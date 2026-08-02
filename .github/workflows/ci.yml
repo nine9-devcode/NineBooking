@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    services:
+      # การ build ต้องมีฐานข้อมูลจริง เพราะบางหน้าอ่านค่าตั้งค่าจาก DB ตอน prerender
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: ninebooking
+          POSTGRES_PASSWORD: ninebooking
+          POSTGRES_DB: ninebooking
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ninebooking"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://ninebooking:ninebooking@localhost:5432/ninebooking?schema=public
+      NEXTAUTH_SECRET: ci-secret-value-that-is-long-enough-for-zod-validation
+      NEXTAUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: ติดตั้ง dependency
+        run: npm ci
+
+      - name: ตรวจสอบ Prisma schema
+        run: npx prisma validate
+
+      - name: สร้าง Prisma client
+        run: npx prisma generate
+
+      - name: ตรวจชนิดข้อมูล
+        run: npm run typecheck
+
+      - name: ตรวจสไตล์โค้ด
+        run: npm run lint
+
+      - name: รันเทสต์
+        run: npm test
+
+      - name: เตรียมฐานข้อมูล
+        run: npx prisma migrate deploy
+
+      - name: Build
+        run: npm run build

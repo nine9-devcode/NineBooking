@@ -1,0 +1,55 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# next.js
+/.next/
+/out/
+/build
+next-env.d.ts
+
+# typescript
+*.tsbuildinfo
+
+# testing
+/coverage
+/test-results
+/playwright-report
+
+# env
+.env
+.env*.local
+.env.production
+!.env.example
+
+# user uploads (keep the folder and the seed assets)
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/seed/
+
+# dev mailer outbox
+/.dev-outbox/
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# vercel
+.vercel
+
+# misc
+*.pem
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: ninebooking-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ninebooking
+      POSTGRES_PASSWORD: ninebooking
+      POSTGRES_DB: ninebooking
+      # ให้เรียงลำดับและเทียบข้อความภาษาไทยได้ถูกต้อง
+      LANG: th_TH.utf8
+    ports:
+      # ถ้าเครื่องมี PostgreSQL อยู่แล้วจนพอร์ตชนกัน ให้ตั้ง DB_PORT ใน .env
+      # เป็นพอร์ตอื่น (เช่น 5433) แล้วแก้ DATABASE_URL ให้ตรงกัน
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - ninebooking-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ninebooking -d ninebooking"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # เครื่องมือส่องฐานข้อมูลผ่านเบราว์เซอร์ที่ http://localhost:8080
+  # ไม่จำเป็นต่อการรันแอป ปิดได้ด้วย: docker compose up -d db
+  adminer:
+    image: adminer:5
+    container_name: ninebooking-adminer
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+      ADMINER_DESIGN: dracula
+
+volumes:
+  ninebooking-db-data:
