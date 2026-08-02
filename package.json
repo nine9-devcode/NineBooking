@@ -19,7 +19,8 @@
     "setup": "npm run db:up && prisma migrate deploy && npm run db:seed",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "postinstall": "prisma generate"
   },
   "prisma": {
     "seed": "tsx --env-file=.env prisma/seed.ts"
