@@ -214,7 +214,7 @@ export async function DELETE(
       where: { id: params.id },
     })
 
-    await deleteFiles(issue.imageUrls)
+    await deleteFiles(issue.imageUrls, "private")
 
     return NextResponse.json({ message: "ลบรายการสำเร็จ" })
 

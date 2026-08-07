@@ -29,6 +29,9 @@ next-env.d.ts
 !/public/uploads/.gitkeep
 !/public/uploads/seed/
 
+# ไฟล์แนบที่ต้องผ่านการตรวจสิทธิ์ก่อน เสิร์ฟผ่าน /api/files เท่านั้น
+/private-uploads/
+
 # dev mailer outbox
 /.dev-outbox/
 

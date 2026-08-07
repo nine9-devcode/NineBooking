@@ -1,35 +1,18 @@
 import { IssueCategory } from "@prisma/client"
 
 import { requireUser } from "@/lib/api/guards"
-import { apiError, apiOk, handleApiError } from "@/lib/api/response"
+import { apiError, apiOk, handleApiError, tooManyRequests } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
+import { nextIssueNumber } from "@/lib/document-number"
 import { sendNewIssueAdminEmail } from "@/lib/mailer/support-mail"
+import { RATE_LIMITS, consume } from "@/lib/rate-limit"
+import { broadcastIssueNotification } from "@/lib/realtime/issue-notifications"
 import { saveFile } from "@/lib/storage"
-
-import { broadcastIssueNotification } from "../admin/issue-notifications/stream/route"
 
 const MAX_IMAGES = 3
 const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5 MB
-const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"]
 
 const VALID_CATEGORIES = Object.values(IssueCategory)
-
-/** ISS-<ปี>-<ลำดับ 4 หลัก> นับต่อจากเลขล่าสุดของปีนั้น */
-async function generateIssueNumber(): Promise<string> {
-  const prefix = `ISS-${new Date().getFullYear()}-`
-
-  const lastIssue = await prisma.contactIssue.findFirst({
-    where: { issueNumber: { startsWith: prefix } },
-    orderBy: { issueNumber: "desc" },
-    select: { issueNumber: true },
-  })
-
-  const lastNumber = lastIssue
-    ? Number.parseInt(lastIssue.issueNumber.slice(prefix.length), 10)
-    : 0
-
-  return `${prefix}${String(lastNumber + 1).padStart(4, "0")}`
-}
 
 // POST /api/support — ลูกค้าส่งเรื่องแจ้งปัญหา
 export async function POST(req: Request) {
@@ -37,6 +20,9 @@ export async function POST(req: Request) {
     const guard = await requireUser()
     if (!guard.ok) return guard.response
     const { user } = guard
+
+    const rate = await consume(`support:user:${user.id}`, RATE_LIMITS.support)
+    if (!rate.ok) return tooManyRequests(rate.retryAfterSec)
 
     const formData = await req.formData()
     const subject = ((formData.get("subject") as string) ?? "").trim()
@@ -53,26 +39,24 @@ export async function POST(req: Request) {
       return apiError("กรุณาเลือกประเภทปัญหา")
     }
 
-    // ตรวจไฟล์ให้ครบก่อน ค่อยเขียนลงดิสก์ จะได้ไม่มีไฟล์ค้างเมื่อมีรูปที่ไม่ผ่าน
     const validFiles = files.filter((f) => f.size > 0).slice(0, MAX_IMAGES)
 
-    for (const file of validFiles) {
-      if (!ALLOWED_TYPES.includes(file.type)) {
-        return apiError("รองรับเฉพาะไฟล์ภาพ (JPG, PNG, WebP)")
-      }
-      if (file.size > MAX_FILE_SIZE) {
-        return apiError("ไฟล์แต่ละรูปต้องมีขนาดไม่เกิน 5 MB")
-      }
-    }
-
+    // ไฟล์แนบของลูกค้าเก็บเป็น private — มักเป็นสกรีนช็อตที่มีเลขออเดอร์ ที่อยู่ เบอร์โทร
+    // อยู่ใน public/ เมื่อไหร่คือใครเดา URL ถูกก็เปิดได้ทันที
     const stored = await Promise.all(
-      validFiles.map((file) => saveFile(file, "support-issues"))
+      validFiles.map((file) =>
+        saveFile(file, "support-issues", {
+          kind: "image",
+          maxBytes: MAX_FILE_SIZE,
+          visibility: "private",
+        })
+      )
     )
     const imageUrls = stored.map((s) => s.url)
 
-    const issueNumber = await generateIssueNumber()
-
     const { issue, notification } = await prisma.$transaction(async (tx) => {
+      const issueNumber = await nextIssueNumber(tx)
+
       const newIssue = await tx.contactIssue.create({
         data: {
           issueNumber,
@@ -116,7 +100,7 @@ export async function POST(req: Request) {
     // อีเมลไม่ควรบล็อกการตอบกลับ — ล้มเหลวก็แค่ log ไว้
     void sendNewIssueAdminEmail({
       issueId: issue.id,
-      issueNumber,
+      issueNumber: issue.issueNumber,
       customerName: issue.user?.name ?? "ไม่ระบุชื่อ",
       customerEmail: user.email ?? "",
       subject,
@@ -128,7 +112,7 @@ export async function POST(req: Request) {
     return apiOk(
       {
         success: true,
-        issueNumber,
+        issueNumber: issue.issueNumber,
         message: "ส่งแจ้งปัญหาสำเร็จ เราจะติดต่อกลับโดยเร็วที่สุด",
       },
       201

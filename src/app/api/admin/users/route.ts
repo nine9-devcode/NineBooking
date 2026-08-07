@@ -1,8 +1,12 @@
 // app/api/admin/users/route.ts
 import { NextRequest, NextResponse } from "next/server"
-import { requireAdmin } from "@/lib/api/guards"
-import { prisma } from "@/lib/db"
 import bcrypt from "bcryptjs"
+import { z } from "zod"
+
+import { requireAdmin } from "@/lib/api/guards"
+import { parsePagination } from "@/lib/api/query"
+import { apiError, apiOk, handleApiError } from "@/lib/api/response"
+import { prisma } from "@/lib/db"
 
 // GET - ดึงรายการสมาชิก + สถิติ + รองรับ filter/pagination
 export async function GET(request: NextRequest) {
@@ -12,14 +16,12 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const search = searchParams.get("search") || ""
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "10")
+    // ผ่าน parsePagination เพื่อไม่ให้ ?limit=999999 ดัมป์ทั้งตารางออกไป
+    const { page, limit, skip } = parsePagination(searchParams)
     const role = searchParams.get("role") || ""
     const memberType = searchParams.get("memberType") || ""
     const profileStatus = searchParams.get("profileStatus") || ""
     const statsOnly = searchParams.get("stats") === "true"
-
-    const skip = (page - 1) * limit
 
     // คำนวณสถิติ (นับจำนวนสมาชิกแยกตามประเภท)
     const today = new Date()
@@ -215,29 +217,54 @@ export async function POST(request: NextRequest) {
   }
 }
 
+const patchUserSchema = z.object({
+  id: z.string().min(1, "ต้องระบุ id ของสมาชิก"),
+  // ต้องเป็น enum ไม่ใช่ string อิสระ ไม่งั้นตั้ง role อะไรก็ได้ที่ไม่มีอยู่จริง
+  role: z.enum(["user", "admin"]).optional(),
+  nickname: z.string().trim().max(40).nullable().optional(),
+  phone: z
+    .string()
+    .regex(/^0\d{9}$/, "เบอร์โทรต้องเป็นตัวเลข 10 หลักขึ้นต้นด้วย 0")
+    .nullable()
+    .optional(),
+})
+
+/** ฟิลด์ที่ยอมให้หลุดออกไปหา client — ห้ามมี password เด็ดขาด */
+const adminUserSelect = {
+  id: true,
+  name: true,
+  nickname: true,
+  email: true,
+  phone: true,
+  role: true,
+  memberType: true,
+  isProfileCompleted: true,
+  createdAt: true,
+  updatedAt: true,
+} as const
+
 // PATCH - เปลี่ยน role/ชื่อเล่น/เบอร์โทร ของสมาชิก
 export async function PATCH(request: NextRequest) {
   try {
     const guard = await requireAdmin()
     if (!guard.ok) return guard.response
 
-    const body = await request.json()
-    const { id, role, nickname, phone } = body
+    const { id, ...changes } = patchUserSchema.parse(await request.json())
 
-    if (!id) return NextResponse.json({ error: "User ID is required" }, { status: 400 })
-
-    if (id === guard.user.id && role && role !== "admin") {
-      return NextResponse.json({ error: "คุณไม่สามารถลดบทบาทของตัวเองได้" }, { status: 400 })
+    if (id === guard.user.id && changes.role && changes.role !== "admin") {
+      return apiError("คุณไม่สามารถลดบทบาทของตัวเองได้")
     }
 
+    // ต้องระบุ select เสมอ — ของเดิมคืนทั้งแถวซึ่งรวม bcrypt hash ของรหัสผ่านออกไปด้วย
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: { role, nickname, phone },
+      data: changes,
+      select: adminUserSelect,
     })
 
-    return NextResponse.json(updatedUser)
+    return apiOk(updatedUser)
   } catch (error) {
-    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการอัปเดต" }, { status: 500 })
+    return handleApiError(error, "admin/users:update")
   }
 }
 

@@ -1,5 +1,5 @@
 import { siteConfig } from "@/config/site"
-import { mailer } from "@/lib/mailer"
+import { escapeHtml, mailer } from "@/lib/mailer"
 import { RESET_TOKEN_TTL_MINUTES } from "@/features/auth/password-reset"
 
 /** เทมเพลตอีเมลตั้งรหัสผ่านใหม่ — HTML ตรงๆ เพราะเป็นข้อความสั้นๆ ไม่ต้องใช้ react-email */
@@ -37,6 +37,7 @@ export async function sendPasswordResetEmail(params: {
   return mailer.send({
     to: params.to,
     subject: `ตั้งรหัสผ่านใหม่ — ${siteConfig.name}`,
-    html: resetPasswordHtml(params.name, resetUrl),
+    // ชื่อมาจากโปรไฟล์ที่ผู้ใช้กรอกเอง ต้อง escape ก่อนแปะลง HTML
+    html: resetPasswordHtml(escapeHtml(params.name), resetUrl),
   })
 }

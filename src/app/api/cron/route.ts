@@ -1,7 +1,11 @@
+import { timingSafeEqual } from "node:crypto"
+
 import { NextRequest } from "next/server"
 
 import { auth } from "@/lib/auth"
 import { apiOk, handleApiError, unauthorized } from "@/lib/api/response"
+import { env } from "@/lib/env"
+import { cleanupExpiredRateLimits } from "@/lib/rate-limit"
 import { archiveProductViews } from "@/features/dashboard/archive-product-views"
 import { cleanupExpiredResetTokens } from "@/features/auth/password-reset"
 
@@ -23,12 +27,19 @@ import { cleanupExpiredResetTokens } from "@/features/auth/password-reset"
  */
 export const dynamic = "force-dynamic"
 
-async function isAuthorized(request: NextRequest): Promise<boolean> {
-  const secret = process.env.CRON_SECRET
+/** เทียบแบบใช้เวลาคงที่ ไม่ให้เดาความลับทีละไบต์จากเวลาที่ตอบกลับ */
+function secretMatches(header: string | null, secret: string): boolean {
+  if (!header) return false
 
-  if (secret) {
-    const header = request.headers.get("authorization")
-    if (header === `Bearer ${secret}`) return true
+  const expected = Buffer.from(`Bearer ${secret}`)
+  const received = Buffer.from(header)
+
+  return expected.length === received.length && timingSafeEqual(expected, received)
+}
+
+async function isAuthorized(request: NextRequest): Promise<boolean> {
+  if (env.CRON_SECRET && secretMatches(request.headers.get("authorization"), env.CRON_SECRET)) {
+    return true
   }
 
   const session = await auth()
@@ -38,9 +49,10 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 async function runJobs() {
   const startedAt = Date.now()
 
-  const [views, tokens] = await Promise.all([
+  const [views, tokens, rateLimits] = await Promise.all([
     archiveProductViews(),
     cleanupExpiredResetTokens(),
+    cleanupExpiredRateLimits(),
   ])
 
   return {
@@ -48,6 +60,7 @@ async function runJobs() {
     durationMs: Date.now() - startedAt,
     archiveProductViews: views,
     expiredResetTokensRemoved: tokens,
+    expiredRateLimitsRemoved: rateLimits,
   }
 }
 

@@ -1,14 +1,20 @@
 import { mkdir, writeFile } from "node:fs/promises"
 import path from "node:path"
 
+import { env } from "@/lib/env"
+
 /**
  * โปรเจกนี้ไม่ผูกกับผู้ให้บริการอีเมลเจ้าไหน เพื่อให้โคลนมาแล้วรันได้ทันทีโดยไม่ต้องมี API key
  *
- * ตัว default (DevOutboxMailer) จะเขียนอีเมลเป็นไฟล์ .html ลง .dev-outbox/
- * แล้ว log path ออก console — เปิดดูในเบราว์เซอร์ได้เหมือนได้รับอีเมลจริง
+ * ตัว default (outbox) จะเขียนอีเมลเป็นไฟล์ .html ลง .dev-outbox/
+ * เปิดดูในเบราว์เซอร์ได้เหมือนได้รับอีเมลจริง
  *
- * จะต่อของจริง (SMTP / Resend / SES) ก็เขียน object ที่ implement Mailer
- * แล้วเปลี่ยนค่า `mailer` ข้างล่างไฟล์นี้ — โค้ดส่วนอื่นไม่ต้องแก้เลย
+ * ⚠️ โหมด outbox ห้ามใช้บน production — ลิงก์ตั้งรหัสผ่านใหม่จะไปกองอยู่บนดิสก์
+ * ใครอ่านโฟลเดอร์นั้นได้ก็ยึดบัญชีใครก็ได้ทันที lib/env.ts จึงโยน error
+ * ถ้า NODE_ENV เป็น production แล้ว MAIL_DRIVER ยังเป็น outbox อยู่
+ *
+ * จะต่อของจริง (SMTP / Resend / SES) ให้เขียน object ที่ implement Mailer
+ * แล้วเพิ่มเข้า DRIVERS ข้างล่าง — โค้ดส่วนอื่นไม่ต้องแก้เลย
  */
 
 export interface MailMessage {
@@ -62,10 +68,7 @@ export const devOutboxMailer: Mailer = {
 
       await writeFile(filePath, banner + html, "utf8")
 
-      console.info(
-        `[mailer] "${subject}" → ${recipients.join(", ")}\n` +
-          `[mailer] เปิดดูได้ที่: ${filePath}`
-      )
+      console.info(`[mailer] "${subject}" → เปิดดูได้ที่ ${filePath}`)
 
       return { success: true, reference: filePath }
     } catch (error) {
@@ -76,18 +79,64 @@ export const devOutboxMailer: Mailer = {
   },
 }
 
-export const mailer: Mailer = devOutboxMailer
+/** สำหรับตอนรันใน container ที่ไม่มีดิสก์ให้เขียน — ดูเนื้ออีเมลจาก log แทน */
+export const consoleMailer: Mailer = {
+  async send({ to, subject, html }) {
+    const recipients = Array.isArray(to) ? to : [to]
+
+    console.info(
+      `\n──── mail ────\nTo: ${recipients.join(", ")}\nSubject: ${subject}\n\n${html}\n──────────────\n`
+    )
+
+    return { success: true, reference: "console" }
+  },
+}
+
+const DRIVERS: Record<typeof env.MAIL_DRIVER, Mailer> = {
+  outbox: devOutboxMailer,
+  console: consoleMailer,
+}
+
+function resolveDriver(): Mailer {
+  if (env.NODE_ENV === "production" && env.MAIL_DRIVER === "outbox") {
+    throw new Error(
+      "MAIL_DRIVER ยังเป็น outbox บน production — โหมดนี้เขียนอีเมล " +
+        "(รวมลิงก์ตั้งรหัสผ่านใหม่) ลงไฟล์ในเครื่องแทนการส่งจริง " +
+        "เขียน adapter ตัวใหม่ใน src/lib/mailer/ แล้วตั้ง MAIL_DRIVER ให้ตรงก่อนครับ"
+    )
+  }
+
+  return DRIVERS[env.MAIL_DRIVER]
+}
+
+/**
+ * เลือก driver ตอนส่งจริง ไม่ใช่ตอน import
+ *
+ * next build ตั้ง NODE_ENV=production แล้วไล่โหลดทุกโมดูลเพื่อเก็บข้อมูลหน้า
+ * ถ้าเช็คตอน import ตัว build จะพังทั้งที่ยังไม่มีการส่งอีเมลสักฉบับ
+ */
+export const mailer: Mailer = {
+  send: (message) => resolveDriver().send(message),
+}
 
 /**
  * ปลายทางของอีเมลแจ้งเตือนฝั่งผู้ดูแลระบบ
  * ตั้งได้ผ่าน ADMIN_EMAIL (คั่นด้วยจุลภาคได้หลายคน) ถ้าไม่ตั้งจะใช้ค่า dev
  */
 export function getAdminRecipients(): string[] {
-  const raw = process.env.ADMIN_EMAIL
-  if (!raw) return ["admin@ninebooking.dev"]
+  if (!env.ADMIN_EMAIL) return ["admin@ninebooking.dev"]
 
-  return raw
-    .split(",")
+  return env.ADMIN_EMAIL.split(",")
     .map((email) => email.trim())
     .filter(Boolean)
+}
+
+/** กัน HTML injection ตอนเอาค่าจากผู้ใช้ (ชื่อ/ชื่อเล่น) ไปแปะในเนื้ออีเมล */
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;")
 }

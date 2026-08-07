@@ -27,9 +27,9 @@ model User {
   residenceType      String? // single_house, condo, townhouse, apartment, other
   residenceTypeOther String? @db.Text
 
-  role           String  @default("user") // user | admin
-  memberType     String? @default("customer") // customer | contractor | dealer | other
-  memberTypeNote String? @db.Text
+  role           UserRole @default(user)
+  memberType     String?  @default("customer") // customer | contractor | dealer | other
+  memberTypeNote String?  @db.Text
 
   // ที่อยู่
   address     String? // บ้านเลขที่ / ถนน / ซอย
@@ -70,19 +70,46 @@ model PasswordResetToken {
   @@index([expiresAt])
 }
 
-// กันเดารหัสผ่าน: ผิด 5 ครั้ง → ล็อค 15 นาที
-model LoginRateLimit {
-  id    String @id @default(cuid())
-  email String @unique
+// สิทธิ์ทั้งระบบวางอยู่บนฟิลด์นี้ จึงต้องเป็น enum ไม่ใช่ String อิสระ
+enum UserRole {
+  user
+  admin
+}
 
-  failCount    Int       @default(0)
+/// ตัวนับสำหรับจำกัดอัตราการเรียก ใช้ร่วมกันทุกจุดที่ต้องกันยิงรัว
+///
+/// key เป็นตัวกำหนดขอบเขตของการนับ เช่น
+///   "login:email:a@b.c"  — กันเดารหัสผ่านของบัญชีหนึ่ง
+///   "login:ip:1.2.3.4"   — กัน credential stuffing ที่ไล่ยิงหลายบัญชีจากที่เดียว
+///   "register:ip:1.2.3.4"
+///
+/// ต้องมีทั้งสองแกน: นับต่อบัญชีอย่างเดียวไม่กันการสเปรย์รหัสเดียวข้ามพันบัญชี
+/// และเปิดช่องให้ใครก็ได้ล็อกบัญชีคนอื่นทิ้งด้วยการกรอกผิดซ้ำๆ
+model RateLimit {
+  key String @id
+
+  count        Int       @default(0)
+  windowStart  DateTime  @default(now())
   blockedUntil DateTime?
-  lastFailedAt DateTime?
 
-  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([blockedUntil])
+}
+
+/// ตัวนับเลขที่เอกสาร (ORD- / ISS- / QT-)
+///
+/// เดิมทั้งสามระบบใช้ count()+1 นอกทรานแซกชัน ซึ่งชนกันได้เมื่อมีคนกดพร้อมกัน
+/// ตัวที่แพ้จะไปชน unique constraint แล้วพังทั้งคำสั่ง
+/// upsert ที่ increment เป็น atomic ระดับ row จึงขอเลขได้ปลอดภัยในทรานแซกชันเดียวกัน
+model DocumentCounter {
+  scope  String // "ORDER" | "ISSUE" | "QUOTATION"
+  period String // "20260807" (ต่อวัน) หรือ "2026" (ต่อปี)
+  value  Int    @default(0)
+
+  updatedAt DateTime @updatedAt
+
+  @@id([scope, period])
 }
 
 // ===================================================================
@@ -126,7 +153,7 @@ model Product {
   images      String[] // แกลเลอรี
 
   datasheets Json? // [{ name, url, fileType, fileSize }, ...]
-  viewCount  Int    @default(0)
+  viewCount  Int   @default(0)
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])

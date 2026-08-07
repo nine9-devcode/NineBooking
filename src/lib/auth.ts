@@ -4,6 +4,8 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
 
 import { prisma } from "@/lib/db"
+import { env } from "@/lib/env"
+import { RATE_LIMITS, clientIp, consume, resetRateLimit } from "@/lib/rate-limit"
 
 // error code เหล่านี้ถูกส่งกลับไปหน้า login แล้วแปลงเป็นข้อความไทยที่นั่น
 class InvalidLoginError extends CredentialsSignin {
@@ -16,32 +18,8 @@ class AccountLockedError extends CredentialsSignin {
   code = "ACCOUNT_LOCKED"
 }
 
-// กันเดารหัสผ่าน: กรอกผิดครบจำนวน → ล็อคบัญชีชั่วคราว
-const LOGIN_RATE_LIMIT = {
-  MAX_ATTEMPTS: 5,
-  BLOCK_MINUTES: 15,
-} as const
-
-async function recordLoginFailure(email: string) {
-  const now = new Date()
-
-  const record = await prisma.loginRateLimit.upsert({
-    where: { email },
-    create: { email, failCount: 1, lastFailedAt: now },
-    update: { failCount: { increment: 1 }, lastFailedAt: now },
-  })
-
-  if (record.failCount >= LOGIN_RATE_LIMIT.MAX_ATTEMPTS) {
-    await prisma.loginRateLimit.update({
-      where: { email },
-      data: {
-        blockedUntil: new Date(
-          now.getTime() + LOGIN_RATE_LIMIT.BLOCK_MINUTES * 60 * 1000
-        ),
-      },
-    })
-  }
-}
+const emailKey = (email: string) => `login:email:${email}`
+const ipKey = (ip: string) => `login:ip:${ip}`
 
 export const authOptions: NextAuthConfig = {
   trustHost: true,
@@ -56,62 +34,49 @@ export const authOptions: NextAuthConfig = {
         isAdminLogin: { label: "Is Admin Login", type: "text" },
       },
 
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const { email, password, isAdminLogin } = credentials as {
           email?: string
           password?: string
           isAdminLogin?: string
         }
 
+        const ip = clientIp(request.headers)
+
+        // นับต่อ IP ก่อนเสมอ แม้ input จะไม่ครบ ไม่งั้นคนยิงเลี่ยงการนับได้
+        // ด้วยการส่งฟอร์มเปล่า และการนับต่อบัญชีอย่างเดียวไม่กันการสเปรย์
+        // รหัสเดียวข้ามหลายพันบัญชี
+        const byIp = await consume(ipKey(ip), RATE_LIMITS.loginPerIp)
+        if (!byIp.ok) throw new AccountLockedError()
+
         if (!email || !password) throw new InvalidLoginError()
 
         const normalizedEmail = email.toLowerCase().trim()
 
-        // 1) บัญชียังถูกล็อคอยู่ไหม
-        const rateLimit = await prisma.loginRateLimit.findUnique({
-          where: { email: normalizedEmail },
-        })
+        const byEmail = await consume(emailKey(normalizedEmail), RATE_LIMITS.loginPerEmail)
+        if (!byEmail.ok) throw new AccountLockedError()
 
-        if (rateLimit?.blockedUntil && rateLimit.blockedUntil > new Date()) {
-          throw new AccountLockedError()
-        }
-
-        // หมดเวลาล็อคแล้ว → เริ่มนับใหม่
-        if (rateLimit?.blockedUntil && rateLimit.blockedUntil <= new Date()) {
-          await prisma.loginRateLimit.update({
-            where: { email: normalizedEmail },
-            data: { failCount: 0, blockedUntil: null, lastFailedAt: null },
-          })
-        }
-
-        // 2) หา user
         const user = await prisma.user.findUnique({
           where: { email: normalizedEmail },
         })
 
-        if (!user?.password) {
-          await recordLoginFailure(normalizedEmail)
-          throw new InvalidLoginError()
-        }
+        if (!user?.password) throw new InvalidLoginError()
 
-        // 3) admin ต้องเข้าผ่านหน้า /admin/login เท่านั้น
+        // ตรวจรหัสผ่านก่อนเช็คอย่างอื่นเสมอ
+        //
+        // เดิมโค้ดเช็ค role === "admin" ไว้เหนือบรรทัดนี้ ผลคือใครก็ได้ยิงรหัสมั่วๆ
+        // แล้วดูว่าได้ ADMIN_NOT_ALLOWED หรือ INVALID_CREDENTIALS ก็รู้ทันทีว่า
+        // อีเมลไหนเป็นแอดมิน โดยไม่ต้องรู้รหัสผ่านและไม่ถูกนับว่ากรอกผิดด้วย
+        const isCorrectPassword = await bcrypt.compare(password, user.password)
+        if (!isCorrectPassword) throw new InvalidLoginError()
+
+        // แอดมินต้องเข้าผ่านหน้า /admin/login — ตอนนี้คนที่จะเห็นข้อความนี้
+        // ต้องรู้รหัสผ่านที่ถูกต้องอยู่แล้ว จึงไม่ใช่ช่องให้ไล่หาบัญชีอีกต่อไป
         if (user.role === "admin" && isAdminLogin !== "true") {
           throw new AdminNotAllowedError()
         }
 
-        // 4) ตรวจรหัสผ่าน
-        const isCorrectPassword = await bcrypt.compare(password, user.password)
-        if (!isCorrectPassword) {
-          await recordLoginFailure(normalizedEmail)
-          throw new InvalidLoginError()
-        }
-
-        // 5) สำเร็จ → ล้างประวัติการกรอกผิด
-        if (rateLimit) {
-          await prisma.loginRateLimit.delete({
-            where: { email: normalizedEmail },
-          })
-        }
+        await resetRateLimit(emailKey(normalizedEmail))
 
         return {
           id: user.id,
@@ -195,7 +160,7 @@ export const authOptions: NextAuthConfig = {
     },
   },
 
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: env.NEXTAUTH_SECRET,
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth(authOptions)

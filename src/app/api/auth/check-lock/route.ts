@@ -1,32 +1,31 @@
-import { NextRequest, NextResponse } from "next/server"
+import { z } from "zod"
+
+import { apiOk, handleApiError } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
 
+const bodySchema = z.object({ email: z.string().optional() })
+
 // POST /api/auth/check-lock
-// เช็คว่า email ถูกล็อคจาก brute force หรือไม่
-// ไม่ต้อง auth — ไม่เปิดเผยว่า email มีอยู่จริงหรือไม่ (แค่บอกว่าล็อคหรือเปล่า)
-export async function POST(req: NextRequest) {
+// หน้า login เรียกตัวนี้เพื่อบอกผู้ใช้ว่าต้องรออีกนานเท่าไร
+//
+// ไม่ต้องล็อกอินก็เรียกได้ และไม่เปิดเผยว่ามีบัญชีนี้อยู่จริงไหม เพราะตัวนับ
+// ถูกสร้างขึ้นสำหรับอีเมลที่ไม่มีในระบบด้วยเหมือนกัน
+export async function POST(req: Request) {
   try {
-    const { email } = await req.json()
+    const { email } = bodySchema.parse(await req.json().catch(() => ({})))
 
-    if (!email) {
-      return NextResponse.json({ locked: false })
-    }
+    if (!email) return apiOk({ locked: false })
 
-    const normalizedEmail = email.toLowerCase().trim()
-
-    const rateLimit = await prisma.loginRateLimit.findUnique({
-      where: { email: normalizedEmail },
+    const record = await prisma.rateLimit.findUnique({
+      where: { key: `login:email:${email.toLowerCase().trim()}` },
     })
 
-    if (rateLimit?.blockedUntil && rateLimit.blockedUntil > new Date()) {
-      return NextResponse.json({
-        locked: true,
-        blockedUntil: rateLimit.blockedUntil.toISOString(),
-      })
+    if (record?.blockedUntil && record.blockedUntil > new Date()) {
+      return apiOk({ locked: true, blockedUntil: record.blockedUntil.toISOString() })
     }
 
-    return NextResponse.json({ locked: false })
-  } catch {
-    return NextResponse.json({ locked: false })
+    return apiOk({ locked: false })
+  } catch (error) {
+    return handleApiError(error, "auth/check-lock")
   }
 }

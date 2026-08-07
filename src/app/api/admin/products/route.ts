@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
-import { requireAdmin } from "@/lib/api/guards"
-import { prisma } from "@/lib/db"
 import { Prisma } from "@prisma/client"
+
+import { requireAdmin } from "@/lib/api/guards"
+import { parsePagination, parseSort } from "@/lib/api/query"
+import { prisma } from "@/lib/db"
+import { sanitizeRichText } from "@/lib/sanitize"
+
+// ฟิลด์ที่ยอมให้เรียงได้ — ของเดิมยัดค่าจาก query string เข้า orderBy ตรงๆ
+// ?sortBy=nope จึงกลายเป็น 500 จาก Prisma
+const SORTABLE_FIELDS = ["createdAt", "updatedAt", "name", "viewCount"] as const
 
 // GET - ดึงรายการสินค้า
 export async function GET(request: NextRequest) {
@@ -11,15 +18,11 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const search = searchParams.get("search") || ""
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "10")
+    const { page, limit, skip } = parsePagination(searchParams)
     const categoryId = searchParams.get("categoryId") || ""
     const excludeId = searchParams.get("excludeId") || ""
     const status = searchParams.get("status") || "" // "active", "inactive", ""
-    const sortBy = searchParams.get("sortBy") || "createdAt"
-    const sortOrder = searchParams.get("sortOrder") || "desc"
-
-    const skip = (page - 1) * limit
+    const sort = parseSort(searchParams, SORTABLE_FIELDS, "createdAt")
 
     // Build where clause
     const where: Prisma.ProductWhereInput = {}
@@ -82,9 +85,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: {
-          [sortBy]: sortOrder,
-        },
+        orderBy: { [sort.field]: sort.direction },
         skip,
         take: limit,
       }),
@@ -182,7 +183,7 @@ export async function POST(request: NextRequest) {
         name,
         subtitle: subtitle || null,
         slug,
-        description,
+        description: sanitizeRichText(description),
         image,
         images: images || [],
         datasheets: datasheets || null,

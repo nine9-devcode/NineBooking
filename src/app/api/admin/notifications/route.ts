@@ -1,6 +1,8 @@
+import { NextResponse } from "next/server"
+
 import { requireAdmin } from "@/lib/api/guards"
-import { prisma } from '@/lib/db'
-import { NextResponse } from 'next/server'
+import { parsePagination } from "@/lib/api/query"
+import { prisma } from "@/lib/db"
 
 // GET: ดึงรายการแจ้งเตือน
 export async function GET(req: Request) {
@@ -9,7 +11,7 @@ export async function GET(req: Request) {
     if (!guard.ok) return guard.response
 
     const { searchParams } = new URL(req.url)
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const { limit } = parsePagination(searchParams, { defaultLimit: 20, maxLimit: 50 })
     const unreadOnly = searchParams.get('unreadOnly') === 'true'
 
     // ดึง notifications

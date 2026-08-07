@@ -1,12 +1,21 @@
 import bcrypt from "bcryptjs"
 
-import { apiError, apiOk, handleApiError } from "@/lib/api/response"
+import { apiError, apiOk, handleApiError, tooManyRequests } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
+import { RATE_LIMITS, clientIp, consume } from "@/lib/rate-limit"
 import { registerSchema } from "@/features/auth/schema"
 
 // POST /api/auth/register — สมัครสมาชิกด้วยอีเมล + รหัสผ่าน
 export async function POST(request: Request) {
   try {
+    // นับก่อน parse เสมอ ไม่งั้นยิงข้อมูลมั่วๆ รัวๆ เพื่อเลี่ยงการนับได้
+    // ปลายทางคือ bcrypt cost 12 ซึ่งกิน CPU มากพอจะทำให้เซิร์ฟเวอร์ล่มได้
+    const rate = await consume(
+      `register:ip:${clientIp(request.headers)}`,
+      RATE_LIMITS.register
+    )
+    if (!rate.ok) return tooManyRequests(rate.retryAfterSec)
+
     const data = registerSchema.parse(await request.json())
 
     const normalizedEmail = data.email.toLowerCase().trim()
@@ -26,6 +35,8 @@ export async function POST(request: Request) {
         password: await bcrypt.hash(data.password, 12),
         phone: data.phone,
         residenceType: data.residenceType,
+        // ฟอร์มเก็บค่านี้มาตั้งแต่แรกแต่ schema ฝั่ง API ไม่มี ค่าจึงหายไปเงียบๆ
+        residenceTypeOther: data.residenceTypeOther || null,
         role: "user",
         isProfileCompleted: true,
         address: data.address || null,

@@ -8,11 +8,20 @@ const SETTINGS_TTL_MS = 30_000
 let cachedShowHomePage = true
 let cachedAt = 0
 
-async function isSiteOpen(requestUrl: string): Promise<boolean> {
+/**
+ * ต้องยึด origin จาก env ไม่ใช่จาก req.url
+ *
+ * req.url ประกอบขึ้นจาก Host header ซึ่งผู้เรียกตั้งเองได้ และโปรเจกนี้ตั้ง
+ * trustHost: true ไว้ ผลคือถ้าใช้ req.url ตรงๆ คนยิงสามารถปลอม Host
+ * ให้ middleware ไปถามเซิร์ฟเวอร์ของตัวเอง แล้วสั่งเปิด/ปิดเว็บได้
+ */
+const APP_ORIGIN = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
+
+async function isSiteOpen(): Promise<boolean> {
   if (Date.now() - cachedAt < SETTINGS_TTL_MS) return cachedShowHomePage
 
   try {
-    const res = await fetch(new URL("/api/settings/home-page", requestUrl))
+    const res = await fetch(new URL("/api/settings/home-page", APP_ORIGIN))
     if (res.ok) {
       const data = (await res.json()) as { showHomePage?: boolean }
       cachedShowHomePage = data.showHomePage !== false
@@ -51,7 +60,7 @@ export default auth(async (req) => {
   if (isLegalPage) return NextResponse.next()
 
   // ── ปิดเว็บชั่วคราว ──
-  const siteOpen = await isSiteOpen(req.url)
+  const siteOpen = await isSiteOpen()
 
   if (!siteOpen) {
     // admin และโซน admin ผ่านได้ (CASE ถัดไปจะพาไป /admin/login เองถ้ายังไม่ล็อกอิน)

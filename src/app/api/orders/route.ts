@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
+import { OrderStatus, Prisma } from "@prisma/client"
+import { z } from "zod"
+
+import { parseEnumParam, parsePagination } from "@/lib/api/query"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { z } from "zod"
-import { notifyAdmins } from '@/app/api/admin/notifications/stream/route'
-import { sendOrderEmails } from '@/lib/mailer/order-mail'
+import { nextOrderNumber } from "@/lib/document-number"
+import { sendOrderEmails } from "@/lib/mailer/order-mail"
+import { notifyAdmins } from "@/lib/realtime/order-notifications"
 
 // Schema สำหรับสร้าง Order
 const createOrderSchema = z.object({
@@ -27,31 +31,6 @@ const createOrderSchema = z.object({
   // รายการสินค้าจากตะกร้า (cart item IDs ที่เลือก)
   cartItemIds: z.array(z.string()).min(1, "กรุณาเลือกสินค้าอย่างน้อย 1 รายการ"),
 })
-
-// Helper: สร้างเลขที่ใบจอง
-async function generateOrderNumber(): Promise<string> {
-  const today = new Date()
-  const dateStr = today.toISOString().slice(0, 10).replace(/-/g, "") // 20260107
-
-  // นับจำนวน orders วันนี้
-  const startOfDay = new Date(today)
-  startOfDay.setHours(0, 0, 0, 0)
-
-  const endOfDay = new Date(today)
-  endOfDay.setHours(23, 59, 59, 999)
-
-  const countToday = await prisma.order.count({
-    where: {
-      createdAt: {
-        gte: startOfDay,
-        lte: endOfDay,
-      },
-    },
-  })
-
-  const sequence = String(countToday + 1).padStart(3, "0") // 001, 002, ...
-  return `ORD-${dateStr}-${sequence}`
-}
 
 // Helper: แปลง orderItems เป็นรูปแบบสำหรับอีเมล
 const groupOrderItemsForEmail = (
@@ -177,12 +156,17 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // สร้างเลขที่ใบจอง
-    const orderNumber = await generateOrderNumber()
+    const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
-    // สร้าง Order + OrderItems ใน transaction
-    const order = await prisma.$transaction(async (tx) => {
-      // 1. สร้าง Order
+    // สร้างเลขที่ใบจอง + Order + OrderItems + กระดิ่งแจ้งเตือน ในทรานแซกชันเดียว
+    //
+    // เลขที่ใบจองต้องขอ "ข้างใน" ทรานแซกชันนี้ ของเดิมนับ order ของวันนี้แล้ว +1
+    // ไว้ข้างนอก ทำให้คนที่กด checkout พร้อมกันได้เลขเดียวกัน ตัวที่เขียนทีหลัง
+    // ไปชน unique constraint แล้วพังทั้งคำสั่ง — และเพราะพังหลังจากนั้น
+    // ตะกร้าก็ไม่ถูกล้าง ลูกค้าเลยไม่รู้ว่าสั่งติดหรือไม่ติด
+    const { order, notification } = await prisma.$transaction(async (tx) => {
+      const orderNumber = await nextOrderNumber(tx)
+
       const newOrder = await tx.order.create({
         data: {
           orderNumber,
@@ -217,7 +201,6 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      // 2. ลบ CartItems ที่ checkout แล้ว
       await tx.cartItem.deleteMany({
         where: {
           id: { in: data.cartItemIds },
@@ -225,78 +208,63 @@ export async function POST(request: NextRequest) {
         },
       })
 
-      return newOrder
+      const newNotification = await tx.orderNotification.create({
+        data: {
+          orderId: newOrder.id,
+          orderNumber: newOrder.orderNumber,
+          customerName: newOrder.customerName,
+          customerNickname: newOrder.customerNickname || newOrder.customerName,
+          totalItems,
+        },
+      })
+
+      return { order: newOrder, notification: newNotification }
     })
-  
-    // สร้าง notification
-const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)           
 
-const notification = await prisma.orderNotification.create({
-  data: {
-    orderId: order.id,
-    orderNumber: order.orderNumber,
-    customerName: order.customerName,
-    customerNickname: order.customerNickname || order.customerName,
-    totalItems: totalItems,
-  },
-})
-// ส่ง real-time notification
-notifyAdmins({
-  id: notification.id,
-  orderId: notification.orderId,
-  orderNumber: notification.orderNumber,
-  customerName: notification.customerName,
-  totalItems: notification.totalItems,
-  isRead: false,
-  createdAt: notification.createdAt.toISOString(),
-})
+    // กระดิ่ง real-time ส่งหลัง commit เท่านั้น
+    // ไม่งั้นแอดมินอาจเห็นแจ้งเตือนของคำสั่งจองที่สุดท้าย rollback ไป
+    notifyAdmins({
+      id: notification.id,
+      orderId: notification.orderId,
+      orderNumber: notification.orderNumber,
+      customerName: notification.customerName,
+      customerNickname: notification.customerNickname,
+      totalItems: notification.totalItems,
+      isRead: false,
+      createdAt: notification.createdAt.toISOString(),
+    })
 
-// ส่งอีเมลแจ้งเตือน
-const groupedItemsForEmail = groupOrderItemsForEmail(order.orderItems)
+    const groupedItemsForEmail = groupOrderItemsForEmail(order.orderItems)
 
-const totalMainQuantity = groupedItemsForEmail.reduce(
-  (sum, g) => sum + g.mainQuantity,
-  0
-)
-const totalPairedQuantity = groupedItemsForEmail.reduce(
-  (sum, g) => sum + (g.pairedProducts?.reduce((s, p) => s + p.quantity, 0) || 0),
-  0
-)
+    const totalMainQuantity = groupedItemsForEmail.reduce((sum, g) => sum + g.mainQuantity, 0)
+    const totalPairedQuantity = groupedItemsForEmail.reduce(
+      (sum, g) => sum + (g.pairedProducts?.reduce((s, p) => s + p.quantity, 0) || 0),
+      0
+    )
 
-// ส่งอีเมล (non-blocking - ไม่กระทบการสร้าง order)
-sendOrderEmails({
-  orderId: order.id,
-  orderNumber: order.orderNumber,
-  customerName: order.customerName,
-  customerNickname: order.customerNickname,
-  customerEmail: order.customerEmail,
-  customerPhone: order.customerPhone,
-  orderItems: groupedItemsForEmail,
-  shippingAddress: order.shippingAddress,
-  shippingProvince: order.shippingProvince,
-  shippingDistrict: order.shippingDistrict,
-  shippingSubDistrict: order.shippingSubDistrict,
-  shippingPostalCode: order.shippingPostalCode,
-  shippingResidenceType: order.shippingResidenceType,
-  customerNote: order.customerNote,
-  totalMainQuantity,
-  totalPairedQuantity,
-  totalQuantity: totalMainQuantity + totalPairedQuantity,
-  createdAt: order.createdAt,
-}).catch((error: unknown) => {
-  // แค่ log error ไม่ throw เพื่อไม่ให้กระทบ order creation
-  console.error('Failed to send emails:', error)
-})
-
-
-
-
-
-
-
-
-
-
+    // อีเมลไม่ควรบล็อกการตอบกลับ — ล้มเหลวก็แค่ log ไว้
+    void sendOrderEmails({
+      orderId: order.id,
+      orderNumber: order.orderNumber,
+      customerName: order.customerName,
+      customerNickname: order.customerNickname,
+      customerEmail: order.customerEmail,
+      customerPhone: order.customerPhone,
+      orderItems: groupedItemsForEmail,
+      shippingAddress: order.shippingAddress,
+      shippingProvince: order.shippingProvince,
+      shippingDistrict: order.shippingDistrict,
+      shippingSubDistrict: order.shippingSubDistrict,
+      shippingPostalCode: order.shippingPostalCode,
+      shippingResidenceType: order.shippingResidenceType,
+      customerNote: order.customerNote,
+      totalMainQuantity,
+      totalPairedQuantity,
+      totalQuantity: totalMainQuantity + totalPairedQuantity,
+      createdAt: order.createdAt,
+    }).catch((error: unknown) => {
+      console.error("[orders] ส่งอีเมลยืนยันไม่สำเร็จ:", error)
+    })
 
     return NextResponse.json({
       success: true,
@@ -387,18 +355,16 @@ export async function GET(request: NextRequest) {
     const userId = session.user.id
     const { searchParams } = new URL(request.url)
 
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "10")
-    const status = searchParams.get("status") // PENDING, CONFIRMED, etc.
+    const { page, limit, skip } = parsePagination(searchParams)
     const search = searchParams.get("search")?.trim() || ""
-    const sortOrder = searchParams.get("sort") === "asc" ? "asc" as const : "desc" as const
+    const sortOrder = searchParams.get("sort") === "asc" ? ("asc" as const) : ("desc" as const)
 
-    // Build where clause
-    const where: any = { userId }
+    // ใช้ type ของ Prisma แทน any เพื่อให้ค่าที่มาจาก query string ถูกตรวจตอน compile
+    const where: Prisma.OrderWhereInput = { userId }
 
-    if (status && status !== "all") {
-      where.status = status
-    }
+    // parseEnumParam คืน undefined ถ้าค่าไม่ตรง enum — ของเดิมยัดค่าดิบเข้าไปแล้วพังเป็น 500
+    const status = parseEnumParam(OrderStatus, searchParams.get("status"))
+    if (status) where.status = status
 
     if (search) {
       where.orderNumber = { contains: search, mode: "insensitive" }
@@ -426,7 +392,7 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: { createdAt: sortOrder },
-      skip: (page - 1) * limit,
+      skip,
       take: limit,
     })
 

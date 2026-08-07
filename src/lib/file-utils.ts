@@ -4,7 +4,7 @@ import {
   File as FileIcon,
   type LucideIcon 
 } from "lucide-react"
-import { DATASHEET_CONFIG, type AllowedFileExtension } from "@/features/products/datasheet.types"
+import { DATASHEET_CONFIG } from "@/features/products/datasheet.types"
 
 /**
  * Format file size จาก bytes เป็น human-readable format

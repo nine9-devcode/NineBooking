@@ -1,8 +1,9 @@
 import { z } from "zod"
 
-import { apiOk, handleApiError } from "@/lib/api/response"
+import { apiOk, handleApiError, tooManyRequests } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
 import { sendPasswordResetEmail } from "@/lib/mailer/auth-mail"
+import { RATE_LIMITS, clientIp, consume } from "@/lib/rate-limit"
 import { issueResetToken } from "@/features/auth/password-reset"
 
 const bodySchema = z.object({
@@ -19,6 +20,13 @@ const GENERIC_RESPONSE = {
 // POST /api/auth/forgot-password — ขอลิงก์ตั้งรหัสผ่านใหม่
 export async function POST(request: Request) {
   try {
+    const rate = await consume(
+      `forgot-password:ip:${clientIp(request.headers)}`,
+      RATE_LIMITS.forgotPassword
+    )
+    // ตอบ 429 ตรงๆ ได้ เพราะเพดานผูกกับ IP ของผู้เรียก ไม่ได้บอกว่าอีเมลไหนมีอยู่จริง
+    if (!rate.ok) return tooManyRequests(rate.retryAfterSec)
+
     const { email } = bodySchema.parse(await request.json())
 
     const user = await prisma.user.findUnique({

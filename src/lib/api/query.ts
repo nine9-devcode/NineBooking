@@ -30,3 +30,22 @@ export function parsePagination(
 
   return { page, limit, skip: (page - 1) * limit }
 }
+
+/**
+ * อ่านฟิลด์ที่ใช้เรียงจาก query string โดยจำกัดไว้เฉพาะที่อนุญาต
+ *
+ * ถ้าไม่จำกัด ค่าอย่าง ?sortBy=nope จะถูกยัดเข้า `orderBy: { [sortBy]: ... }`
+ * ตรงๆ แล้วไปพังที่ Prisma เป็น 500 (ไม่ถึงขั้น injection เพราะ Prisma
+ * ไม่ได้ต่อ SQL เป็นสตริง แต่เป็นการปล่อย input ที่ไม่ตรวจไหลไปถึง query builder)
+ */
+export function parseSort<F extends string>(
+  searchParams: URLSearchParams,
+  allowedFields: readonly F[],
+  fallback: F
+): { field: F; direction: "asc" | "desc" } {
+  const requested = searchParams.get("sortBy")
+  const field = allowedFields.includes(requested as F) ? (requested as F) : fallback
+  const direction = searchParams.get("sortOrder") === "asc" ? "asc" : "desc"
+
+  return { field, direction }
+}

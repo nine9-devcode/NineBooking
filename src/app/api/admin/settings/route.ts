@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server"
+
 import { requireAdmin } from "@/lib/api/guards"
+import { handleApiError } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
-import { getErrorMessage } from "@/lib/utils"
 
 // GET: ดึงการตั้งค่า
 export async function GET() {
@@ -26,9 +27,8 @@ export async function GET() {
         showHomePage: settings.showHomePage,
       },
     })
-  } catch (error: unknown) {
-    console.error("Error fetching settings:", error)
-    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error, "admin/settings:get")
   }
 }
 
@@ -63,8 +63,7 @@ export async function PATCH(request: Request) {
       settings: { showHomePage },
       message: "อัปเดตการตั้งค่าสำเร็จ",
     })
-  } catch (error: unknown) {
-    console.error("Error updating settings:", error)
-    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 })
+  } catch (error) {
+    return handleApiError(error, "admin/settings:update")
   }
 }

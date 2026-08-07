@@ -65,7 +65,7 @@ export async function POST(request: Request) {
     }
 
     // Hash รหัสผ่านใหม่
-    const hashedPassword = await bcrypt.hash(newPassword, 10)
+    const hashedPassword = await bcrypt.hash(newPassword, 12)
 
     // อัพเดทรหัสผ่าน
     await prisma.user.update({

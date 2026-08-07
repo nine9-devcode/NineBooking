@@ -45,20 +45,14 @@ export async function POST(request: Request) {
     const hashedPassword = await bcrypt.hash(password, 12)
 
     await prisma.$transaction(async (tx) => {
-      await tx.user.update({
+      const user = await tx.user.update({
         where: { id: check.userId },
         data: { password: hashedPassword },
-      })
-
-      // ปลดล็อคบัญชีที่โดนล็อคจากการกรอกรหัสผิด — เจ้าของยืนยันตัวตนผ่านอีเมลแล้ว
-      const user = await tx.user.findUnique({
-        where: { id: check.userId },
         select: { email: true },
       })
 
-      if (user) {
-        await tx.loginRateLimit.deleteMany({ where: { email: user.email } })
-      }
+      // ปลดล็อคบัญชีที่โดนล็อคจากการกรอกรหัสผิด — เจ้าของยืนยันตัวตนผ่านอีเมลแล้ว
+      await tx.rateLimit.deleteMany({ where: { key: `login:email:${user.email}` } })
     })
 
     await consumeResetToken(check.tokenId)

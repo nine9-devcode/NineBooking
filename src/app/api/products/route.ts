@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
+
 import { auth } from "@/lib/auth"
+import { parsePagination } from "@/lib/api/query"
 import { prisma } from "@/lib/db"
 
 // GET - ดึงสินค้าที่ active (สำหรับ Customer)
@@ -18,13 +21,11 @@ export async function GET(request: NextRequest) {
     const categoryId = searchParams.get("categoryId") || ""
     const categorySlug = searchParams.get("categorySlug") || ""
     const sort = searchParams.get("sort") || "category"
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = Math.min(parseInt(searchParams.get("limit") || "12"), 100)
+    const { page, limit, skip } = parsePagination(searchParams, { defaultLimit: 12 })
 
-    const skip = (page - 1) * limit
 
-    // Build where clause
-    const where: any = {
+    // ใช้ type ของ Prisma แทน any — ตรงนี้คือจุดที่ input จากผู้ใช้เข้าไปถึง query
+    const where: Prisma.ProductWhereInput = {
       isActive: true,
     }
 

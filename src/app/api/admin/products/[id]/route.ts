@@ -3,6 +3,7 @@ import { NextRequest } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { apiError, apiOk, handleApiError, notFound } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
+import { sanitizeRichText } from "@/lib/sanitize"
 import { deleteFiles } from "@/lib/storage"
 import type { DatasheetJSON } from "@/features/products/datasheet.types"
 
@@ -62,7 +63,10 @@ export async function PATCH(
         name: name ?? existing.name,
         subtitle: subtitle !== undefined ? subtitle : existing.subtitle,
         slug: slug ?? existing.slug,
-        description: description !== undefined ? description : existing.description,
+        // sanitize ตอนเขียน — DOMPurify ที่ฝั่งแสดงผลเป็น client component
+        // จึงไม่ทำงานตอน SSR ต้องกันที่ต้นทางแทน
+        description:
+          description !== undefined ? sanitizeRichText(description) : existing.description,
         image: image !== undefined ? image : existing.image,
         images: images !== undefined ? images : existing.images,
         datasheets: datasheets !== undefined ? datasheets : existing.datasheets,

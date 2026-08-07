@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
 import { OrderStatus, Prisma } from "@prisma/client"
-import { parseEnumParam } from "@/lib/api/query"
+import { parseEnumParam, parsePagination } from "@/lib/api/query"
 
 // Group order items ตาม productId + createdAt (เหมือน cart)
 // ถ้าเพิ่มมาพร้อมกัน (ภายใน 5 วินาที) จะ group รวมกัน
@@ -97,8 +97,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
 
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "10")
+    const { page, limit, skip } = parsePagination(searchParams)
     const search = searchParams.get("search") || ""
     const status = searchParams.get("status") // PENDING, CONFIRMED, etc.
 
@@ -180,7 +179,7 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: { createdAt: "desc" },
-      skip: (page - 1) * limit,
+      skip,
       take: limit,
     })
 

@@ -1,8 +1,9 @@
 import { NextRequest } from "next/server"
 
+import { DATASHEET_CONFIG } from "@/features/products/datasheet.types"
 import { requireAdmin } from "@/lib/api/guards"
-import { apiError, apiOk, handleApiError } from "@/lib/api/response"
-import { getFileValidationError } from "@/lib/file-utils"
+import { apiError, apiOk, handleApiError, tooManyRequests } from "@/lib/api/response"
+import { RATE_LIMITS, consume } from "@/lib/rate-limit"
 import { deleteFile, saveFile } from "@/lib/storage"
 
 // POST /api/upload/document — อัปโหลดเอกสาร datasheet (PDF / Word / Excel)
@@ -11,6 +12,9 @@ export async function POST(request: NextRequest) {
     const guard = await requireAdmin()
     if (!guard.ok) return guard.response
 
+    const rate = await consume(`upload:user:${guard.user.id}`, RATE_LIMITS.upload)
+    if (!rate.ok) return tooManyRequests(rate.retryAfterSec)
+
     const formData = await request.formData()
     const file = formData.get("file")
 
@@ -18,10 +22,11 @@ export async function POST(request: NextRequest) {
       return apiError("ไม่พบไฟล์ที่จะอัปโหลด")
     }
 
-    const validationError = getFileValidationError(file)
-    if (validationError) return apiError(validationError)
-
-    const stored = await saveFile(file, "documents")
+    // ชนิดถูกตรวจจาก magic bytes ใน saveFile — ตัวเช็คเดิมดูแค่ file.type ที่ client ตั้งเองได้
+    const stored = await saveFile(file, "documents", {
+      kind: "document",
+      maxBytes: DATASHEET_CONFIG.maxFileSize,
+    })
 
     return apiOk(stored)
   } catch (error) {

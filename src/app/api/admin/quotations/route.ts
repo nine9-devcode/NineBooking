@@ -6,7 +6,9 @@ import { prisma } from "@/lib/db"
 import { createQuotationSchema } from "@/features/quotations/components/schema"
 import { Decimal } from "@prisma/client/runtime/library"
 import { Prisma, QuotationStatus } from "@prisma/client"
-import { parseEnumParam } from "@/lib/api/query"
+import { parseEnumParam, parsePagination } from "@/lib/api/query"
+import { nextQuotationBaseNumber } from "@/lib/document-number"
+import { calculateQuotationTotals, lineAmount } from "@/features/quotations/totals"
 
 // GET - ดึงรายการใบเสนอราคาทั้งหมด
 export async function GET(request: NextRequest) {
@@ -15,8 +17,7 @@ export async function GET(request: NextRequest) {
     if (!guard.ok) return guard.response
 
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "10")
+    const { page, limit, skip } = parsePagination(searchParams)
     const search = searchParams.get("search") || ""
     const status = searchParams.get("status") || ""
     const dateFrom = searchParams.get("dateFrom") || ""
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: { createdAt: "desc" },
-        skip: (page - 1) * limit,
+        skip,
         take: limit,
       }),
       prisma.quotation.count({ where }),
@@ -193,30 +194,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Generate quotation number (QT-YYYY-XXXX) — ใช้ baseNumber เพื่อหลีกเลี่ยง V suffix
-    const year = new Date().getFullYear()
-    const lastQuotation = await prisma.quotation.findFirst({
-      where: {
-        baseNumber: { startsWith: `QT-${year}` },
-        version: 1,
-      },
-      orderBy: { baseNumber: "desc" },
+    // ยอดเงินคำนวณด้วย Decimal ตลอดสาย ไม่ผ่าน float
+    const { subtotal, vatAmount, totalAmount } = calculateQuotationTotals(data.items, {
+      includeVat: data.includeVat,
+      vatPercent: data.vatPercent,
     })
-
-    let nextNumber = 1
-    if (lastQuotation) {
-      const lastNumber = parseInt(lastQuotation.baseNumber.split("-")[2])
-      if (!isNaN(lastNumber)) nextNumber = lastNumber + 1
-    }
-    const quotationNumber = `QT-${year}-${nextNumber.toString().padStart(4, "0")}`
-
-    // Calculate totals
-    const subtotal = data.items.reduce(
-      (sum, item) => sum + item.quantity * item.unitPrice,
-      0
-    )
-    const vatAmount = data.includeVat ? subtotal * (data.vatPercent / 100) : 0
-    const totalAmount = subtotal + vatAmount
 
     // Calculate valid until date
     const validUntil = new Date()
@@ -228,19 +210,23 @@ export async function POST(request: NextRequest) {
       tempIdToIndex[item.tempId] = index
     })
 
-    // Create quotation with items
-    const quotation = await prisma.quotation.create({
+    // เลขที่ใบเสนอราคาขอในทรานแซกชันเดียวกับที่สร้างเอกสาร
+    // ของเดิมอ่านเลขล่าสุดแล้ว +1 ไว้ข้างนอก ซึ่งชนกันได้เมื่อแอดมินสองคนออกใบพร้อมกัน
+    const quotation = await prisma.$transaction(async (tx) => {
+      const quotationNumber = await nextQuotationBaseNumber(tx)
+
+      return tx.quotation.create({
       data: {
         quotationNumber,
         baseNumber: quotationNumber,
         version: 1,
         isLatest: true,
         orderId: data.orderId,
-        subtotal: new Decimal(subtotal),
+        subtotal,
         includeVat: data.includeVat,
         vatPercent: new Decimal(data.vatPercent),
-        vatAmount: new Decimal(vatAmount),
-        totalAmount: new Decimal(totalAmount),
+        vatAmount,
+        totalAmount,
         validDays: data.validDays,
         validUntil,
         notes: data.notes || null,
@@ -259,11 +245,12 @@ export async function POST(request: NextRequest) {
               : null,
             quantity: item.quantity,
             unitPrice: new Decimal(item.unitPrice),
-            amount: new Decimal(item.quantity * item.unitPrice),
+            amount: lineAmount(item),
             sortOrder: index,
           })),
         },
       },
+      })
     })
 
     return NextResponse.json({

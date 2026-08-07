@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
 import { IssueCategory, IssueStatus, Prisma } from "@prisma/client"
-import { parseEnumParam } from "@/lib/api/query"
+import { parseEnumParam, parsePagination } from "@/lib/api/query"
 
 // GET: ดึงรายการแจ้งปัญหา + Stats
 export async function GET(request: NextRequest) {
@@ -17,9 +17,7 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get("category") || ""
     const dateFrom = searchParams.get("dateFrom") || ""
     const dateTo = searchParams.get("dateTo") || ""
-    const page = parseInt(searchParams.get("page") || "1")
-    const limit = parseInt(searchParams.get("limit") || "10")
-    const skip = (page - 1) * limit
+    const { page, limit, skip } = parsePagination(searchParams)
 
     // Build where clause
     const where: Prisma.ContactIssueWhereInput = {}

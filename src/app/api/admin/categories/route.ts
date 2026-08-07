@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
+import { parsePagination, parseSort } from "@/lib/api/query"
+
+const SORTABLE_FIELDS = ["name", "createdAt", "updatedAt", "sortOrder"] as const
 import { prisma } from "@/lib/db"
 import { Prisma } from "@prisma/client"
 
@@ -11,10 +14,9 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const search = searchParams.get("search") || ""
-    const page = parseInt(searchParams.get("page") || "1") || 1
-    const limit = Math.min(parseInt(searchParams.get("limit") || "10") || 10, 100)
-    const sortBy = searchParams.get("sortBy") || "sortOrder"
-    const sortOrder = searchParams.get("sortOrder") || "asc"
+    const { page, limit, skip } = parsePagination(searchParams)
+    // จำกัดฟิลด์ที่เรียงได้ ไม่งั้น ?sortBy=nope กลายเป็น 500 จาก Prisma
+    const sort = parseSort(searchParams, SORTABLE_FIELDS, "name")
     const flat = searchParams.get("flat") === "true"
     const status = searchParams.get("status") || ""
 
@@ -62,7 +64,6 @@ export async function GET(request: NextRequest) {
       parentWhere.isActive = false
     }
 
-    const skip = (page - 1) * limit
 
     // ดึง PARENT ตาม pagination
     const [parents, totalParents] = await Promise.all([
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
             orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
           },
         },
-        orderBy: [{ sortOrder: "asc" }, { [sortBy]: sortOrder }],
+        orderBy: [{ sortOrder: "asc" }, { [sort.field]: sort.direction }],
         skip,
         take: limit,
       }),

@@ -281,12 +281,52 @@ async function reset() {
   await prisma.categoryPairing.deleteMany()
   await prisma.category.deleteMany()
   await prisma.passwordResetToken.deleteMany()
-  await prisma.loginRateLimit.deleteMany()
+  await prisma.rateLimit.deleteMany()
+  await prisma.documentCounter.deleteMany()
   await prisma.user.deleteMany()
   await prisma.quotationSeller.deleteMany()
   await prisma.quotationSettings.deleteMany()
   await prisma.seoSettings.deleteMany()
   await prisma.systemSettings.deleteMany()
+}
+
+/**
+ * ตั้งตัวนับเลขที่เอกสารให้ตรงกับข้อมูลตัวอย่างที่เพิ่งใส่ไป
+ *
+ * ถ้าไม่ทำ ใบเสนอราคาใบแรกที่ออกหลัง seed จะได้เลข QT-<ปี>-0001
+ * ซึ่งชนกับใบตัวอย่างที่มีอยู่แล้ว แล้วพังทันทีที่คนลองกดใช้งานจริง
+ */
+async function syncDocumentCounters() {
+  const [orders, issues, quotations] = await Promise.all([
+    prisma.order.findMany({ select: { orderNumber: true } }),
+    prisma.contactIssue.findMany({ select: { issueNumber: true } }),
+    prisma.quotation.findMany({ select: { baseNumber: true } }),
+  ])
+
+  // เก็บค่าสูงสุดของแต่ละช่วง (ORDER นับรายวัน ส่วน ISSUE/QUOTATION นับรายปี)
+  const maxByKey = new Map<string, { scope: string; period: string; value: number }>()
+
+  const track = (scope: string, period: string, value: number) => {
+    if (!Number.isFinite(value)) return
+    const key = `${scope}:${period}`
+    const current = maxByKey.get(key)
+    if (!current || value > current.value) maxByKey.set(key, { scope, period, value })
+  }
+
+  for (const { orderNumber } of orders) {
+    const [, period, sequence] = orderNumber.split("-")
+    track("ORDER", period, Number.parseInt(sequence, 10))
+  }
+  for (const { issueNumber } of issues) {
+    const [, period, sequence] = issueNumber.split("-")
+    track("ISSUE", period, Number.parseInt(sequence, 10))
+  }
+  for (const { baseNumber } of quotations) {
+    const [, period, sequence] = baseNumber.split("-")
+    track("QUOTATION", period, Number.parseInt(sequence, 10))
+  }
+
+  await prisma.documentCounter.createMany({ data: [...maxByKey.values()] })
 }
 
 async function main() {
@@ -654,6 +694,8 @@ async function main() {
   await prisma.quotationSeller.create({
     data: { name: "ฝ่ายขาย (ตัวอย่าง)", phone: "02-000-0000", isActive: true },
   })
+
+  await syncDocumentCounters()
 
   const counts = {
     ผู้ใช้: await prisma.user.count(),
