@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { EmptyState, LoadingState } from "@/components/ui/states"
-import { AUDIT_ACTION_LABELS } from "@/lib/audit"
+import { AUDIT_ACTION_LABELS, AUDIT_ENTITY_LABELS } from "@/lib/audit-actions"
 import { formatDate } from "@/lib/utils"
 
 interface AuditEntry {
@@ -32,15 +32,6 @@ interface Actor {
   id: string
   name: string | null
   nickname: string | null
-}
-
-const ENTITY_LABELS: Record<string, string> = {
-  Order: "คำสั่งจอง",
-  Product: "สินค้า",
-  Category: "หมวดหมู่",
-  Quotation: "ใบเสนอราคา",
-  User: "สมาชิก",
-  Settings: "การตั้งค่า",
 }
 
 /** แปลง { status: "PENDING" } เป็นข้อความอ่านง่าย */
@@ -126,7 +117,7 @@ export default function AuditLogPage() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">ทุกประเภท</SelectItem>
-            {Object.entries(ENTITY_LABELS).map(([value, label]) => (
+            {Object.entries(AUDIT_ENTITY_LABELS).map(([value, label]) => (
               <SelectItem key={value} value={value}>
                 {label}
               </SelectItem>
@@ -191,7 +182,7 @@ export default function AuditLogPage() {
                     {AUDIT_ACTION_LABELS[entry.action] ?? entry.action}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
-                    <div>{ENTITY_LABELS[entry.entityType] ?? entry.entityType}</div>
+                    <div>{AUDIT_ENTITY_LABELS[entry.entityType] ?? entry.entityType}</div>
                     <code className="text-xs">{entry.entityId.slice(-8)}</code>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">

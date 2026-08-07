@@ -1,7 +1,6 @@
 import { expect, test } from "@playwright/test"
 
-const DEMO = { email: "demo@ninebooking.dev", password: "Demo@1234" }
-const ADMIN = { email: "admin@ninebooking.dev", password: "Admin@1234" }
+import { ADMIN, fillCredentials, login } from "./helpers"
 
 test.describe("การเข้าสู่ระบบ", () => {
   test("คนที่ยังไม่ล็อกอินถูกพาไปหน้า login", async ({ page }) => {
@@ -9,25 +8,23 @@ test.describe("การเข้าสู่ระบบ", () => {
     await expect(page).toHaveURL(/\/login/)
   })
 
-  test("ลูกค้าล็อกอินแล้วเห็นรายการสินค้า", async ({ page }) => {
-    await page.goto("/login")
-    await page.getByLabel(/อีเมล/i).fill(DEMO.email)
-    await page.getByLabel(/รหัสผ่าน/i).fill(DEMO.password)
-    await page.getByRole("button", { name: /เข้าสู่ระบบ/ }).click()
-
-    await expect(page).toHaveURL("/", { timeout: 15_000 })
+  test("ลูกค้าล็อกอินแล้วเข้าหน้าแรกได้", async ({ page }) => {
+    await login(page)
     await expect(page.getByRole("main")).toBeVisible()
   })
 
-  test("รหัสผ่านผิดไม่บอกว่าอีเมลนั้นเป็นแอดมิน", async ({ page }) => {
-    // เคยเป็นช่องให้ไล่หาบัญชีแอดมิน — ต้องได้ข้อความเดียวกับอีเมลทั่วไป
+  test("รหัสผ่านผิดไม่บอกว่าอีเมลนั้นเป็นบัญชีผู้ดูแลระบบ", async ({ page }) => {
+    // เคยเป็นช่องโหว่จริง: ระบบเช็ค role ก่อนตรวจรหัสผ่าน คนยิงจึงไล่หาบัญชี
+    // แอดมินได้จากข้อความ error โดยไม่ต้องรู้รหัสผ่าน
     await page.goto("/login")
-    await page.getByLabel(/อีเมล/i).fill(ADMIN.email)
-    await page.getByLabel(/รหัสผ่าน/i).fill("wrong-password-on-purpose")
-    await page.getByRole("button", { name: /เข้าสู่ระบบ/ }).click()
+    await fillCredentials(page, ADMIN.email, "wrong-password-on-purpose")
+    await page.getByRole("button", { name: "เข้าสู่ระบบ", exact: true }).click()
 
-    await expect(page.getByText(/อีเมลหรือรหัสผ่านไม่ถูกต้อง/)).toBeVisible({
-      timeout: 15_000,
-    })
+    // ต้องมีข้อความผิดพลาดโผล่มา (จะเป็น "อีเมลหรือรหัสผ่านไม่ถูกต้อง" หรือ
+    // "ถูกล็อคชั่วคราว" ก็ได้ ขึ้นกับว่ารันเทสต์ซ้ำมากี่รอบ)
+    await expect(page.getByRole("alert")).toBeVisible({ timeout: 15_000 })
+
+    // สิ่งที่ต้องไม่มีคือข้อความที่เผยว่านี่เป็นบัญชีแอดมิน
+    await expect(page.getByText("บัญชีผู้ดูแลระบบต้องเข้าสู่ระบบผ่านหน้า")).toHaveCount(0)
   })
 })

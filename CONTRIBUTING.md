@@ -16,6 +16,18 @@ npm run dev
 | ผู้ดูแลระบบ  | `admin@ninebooking.dev` | `Admin@1234` | `/admin/login` |
 | ผู้ใช้ทั่วไป | `demo@ninebooking.dev`  | `Demo@1234`  | `/login`       |
 
+## เทสต์ end-to-end
+
+รันครั้งแรกต้องโหลดเบราว์เซอร์ก่อน (ไม่ได้มากับ `npm install`)
+
+```bash
+npm run e2e:setup
+npm run build && npm run test:e2e
+```
+
+สเปกใช้บัญชีและ slug สินค้าจาก `prisma/seed.ts` ตรงๆ ถ้าเปลี่ยนข้อมูลตัวอย่าง
+ให้แก้ค่าคงที่ใน `e2e/helpers.ts` ตามด้วย
+
 ## ก่อนเปิด PR
 
 ```bash

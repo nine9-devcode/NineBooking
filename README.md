@@ -162,6 +162,7 @@ npm run build        # build สำหรับใช้งานจริง
 npm run typecheck    # ตรวจชนิดข้อมูล
 npm run lint         # ตรวจสไตล์โค้ด
 npm test             # รันเทสต์
+npm run e2e:setup    # โหลดเบราว์เซอร์ของ Playwright (ทำครั้งเดียว)
 npm run test:e2e     # smoke test ด้วย Playwright (ต้อง build ก่อน)
 npm run format       # จัดรูปแบบโค้ดด้วย Prettier
 
