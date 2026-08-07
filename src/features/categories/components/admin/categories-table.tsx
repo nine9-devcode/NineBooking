@@ -72,7 +72,7 @@ export function CategoriesTable({
   const [categoryPairings, setCategoryPairings] = useState<
     Record<string, PairedCategory[]>
   >({})
-  const [loadingPairings, setLoadingPairings] = useState(false)
+  const [, setLoadingPairings] = useState(false)
 
   // State สำหรับ sortOrder
   const [localSortOrders, setLocalSortOrders] = useState<

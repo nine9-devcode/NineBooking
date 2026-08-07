@@ -24,7 +24,7 @@ import {
 } from '@/features/support/components'
 
 export default function ContactPage() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const router = useRouter()
   const { refresh: refreshSupportNotifications } = useSupportNotifications()
 

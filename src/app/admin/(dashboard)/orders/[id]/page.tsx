@@ -16,7 +16,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { toast } from "sonner"
-import { Loader2, Package, ArrowLeft, Save, Copy, Check, FileText, Plus } from "lucide-react"
+import { Loader2, Package, ArrowLeft, Save, Copy, Check, FileText } from "lucide-react"
 import {
   OrderDetail,
   OrderStatusCard,

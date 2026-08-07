@@ -9,13 +9,13 @@ import { RATE_LIMITS, clientIp, consume, resetRateLimit } from "@/lib/rate-limit
 
 // error code เหล่านี้ถูกส่งกลับไปหน้า login แล้วแปลงเป็นข้อความไทยที่นั่น
 class InvalidLoginError extends CredentialsSignin {
-  code = "INVALID_CREDENTIALS"
+  override code = "INVALID_CREDENTIALS"
 }
 class AdminNotAllowedError extends CredentialsSignin {
-  code = "ADMIN_NOT_ALLOWED"
+  override code = "ADMIN_NOT_ALLOWED"
 }
 class AccountLockedError extends CredentialsSignin {
-  code = "ACCOUNT_LOCKED"
+  override code = "ACCOUNT_LOCKED"
 }
 
 const emailKey = (email: string) => `login:email:${email}`

@@ -1,7 +1,7 @@
 "use client"
 
 import { Search, X, ArrowUpDown, Layers, Calendar, SortAsc, SortDesc, TrendingUp } from "lucide-react"
-import { useEffect, useState, useRef, useCallback } from "react"
+import { useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 
 export type SortOption =

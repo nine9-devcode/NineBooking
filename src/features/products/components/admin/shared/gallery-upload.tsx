@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import { Upload, X } from "lucide-react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"

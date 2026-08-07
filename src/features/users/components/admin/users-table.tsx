@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Edit, Trash2, User, Calendar, ShoppingBag, Users, MessageSquare, CheckCircle2, AlertCircle } from "lucide-react"
+import { Edit, Trash2, Calendar, ShoppingBag, Users, MessageSquare, AlertCircle } from "lucide-react"
 import { DataPagination } from "@/components/ui/data-pagination"
 import { getResidenceTypeLabel, getMemberTypeLabel, MEMBER_TYPE_COLORS } from "@/lib/constants"
 

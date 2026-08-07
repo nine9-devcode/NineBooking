@@ -1,0 +1,7 @@
+.next
+node_modules
+public/uploads
+private-uploads
+.dev-outbox
+prisma/migrations
+package-lock.json

@@ -6,6 +6,11 @@ import { parseEnumParam, parsePagination } from "@/lib/api/query"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { nextOrderNumber } from "@/lib/document-number"
+import {
+  groupOrderItems,
+  summarizeOrderItems,
+  toEmailItems,
+} from "@/features/orders/group-items"
 import { sendOrderEmails } from "@/lib/mailer/order-mail"
 import { notifyAdmins } from "@/lib/realtime/order-notifications"
 
@@ -31,62 +36,6 @@ const createOrderSchema = z.object({
   // รายการสินค้าจากตะกร้า (cart item IDs ที่เลือก)
   cartItemIds: z.array(z.string()).min(1, "กรุณาเลือกสินค้าอย่างน้อย 1 รายการ"),
 })
-
-// Helper: แปลง orderItems เป็นรูปแบบสำหรับอีเมล
-const groupOrderItemsForEmail = (
-  items: Array<{
-    productId: string
-    productName: string
-    productImage: string | null
-    pairedProductId: string | null
-    pairedProductName: string | null
-    pairedProductImage: string | null
-    quantity: number
-  }>
-) => {
-  const grouped = new Map<
-    string,
-    {
-      productName: string
-      productImage: string | null
-      mainQuantity: number
-      pairedProducts: Array<{
-        name: string
-        image: string | null
-        quantity: number
-      }>
-    }
-  >()
-
-  for (const item of items) {
-    const productId = item.productId
-
-    if (!grouped.has(productId)) {
-      grouped.set(productId, {
-        productName: item.productName,
-        productImage: item.productImage,
-        mainQuantity: 0,
-        pairedProducts: [],
-      })
-    }
-
-    const group = grouped.get(productId)!
-
-    if (item.pairedProductName) {
-      // เป็นสินค้าคู่
-      group.pairedProducts.push({
-        name: item.pairedProductName,
-        image: item.pairedProductImage,
-        quantity: item.quantity,
-      })
-    } else {
-      // เป็นสินค้าหลัก
-      group.mainQuantity += item.quantity
-    }
-  }
-
-  return Array.from(grouped.values())
-}
 
 // POST - สร้างคำสั่งจอง
 export async function POST(request: NextRequest) {
@@ -234,7 +183,7 @@ export async function POST(request: NextRequest) {
       createdAt: notification.createdAt.toISOString(),
     })
 
-    const groupedItemsForEmail = groupOrderItemsForEmail(order.orderItems)
+    const groupedItemsForEmail = toEmailItems(groupOrderItems(order.orderItems))
 
     const totalMainQuantity = groupedItemsForEmail.reduce((sum, g) => sum + g.mainQuantity, 0)
     const totalPairedQuantity = groupedItemsForEmail.reduce(
@@ -283,64 +232,6 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// Group items by productId
-const groupOrderItems = (
-  items: {
-    productId: string
-    productName: string
-    productImage: string | null
-    pairedProductId: string | null
-    pairedProductName: string | null
-    pairedProductImage: string | null
-    quantity: number
-  }[]
-) => {
-  const grouped = new Map<
-    string,
-    {
-      productId: string
-      productName: string
-      productImage: string | null
-      mainQuantity: number
-      pairedProducts: {
-        name: string
-        image: string | null
-        quantity: number
-      }[]
-    }
-  >()
-
-  for (const item of items) {
-    const productId = item.productId
-
-    if (!grouped.has(productId)) {
-      grouped.set(productId, {
-        productId,
-        productName: item.productName,
-        productImage: item.productImage,
-        mainQuantity: 0,
-        pairedProducts: [],
-      })
-    }
-
-    const group = grouped.get(productId)!
-
-    if (item.pairedProductName) {
-      // สินค้าคู่
-      group.pairedProducts.push({
-        name: item.pairedProductName,
-        image: item.pairedProductImage,
-        quantity: item.quantity,
-      })
-    } else {
-      // สินค้าหลัก
-      group.mainQuantity += item.quantity
-    }
-  }
-
-  return Array.from(grouped.values())
 }
 
 // GET - ดึงประวัติการจอง
@@ -398,27 +289,17 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       orders: orders.map((order) => {
-        // Group items
         const groupedItems = groupOrderItems(order.orderItems)
-
-        // คำนวณจำนวนรวม
-        const totalMainQuantity = groupedItems.reduce(
-          (sum, g) => sum + g.mainQuantity,
-          0
-        )
-        const totalPairedQuantity = groupedItems.reduce(
-          (sum, g) => sum + g.pairedProducts.reduce((s, p) => s + p.quantity, 0),
-          0
-        )
+        const summary = summarizeOrderItems(groupedItems)
 
         return {
           id: order.id,
           orderNumber: order.orderNumber,
           status: order.status,
-          itemCount: groupedItems.length, // จำนวนสินค้าหลัก (grouped)
-          totalQuantity: totalMainQuantity + totalPairedQuantity,
-          mainQuantity: totalMainQuantity,
-          pairedQuantity: totalPairedQuantity,
+          itemCount: summary.productCount,
+          totalQuantity: summary.totalQuantity,
+          mainQuantity: summary.mainQuantity,
+          pairedQuantity: summary.pairedQuantity,
           createdAt: order.createdAt,
           updatedAt: order.updatedAt,
           // Preview items (แสดง 3 รายการแรก - grouped)
@@ -426,8 +307,12 @@ export async function GET(request: NextRequest) {
             productName: group.productName,
             productImage: group.productImage,
             quantity: group.mainQuantity || 1,
-            pairedCount: group.pairedProducts.length,
-            pairedProducts: group.pairedProducts.slice(0, 3), // แสดงคู่จับ 3 อันแรก
+            pairedCount: group.pairedItems.length,
+            pairedProducts: group.pairedItems.slice(0, 3).map((paired) => ({
+              name: paired.name,
+              image: paired.image,
+              quantity: paired.quantity,
+            })),
           })),
         }
       }),

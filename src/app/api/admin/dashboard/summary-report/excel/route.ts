@@ -11,8 +11,6 @@ import {
   styleDataRow,
   autoFitColumns,
   generateExcelBuffer,
-  formatShortDate,
-  STATUS_TEXT,
 } from '@/lib/excel';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';

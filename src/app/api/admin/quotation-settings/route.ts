@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
-import { companyDefaults, PDF_LOGO_RELATIVE_PATH } from "@/config/company"
+import { companyDefaults } from "@/config/company"
 
 const DEFAULT_SETTINGS = {
   companyNameTh: companyDefaults.nameTh,

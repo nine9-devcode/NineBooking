@@ -3,93 +3,8 @@ import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
 import { OrderStatus, Prisma } from "@prisma/client"
 import { parseEnumParam, parsePagination } from "@/lib/api/query"
+import { groupOrderItems, summarizeOrderItems } from "@/features/orders/group-items"
 
-// Group order items ตาม productId + createdAt (เหมือน cart)
-// ถ้าเพิ่มมาพร้อมกัน (ภายใน 5 วินาที) จะ group รวมกัน
-function groupOrderItemsForPreview(
-  orderItems: {
-    id: string
-    productId: string
-    productName: string
-    productImage: string | null
-    pairedProductId: string | null
-    pairedProductName: string | null
-    pairedProductImage: string | null
-    quantity: number
-    createdAt: Date
-  }[]
-) {
-  const GROUP_TIME_THRESHOLD = 5000 // 5 วินาที (เหมือน cart)
-
-  // Sort by createdAt
-  const sortedItems = [...orderItems].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  )
-
-  interface GroupedOrderItem {
-    groupId: string
-    productId: string
-    productName: string
-    productImage: string | null
-    mainQuantity: number // จำนวนสินค้าหลัก (นับจาก unique group)
-    createdAt: Date
-    pairedItems: {
-      id: string
-      pairedProductId: string | null
-      pairedProductName: string | null
-      pairedProductImage: string | null
-      quantity: number
-    }[]
-  }
-
-  const groups: GroupedOrderItem[] = []
-  let currentGroup: GroupedOrderItem | null = null
-
-  for (const item of sortedItems) {
-    const itemTime = new Date(item.createdAt).getTime()
-
-    // ตรวจสอบว่าควรรวมกับ group ปัจจุบันหรือไม่
-    const shouldJoinGroup =
-      currentGroup &&
-      currentGroup.productId === item.productId &&
-      itemTime - new Date(currentGroup.createdAt).getTime() <= GROUP_TIME_THRESHOLD
-
-    if (shouldJoinGroup && currentGroup) {
-      // รวมเข้า group เดิม - เพิ่ม paired item
-      currentGroup.pairedItems.push({
-        id: item.id,
-        pairedProductId: item.pairedProductId,
-        pairedProductName: item.pairedProductName,
-        pairedProductImage: item.pairedProductImage,
-        quantity: item.quantity,
-      })
-    } else {
-      // สร้าง group ใหม่
-      currentGroup = {
-        groupId: `${item.productId}-${item.createdAt.toISOString()}`,
-        productId: item.productId,
-        productName: item.productName,
-        productImage: item.productImage,
-        mainQuantity: 1, // สินค้าหลัก 1 ชิ้นต่อ group
-        createdAt: item.createdAt,
-        pairedItems: [
-          {
-            id: item.id,
-            pairedProductId: item.pairedProductId,
-            pairedProductName: item.pairedProductName,
-            pairedProductImage: item.pairedProductImage,
-            quantity: item.quantity,
-          },
-        ],
-      }
-      groups.push(currentGroup)
-    }
-  }
-
-  return groups
-}
-
-// GET - ดึงรายการ Orders ทั้งหมด (Admin)
 export async function GET(request: NextRequest) {
   try {
     const guard = await requireAdmin()
@@ -192,19 +107,11 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       orders: orders.map((order) => {
-        // Group order items
-        const groupedItems = groupOrderItemsForPreview(order.orderItems)
+        const groupedItems = groupOrderItems(order.orderItems)
+        const summary = summarizeOrderItems(groupedItems)
 
-        // นับจำนวน groups (= จำนวนครั้งที่กดเพิ่มตะกร้า)
-        const groupCount = groupedItems.length
-
-        // นับจำนวนชิ้นทั้งหมด (รวม paired items)
-        const totalQuantity = groupedItems.reduce((sum, group) => {
-          const pairedQty = group.pairedItems.reduce((s, p) => s + p.quantity, 0)
-          // ถ้ามี paired items ให้นับแค่ paired, ถ้าไม่มีให้นับ mainQuantity
-          const hasPaired = group.pairedItems.some(p => p.pairedProductId)
-          return sum + (hasPaired ? pairedQty : group.mainQuantity)
-        }, 0)
+        const groupCount = summary.productCount
+        const totalQuantity = summary.totalQuantity
 
         return {
           id: order.id,
@@ -226,14 +133,11 @@ export async function GET(request: NextRequest) {
           totalQuantity: totalQuantity,
           // Preview items
           previewItems: groupedItems.slice(0, 3).map((group) => {
-            // ตรวจสอบว่ามี paired products หรือไม่
-            const pairedProducts = group.pairedItems
-              .filter((p) => p.pairedProductName)
-              .map((p) => ({
-                name: p.pairedProductName!,
-                image: p.pairedProductImage,
-                quantity: p.quantity,
-              }))
+            const pairedProducts = group.pairedItems.map((paired) => ({
+              name: paired.name,
+              image: paired.image,
+              quantity: paired.quantity,
+            }))
 
             return {
               productName: group.productName,

@@ -23,8 +23,8 @@ import {
 
 export default function CartPage() {
   const router = useRouter()
-  const { data: session, status } = useSession()
-  const { items, totalItems, count, isLoading, clearCart } = useCart()
+  const { status } = useSession()
+  const { items, totalItems, isLoading, clearCart } = useCart()
 
   // State สำหรับ grouped items และ selected items
   const [groupedItems, setGroupedItems] = useState<GroupedCartItem[]>([])

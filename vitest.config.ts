@@ -5,7 +5,13 @@ import { defineConfig } from "vitest/config"
 export default defineConfig({
   test: {
     environment: "node",
-    include: ["src/**/*.test.ts"],
+    // รับทั้ง .ts และ .tsx — ของเดิมจับแค่ .ts จึงเขียนเทสต์ component ไม่ได้เลย
+    include: ["src/**/*.test.{ts,tsx}"],
+    coverage: {
+      reporter: ["text", "html"],
+      include: ["src/lib/**", "src/features/**"],
+      exclude: ["**/*.test.*", "**/components/**"],
+    },
   },
   resolve: {
     alias: {

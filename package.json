@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
+    "lint": "eslint --max-warnings 400",
     "typecheck": "tsc --noEmit",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
@@ -20,7 +20,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test:coverage": "vitest run --coverage",
+    "db:diff": "prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema.prisma --shadow-database-url $SHADOW_DATABASE_URL --exit-code"
   },
   "prisma": {
     "seed": "tsx --env-file=.env prisma/seed.ts"
@@ -35,7 +39,6 @@
     "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-popover": "^1.1.15",
-    "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
@@ -59,7 +62,6 @@
     "next": "16.1.1",
     "next-auth": "^5.0.0-beta.30",
     "react": "19.2.3",
-    "react-day-picker": "^9.13.0",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.69.0",
     "recharts": "^3.6.0",
@@ -77,6 +79,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "prettier": "^3.9.6",
     "prisma": "^6.19.1",
     "tailwindcss": "^4",
     "tailwindcss-animate": "^1.0.7",

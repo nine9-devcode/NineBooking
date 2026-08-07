@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Eye, EyeOff, CheckCircle2 } from "lucide-react"
+import { Eye, EyeOff } from "lucide-react"
 import { RESIDENCE_TYPES } from "@/lib/constants"
 import { RegisterFormValues, RegisterFormErrors } from "./schema"
 

@@ -3,7 +3,7 @@
 "use client"
 
 import Image from "next/image"
-import { User, Mail, Phone, UserCircle, MessageSquare } from "lucide-react"
+import { User, Mail, Phone, MessageSquare } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { QuotationDetail } from "../types"
 import { formatDate } from "../constants"

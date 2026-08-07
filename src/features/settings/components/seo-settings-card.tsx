@@ -14,7 +14,6 @@ import {
   Save, 
   Search, 
   Image as ImageIcon, 
-  Upload, 
   Trash2, 
   ExternalLink,
   BarChart3,

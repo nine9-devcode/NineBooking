@@ -78,7 +78,7 @@ export default function ProductsPage() {
   const [statusFilter, setStatusFilter] = useState("all")
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
-  const [total, setTotal] = useState(0)
+  const [, setTotal] = useState(0)
 
   const [exclusiveModalOpen, setExclusiveModalOpen] = useState(false)
   const [selectedProductForExclusive, setSelectedProductForExclusive] = useState<Product | null>(null)

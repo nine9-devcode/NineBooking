@@ -65,6 +65,7 @@ model PasswordResetToken {
   usedAt    DateTime?
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([expiresAt])
@@ -156,11 +157,9 @@ model Product {
   viewCount  Int   @default(0)
 
   categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  // สินค้าที่ใช้ร่วมกันได้
-  compatibleWith ProductCompatibility[] @relation("MainProduct")
-  compatibleFor  ProductCompatibility[] @relation("CompatibleProduct")
+  // Restrict โดยเจตนา: ลบหมวดที่ยังมีสินค้าอยู่ไม่ได้ ต้องย้ายสินค้าออกก่อน
+  // (Category.parent เป็น Cascade เพราะหมวดย่อยไม่มีความหมายถ้าไม่มีหมวดแม่)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
   // จับคู่สินค้าเฉพาะเจาะจง (สองทาง) — ถ้ามี จะไม่ใช้การจับคู่ระดับหมวดหมู่
   exclusivePairingsA   ExclusivePairing[] @relation("ExclusiveProductA")
@@ -210,21 +209,11 @@ model ProductViewSummary {
   date      DateTime @db.Date
   viewCount Int      @default(0)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([productId, date])
   @@index([date])
-}
-
-model ProductCompatibility {
-  id                  String @id @default(cuid())
-  mainProductId       String
-  compatibleProductId String
-
-  mainProduct       Product @relation("MainProduct", fields: [mainProductId], references: [id], onDelete: Cascade)
-  compatibleProduct Product @relation("CompatibleProduct", fields: [compatibleProductId], references: [id], onDelete: Cascade)
-
-  @@unique([mainProductId, compatibleProductId])
-  @@index([mainProductId])
-  @@index([compatibleProductId])
 }
 
 model CategoryPairing {
@@ -237,6 +226,7 @@ model CategoryPairing {
   categoryB   Category @relation("CategoryB", fields: [categoryBId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([categoryAId, categoryBId])
   @@index([categoryAId])
@@ -254,6 +244,7 @@ model ExclusivePairing {
   productB   Product @relation("ExclusiveProductB", fields: [productBId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([productAId, productBId])
   @@index([productAId])
@@ -263,6 +254,17 @@ model ExclusivePairing {
 // ===================================================================
 // Cart & Orders
 // ===================================================================
+
+enum CancelledBy {
+  CUSTOMER
+  ADMIN
+}
+
+enum SupportNotificationType {
+  RESPONSE
+  IN_PROGRESS
+  CLOSED
+}
 
 model CartItem {
   id String @id @default(cuid())
@@ -315,8 +317,8 @@ model Order {
   customerNote String? @db.Text
   adminNote    String? @db.Text
 
-  status      OrderStatus @default(PENDING)
-  cancelledBy String? // CUSTOMER | ADMIN
+  status      OrderStatus  @default(PENDING)
+  cancelledBy CancelledBy?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -325,6 +327,9 @@ model Order {
   @@index([status])
   @@index([createdAt])
   @@index([orderNumber])
+  // หน้า "คำสั่งจองของฉัน" กรองด้วย userId + status แล้วเรียงตาม createdAt เสมอ
+  @@index([userId, status])
+  @@index([userId, createdAt])
 }
 
 model OrderItem {
@@ -332,11 +337,14 @@ model OrderItem {
   orderId String
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  productId String
-  product   Product @relation("OrderProduct", fields: [productId], references: [id])
+  // SetNull ไม่ใช่ Restrict: แถวนี้ snapshot ชื่อและรูปไว้แล้ว (productName/productImage)
+  // ประวัติจึงยังอ่านออกแม้สินค้าจะถูกลบ — ของเดิมทำให้ลบสินค้าไม่ได้ตลอดกาล
+  // ถ้าเคยมีคนสั่ง
+  productId String?
+  product   Product? @relation("OrderProduct", fields: [productId], references: [id], onDelete: SetNull)
 
   pairedProductId String?
-  pairedProduct   Product? @relation("PairedOrderProduct", fields: [pairedProductId], references: [id])
+  pairedProduct   Product? @relation("PairedOrderProduct", fields: [pairedProductId], references: [id], onDelete: SetNull)
 
   quantity Int @default(1)
 
@@ -347,6 +355,7 @@ model OrderItem {
   pairedProductImage String?
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([orderId])
   @@index([productId])
@@ -424,6 +433,7 @@ model QuotationItem {
   sortOrder Int @default(0)
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([quotationId])
   @@index([sortOrder])
@@ -500,6 +510,7 @@ model OrderNotification {
 
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([isRead, createdAt])
   @@index([orderId])
@@ -518,6 +529,7 @@ model IssueNotification {
 
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([isRead, createdAt])
   @@index([issueId])
@@ -534,13 +546,14 @@ model UserOrderNotification {
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   orderNumber String
-  oldStatus   String
-  newStatus   String
+  oldStatus   OrderStatus
+  newStatus   OrderStatus
 
   isRead Boolean   @default(false)
   readAt DateTime?
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, isRead])
   @@index([orderId])
@@ -557,12 +570,13 @@ model UserSupportNotification {
   issue   ContactIssue @relation(fields: [issueId], references: [id], onDelete: Cascade)
 
   issueNumber      String
-  notificationType String // response | in_progress | closed
+  notificationType SupportNotificationType
 
   isRead Boolean   @default(false)
   readAt DateTime?
 
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId, isRead])
   @@index([issueId])

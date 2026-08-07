@@ -7,8 +7,6 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
-  CheckCircle2,
-  Loader2,
   MessageSquareText,
   Image as ImageIcon,
 } from 'lucide-react'

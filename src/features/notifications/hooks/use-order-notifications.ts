@@ -6,7 +6,7 @@ import { useState, useEffect, useCallback } from "react"
 import { useSession } from "next-auth/react"
 
 export function useOrderNotifications() {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
 

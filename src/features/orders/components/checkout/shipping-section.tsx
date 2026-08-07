@@ -18,7 +18,6 @@ import {
   provinces,
   getDistrictsByProvinceCode,
   getSubDistrictsByDistrictCode,
-  getPostalCodeBySubDistrictCode,
 } from "@/lib/thailand-addresses"
 
 interface ShippingSectionProps {

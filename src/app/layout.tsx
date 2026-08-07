@@ -41,7 +41,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const siteTitle = settings?.siteTitle || siteConfig.title
   const siteDescription = settings?.siteDescription || siteConfig.description
-  const ogImage = settings?.ogImage || `${siteConfig.url}/brand/og-image.png`
 
   return {
     metadataBase: new URL(siteConfig.url),
@@ -57,36 +56,11 @@ export async function generateMetadata(): Promise<Metadata> {
     creator: siteConfig.author,
     publisher: siteConfig.author,
 
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        "max-video-preview": -1,
-        "max-image-preview": "large",
-        "max-snippet": -1,
-      },
-    },
+    // ทั้งเว็บอยู่หลังการล็อกอิน จึงไม่มีอะไรให้ index (ดู app/robots.ts)
+    robots: { index: false, follow: false },
 
     manifest: "/manifest.webmanifest",
 
-    openGraph: {
-      type: "website",
-      locale: siteConfig.locale,
-      url: siteConfig.url,
-      siteName: siteConfig.name,
-      title: siteTitle,
-      description: siteDescription,
-      images: [{ url: ogImage, width: 1200, height: 630, alt: siteTitle }],
-    },
-
-    twitter: {
-      card: "summary_large_image",
-      title: siteTitle,
-      description: siteDescription,
-      images: [ogImage],
-    },
 
     category: "technology",
 

@@ -4,144 +4,13 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
 import { z } from "zod"
+import { groupOrderItems, summarizeOrderItems } from "@/features/orders/group-items"
 
 // Schema สำหรับอัพเดท Order
 const updateOrderSchema = z.object({
   status: z.enum(["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"]).optional(),
   adminNote: z.string().nullable().optional(),
 })
-
-// Group order items
-function groupOrderItems(
-  orderItems: {
-    id: string
-    productId: string
-    productName: string
-    productImage: string | null
-    pairedProductId: string | null
-    pairedProductName: string | null
-    pairedProductImage: string | null
-    quantity: number
-    createdAt: Date
-    product?: {
-      id: string
-      slug: string | null
-      isActive: boolean
-      category?: { name: string } | null
-    } | null
-    pairedProduct?: {
-      id: string
-      slug: string | null
-      isActive: boolean
-    } | null
-  }[]
-) {
-  const GROUP_TIME_THRESHOLD = 5000 // 5 วินาที
-
-  // Sort by createdAt
-  const sortedItems = [...orderItems].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  )
-
-  interface GroupedItem {
-    groupId: string
-    productId: string
-    product: {
-      id: string
-      name: string
-      image: string | null
-      slug: string | null
-      isActive: boolean
-      category: string | null
-    }
-    mainQuantity: number
-    pairedItems: {
-      id: string
-      quantity: number
-      pairedProduct: {
-        id: string
-        name: string
-        image: string | null
-        slug: string | null
-        isActive: boolean
-      }
-    }[]
-    createdAt: Date
-  }
-
-  const groups: GroupedItem[] = []
-  let currentGroup: GroupedItem | null = null
-
-  for (const item of sortedItems) {
-    const itemTime = new Date(item.createdAt).getTime()
-
-    // ตรวจสอบว่าควรรวมกับ group ปัจจุบันหรือไม่
-    const shouldJoinGroup =
-      currentGroup &&
-      currentGroup.productId === item.productId &&
-      itemTime - new Date(currentGroup.createdAt).getTime() <= GROUP_TIME_THRESHOLD
-
-    if (shouldJoinGroup && currentGroup) {
-      // รวมเข้า group เดิม
-      if (item.pairedProductId && item.pairedProductName) {
-        // เป็นสินค้าคู่
-        currentGroup.pairedItems.push({
-          id: item.id,
-          quantity: item.quantity,
-          pairedProduct: {
-            id: item.pairedProductId,
-            name: item.pairedProductName,
-            image: item.pairedProductImage,
-            slug: item.pairedProduct?.slug || null,
-            isActive: item.pairedProduct?.isActive ?? false,
-          },
-        })
-      } else {
-        // เป็นสินค้าหลัก
-        currentGroup.mainQuantity += item.quantity
-      }
-    } else {
-      // สร้าง group ใหม่
-      currentGroup = {
-        groupId: `${item.productId}-${item.createdAt.toISOString()}`,
-        productId: item.productId,
-        product: {
-          id: item.productId,
-          name: item.productName,
-          image: item.productImage,
-          slug: item.product?.slug || null,
-          isActive: item.product?.isActive ?? false,
-          category: item.product?.category?.name || null,
-        },
-        mainQuantity: 0,
-        pairedItems: [],
-        createdAt: item.createdAt,
-      }
-
-      if (item.pairedProductId && item.pairedProductName) {
-        // เป็นสินค้าคู่
-        currentGroup.pairedItems.push({
-          id: item.id,
-          quantity: item.quantity,
-          pairedProduct: {
-            id: item.pairedProductId,
-            name: item.pairedProductName,
-            image: item.pairedProductImage,
-            slug: item.pairedProduct?.slug || null,
-            isActive: item.pairedProduct?.isActive ?? false,
-          },
-        })
-      } else {
-        // เป็นสินค้าหลัก
-        currentGroup.mainQuantity = item.quantity
-      }
-
-      groups.push(currentGroup)
-    }
-  }
-
-  return groups
-}
 
 // GET - ดึงรายละเอียด Order
 export async function GET(
@@ -199,17 +68,9 @@ export async function GET(
       return NextResponse.json({ error: "ไม่พบคำสั่งจอง" }, { status: 404 })
     }
 
-    // Group order items
     const groupedItems = groupOrderItems(order.orderItems)
-
-    // คำนวณ summary
-    let totalMainQuantity = 0
-    let totalPairedQuantity = 0
-
-    for (const group of groupedItems) {
-      totalMainQuantity += group.mainQuantity
-      totalPairedQuantity += group.pairedItems.reduce((sum, p) => sum + p.quantity, 0)
-    }
+    const { mainQuantity: totalMainQuantity, pairedQuantity: totalPairedQuantity } =
+      summarizeOrderItems(groupedItems)
 
     return NextResponse.json({
       order: {
@@ -257,13 +118,45 @@ export async function GET(
         adminNote: order.adminNote,
 
         // รายการสินค้า (grouped)
-        items: groupedItems.map((group) => ({
-          groupId: group.groupId,
-          productId: group.productId,
-          product: group.product,
-          mainQuantity: group.mainQuantity,
-          pairedItems: group.pairedItems,
-        })),
+        items: groupedItems.map((group) => {
+          // relation ของสินค้ามาจากแถวแรกของกลุ่ม — ทุกแถวในกลุ่มเป็นสินค้าตัวเดียวกัน
+          const source = group.mainItems[0] ?? group.pairedItems[0]?.item
+
+          return {
+            groupId: group.groupId,
+            productId: group.productId,
+            product: source?.product
+              ? {
+                  id: source.product.id,
+                  name: group.productName,
+                  image: group.productImage,
+                  slug: source.product.slug,
+                  isActive: source.product.isActive,
+                  category: source.product.category?.name ?? null,
+                }
+              : // สินค้าถูกลบไปแล้ว — ยังแสดงชื่อกับรูปที่ snapshot ไว้ได้ แต่ลิงก์ไปไม่ได้
+                {
+                  id: null,
+                  name: group.productName,
+                  image: group.productImage,
+                  slug: null,
+                  isActive: false,
+                  category: null,
+                },
+            mainQuantity: group.mainQuantity,
+            pairedItems: group.pairedItems.map((paired) => ({
+              id: paired.itemId,
+              quantity: paired.quantity,
+              pairedProduct: {
+                id: paired.item.pairedProduct?.id ?? null,
+                name: paired.name,
+                image: paired.image,
+                slug: paired.item.pairedProduct?.slug ?? null,
+                isActive: paired.item.pairedProduct?.isActive ?? false,
+              },
+            })),
+          }
+        }),
 
         // สรุป
         totalItems: groupedItems.length,

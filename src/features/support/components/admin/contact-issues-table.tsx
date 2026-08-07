@@ -28,8 +28,6 @@ import {
   ChevronLeft,
   ChevronRight,
   AlertCircle,
-  Clock,
-  CheckCircle2,
   Loader2,
   MessageSquare,
 } from "lucide-react"

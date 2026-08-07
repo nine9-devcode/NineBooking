@@ -50,92 +50,24 @@ export function truncate(text: string, maxLength: number = 160): string {
   return text.slice(0, maxLength - 3).trim() + '...'
 }
 
-// ===== Generate Product Metadata =====
-export function generateProductMetadata(
-  product: ProductSeoData,
-  slug: string
-): Metadata {
-  // สร้าง title
-  const title = product.name
+/**
+ * metadata ของหน้าสินค้า — มีแค่ title กับ description สำหรับแท็บเบราว์เซอร์
+ *
+ * ไม่มี Open Graph / Twitter card / canonical แล้ว เพราะหน้าสินค้าอยู่หลังการ
+ * ล็อกอิน คนที่แชร์ลิงก์ไปจะไม่มีใครเห็นการ์ดพวกนั้นอยู่ดี (ดู app/robots.ts)
+ */
+export function generateProductMetadata(product: ProductSeoData, _slug: string): Metadata {
+  let description = ""
 
-  // สร้าง description (ใช้ subtitle หรือ description)
-  let description = ''
   if (product.subtitle) {
     description = product.subtitle
   } else if (product.description) {
     description = truncate(stripHtml(product.description), 160)
   }
-  
-  // ถ้าไม่มี description ใช้ default
+
   if (!description) {
-    description = `${product.name} - สินค้า${product.category?.name ?? 'ทั่วไป'} พร้อมจองออนไลน์`
+    description = `${product.name} - สินค้า${product.category?.name ?? "ทั่วไป"} พร้อมจองออนไลน์`
   }
 
-  // URL ของหน้าสินค้า
-  const url = `${siteConfig.url}/products/${slug}`
-
-  // รูปภาพ (ใช้รูปสินค้า หรือ default og-image)
-  const image = product.image || `${siteConfig.url}/og-image.png`
-
-  return {
-    title,
-    description,
-
-    // Open Graph
-    openGraph: {
-      type: 'website',
-      locale: siteConfig.locale,
-      url,
-      siteName: siteConfig.name,
-      title: `${title} | ${siteConfig.name}`,
-      description,
-      images: [
-        {
-          url: image,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
-    },
-
-    // Twitter Card
-    twitter: {
-      card: 'summary_large_image',
-      title: `${title} | ${siteConfig.name}`,
-      description,
-      images: [image],
-    },
-
-    // Canonical URL
-    alternates: {
-      canonical: url,
-    },
-  }
-}
-
-// ===== Generate Category Metadata (สำหรับอนาคต) =====
-export function generateCategoryMetadata(
-  categoryName: string,
-  slug: string
-): Metadata {
-  const title = categoryName
-  const description = `สินค้าในหมวด${categoryName} - NineBooking`
-  const url = `${siteConfig.url}/?category=${slug}`
-
-  return {
-    title,
-    description,
-    openGraph: {
-      type: 'website',
-      locale: siteConfig.locale,
-      url,
-      siteName: siteConfig.name,
-      title: `${title} | ${siteConfig.name}`,
-      description,
-    },
-    alternates: {
-      canonical: url,
-    },
-  }
+  return { title: product.name, description }
 }

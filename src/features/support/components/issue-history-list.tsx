@@ -1,7 +1,7 @@
 'use client'
 
 import { IssueHistoryItem } from './issue-history-item'
-import { Loader2, Inbox } from 'lucide-react'
+import { Inbox } from 'lucide-react'
 
 interface Issue {
   id: string

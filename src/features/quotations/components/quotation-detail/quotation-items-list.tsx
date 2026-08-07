@@ -5,7 +5,7 @@
 import Image from "next/image"
 import { Input } from "@/components/ui/input"
 import { Package, Link2 } from "lucide-react"
-import { QuotationItemFormData, GroupedQuotationItem } from "./quotation-types"
+import { GroupedQuotationItem } from "./quotation-types"
 import { formatCurrency } from "../constants"
 
 interface QuotationItemsListProps {

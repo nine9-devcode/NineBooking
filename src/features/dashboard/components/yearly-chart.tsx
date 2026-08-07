@@ -30,7 +30,7 @@ export function YearlyChart() {
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
-  const [availableYears, setAvailableYears] = useState<number[]>([]);
+  const [, setAvailableYears] = useState<number[]>([]);
   const [activeTab, setActiveTab] = useState<'orders' | 'views'>('orders');
 
   useEffect(() => {

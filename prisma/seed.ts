@@ -276,7 +276,6 @@ async function reset() {
   await prisma.productViewSummary.deleteMany()
   await prisma.productView.deleteMany()
   await prisma.exclusivePairing.deleteMany()
-  await prisma.productCompatibility.deleteMany()
   await prisma.product.deleteMany()
   await prisma.categoryPairing.deleteMany()
   await prisma.category.deleteMany()

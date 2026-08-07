@@ -28,6 +28,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://ninebooking:ninebooking@localhost:5432/ninebooking?schema=public
+      SHADOW_DATABASE_URL: postgresql://ninebooking:ninebooking@localhost:5432/ninebooking_shadow?schema=public
       NEXTAUTH_SECRET: ci-secret-value-that-is-long-enough-for-zod-validation
       NEXTAUTH_URL: http://localhost:3000
       NEXT_PUBLIC_APP_URL: http://localhost:3000
@@ -37,7 +38,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
 
       - name: ติดตั้ง dependency
@@ -55,11 +56,36 @@ jobs:
       - name: ตรวจสไตล์โค้ด
         run: npm run lint
 
+      - name: ตรวจการจัดรูปแบบโค้ด
+        run: npm run format:check
+
       - name: รันเทสต์
         run: npm test
 
       - name: เตรียมฐานข้อมูล
         run: npx prisma migrate deploy
 
+      # ไฟล์ migration ต้องตรงกับ schema.prisma เสมอ
+      # ไม่งั้นคนที่ clone ไปจะได้ฐานข้อมูลคนละหน้าตากับที่โค้ดคาดไว้
+      - name: ตรวจว่า migration ตรงกับ schema
+        run: |
+          psql "$DATABASE_URL" -c 'CREATE DATABASE ninebooking_shadow' || true
+          npm run db:diff
+
       - name: Build
         run: npm run build
+
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # แยกเป็น job ของตัวเองเพราะเป็นเรื่องของ dependency ไม่ใช่ของโค้ด
+      # ช่องโหว่ที่โผล่มาใหม่ไม่ควรทำให้ PR ที่ไม่เกี่ยวข้องกลายเป็นสีแดง
+      - name: ตรวจช่องโหว่ของ dependency
+        run: npm audit --audit-level=high
+        continue-on-error: true

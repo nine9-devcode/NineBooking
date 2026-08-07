@@ -34,7 +34,7 @@ import type {
 import type { DatasheetItem } from "@/features/products/datasheet.types"
 
 // Utils
-import { useUploadProgress, UPLOAD_STEPS } from "./use-upload-progress"
+import { useUploadProgress } from "./use-upload-progress"
 // Note: เมื่อย้ายไปใช้งานจริง ให้เปลี่ยน path ตามโครงสร้างโปรเจกต์
 import { uploadImage } from "@/features/products/components/admin/shared/image-upload"
 import { uploadGallery } from "@/features/products/components/admin/shared/gallery-upload"

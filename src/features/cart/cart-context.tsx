@@ -45,7 +45,7 @@ interface CartProviderProps {
 
 // Cart Provider Component
 export function CartProvider({ children }: CartProviderProps) {
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const [state, setState] = useState<CartState>(defaultCartState)
 
   // Fetch cart from API

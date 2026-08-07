@@ -62,7 +62,9 @@ export async function GET() {
     }> = {};
 
     orderItems.forEach((item) => {
-      // 1. นับ Main Product
+      // สินค้าที่ถูกลบไปแล้วไม่นับ — อันดับนี้ต้องลิงก์ไปหน้าสินค้าได้
+      if (!item.productId || !item.product) return
+
       const mainProductId = item.productId;
 
       if (!productStats[mainProductId]) {

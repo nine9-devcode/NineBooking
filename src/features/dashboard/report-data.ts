@@ -235,7 +235,10 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
   });
 
   // Single findMany instead of N findUnique calls
-  const topOrderProductIds = productOrderCounts.map(p => p.productId);
+  // สินค้าที่ถูกลบไปแล้วจะไม่มี id ให้ค้น — คัดออกก่อน
+  const topOrderProductIds = productOrderCounts
+    .map(p => p.productId)
+    .filter((id): id is string => id !== null);
   const topOrderProducts = topOrderProductIds.length > 0
     ? await prisma.product.findMany({
         where: { id: { in: topOrderProductIds } },
@@ -245,7 +248,7 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
 
   const productNameMap = new Map(topOrderProducts.map(p => [p.id, p.name]));
   const topProductsByOrders = productOrderCounts.map((item) => ({
-    name: productNameMap.get(item.productId) || 'ไม่ทราบชื่อ',
+    name: (item.productId && productNameMap.get(item.productId)) || 'สินค้าที่ถูกลบแล้ว',
     orderCount: item._count.productId,
   }));
 

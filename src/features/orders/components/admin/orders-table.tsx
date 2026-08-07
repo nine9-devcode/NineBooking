@@ -23,9 +23,6 @@ import {
 import {
   Loader2,
   Package,
-  Clock,
-  CheckCircle2,
-  XCircle,
   Eye,
   Calendar,
   Link2,

@@ -10,9 +10,6 @@ import { th } from 'date-fns/locale';
 import {
   ShoppingBag,
   ExternalLink,
-  Clock,
-  CheckCircle2,
-  XCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import type { OrderStatus } from "@prisma/client";

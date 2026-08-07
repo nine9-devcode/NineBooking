@@ -1,3 +1,4 @@
+import type { SupportNotificationType } from "@prisma/client"
 // app/api/admin/contact-issues/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
@@ -117,7 +118,7 @@ export async function PATCH(
         userId: string
         issueId: string
         issueNumber: string
-        notificationType: string
+        notificationType: SupportNotificationType
       }[] = []
 
       // ตรวจสอบ status เปลี่ยน → IN_PROGRESS หรือ CLOSED
@@ -127,7 +128,7 @@ export async function PATCH(
             userId: existingIssue.userId,
             issueId: params.id,
             issueNumber: existingIssue.issueNumber,
-            notificationType: status === "IN_PROGRESS" ? "in_progress" : "closed",
+            notificationType: status === "IN_PROGRESS" ? "IN_PROGRESS" : "CLOSED",
           })
         }
       }
@@ -145,7 +146,7 @@ export async function PATCH(
             userId: existingIssue.userId,
             issueId: params.id,
             issueNumber: existingIssue.issueNumber,
-            notificationType: "response",
+            notificationType: "RESPONSE",
           })
         }
       }
