@@ -97,7 +97,7 @@ export function AdminSidebar({ collapsed, onCollapse, mobileOpen, onMobileClose 
   return (
     <aside
       className={cn(
-        "fixed left-0 bg-background border-r border-border z-40",
+        "fixed left-0 flex flex-col bg-background border-r border-border z-40",
         // Mobile: full-height drawer, slide in/out
         "top-0 h-full w-64 transition-transform duration-300",
         mobileOpen ? "translate-x-0" : "-translate-x-full",
@@ -134,7 +134,7 @@ export function AdminSidebar({ collapsed, onCollapse, mobileOpen, onMobileClose 
       </button>
 
       {/* Menu Items */}
-      <nav className="p-4 space-y-2 mt-4">
+      <nav className="flex-1 overflow-y-auto p-4 space-y-2 mt-4">
         {menuItems.map((item) => {
           const Icon = item.icon
           const isActive = item.href === "/admin"
@@ -179,11 +179,9 @@ export function AdminSidebar({ collapsed, onCollapse, mobileOpen, onMobileClose 
         })}
       </nav>
 
-      {/* Footer Info — hidden when collapsed on desktop */}
-      <div className={cn(
-        "absolute bottom-4 left-4 right-4",
-        collapsed && "md:hidden"
-      )}>
+      {/* Footer Info — hidden when collapsed on desktop
+          เป็น sibling ปกติของ nav ไม่ใช่ absolute ไม่งั้นทับเมนูตัวท้ายบนจอเตี้ย */}
+      <div className={cn("shrink-0 p-4 pt-0", collapsed && "md:hidden")}>
         <div className="bg-card/50 rounded-lg p-3 border border-border">
           <p className="text-xs text-muted-foreground">NineBooking Admin v1.0</p>
           <p className="text-xs text-muted-foreground mt-1">© 2025 All Rights Reserved</p>

@@ -5,6 +5,7 @@
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { PieChart as PieChartIcon } from 'lucide-react';
+import { chartTheme, chartTooltipStyle } from "@/config/chart-theme";
 
 interface CategoryStat {
   categoryId: string;
@@ -21,23 +22,14 @@ interface CategoryStats {
   totalViews: number;
 }
 
-// สีสำหรับ Tab ยอดจอง (โทนส้ม)
-const ORDER_COLORS = [
-  { main: '#f97316', light: '#fb923c' },
-  { main: '#ea580c', light: '#f97316' },
-  { main: '#c2410c', light: '#ea580c' },
-  { main: '#9a3412', light: '#c2410c' },
-  { main: '#7c2d12', light: '#9a3412' },
-];
+// สองแท็บใช้คนละชุดสีเพื่อให้แยกออกว่ากำลังดูอะไรอยู่
+// ยอดจอง = ไล่เฉดน้ำเงินหลัก / ยอดเข้าชม = สีชุดของกราฟ
+const ORDER_COLORS = chartTheme.ramp.map((main, i) => ({
+  main,
+  light: chartTheme.ramp[Math.max(0, i - 1)],
+}));
 
-// สีสำหรับ Tab ยอดเข้าชม (โทนฟ้า)
-const VIEW_COLORS = [
-  { main: '#3b82f6', light: '#60a5fa' },
-  { main: '#2563eb', light: '#3b82f6' },
-  { main: '#1d4ed8', light: '#2563eb' },
-  { main: '#1e40af', light: '#1d4ed8' },
-  { main: '#1e3a8a', light: '#1e40af' },
-];
+const VIEW_COLORS = chartTheme.series.map((main) => ({ main, light: main }));
 
 export function CategoryPieChart() {
   const [stats, setStats] = useState<CategoryStats | null>(null);
@@ -163,12 +155,8 @@ export function CategoryPieChart() {
                 ))}
               </Pie>
               <Tooltip
-                contentStyle={{
-                  backgroundColor: '#111827',
-                  border: '1px solid #374151',
-                  borderRadius: '8px',
-                }}
-                itemStyle={{ color: '#ffffff' }}
+                contentStyle={chartTooltipStyle}
+                itemStyle={{ color: chartTheme.tooltipText }}
                 formatter={(value: any, name: any, props: any) => [
                   `${value.toLocaleString()} ${activeTab === 'orders' ? 'ใบจอง' : 'ครั้ง'} (${props.payload.percentage.toFixed(1)}%)`,
                   name,

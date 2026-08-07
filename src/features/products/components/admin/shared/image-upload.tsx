@@ -106,7 +106,7 @@ export function ImageUpload({
           </Button>
           {/* Badge for new image */}
           {value?.file && (
-            <div className="absolute bottom-2 left-2 px-2 py-1 bg-warning text-foreground text-xs rounded">
+            <div className="absolute bottom-2 left-2 px-2 py-1 bg-warning text-warning-foreground text-xs rounded">
               รูปใหม่ (ยังไม่บันทึก)
             </div>
           )}

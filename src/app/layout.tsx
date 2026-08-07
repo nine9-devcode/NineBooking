@@ -115,8 +115,9 @@ export default async function RootLayout({
   const gaId = settings?.googleAnalyticsId
 
   return (
-    // ธีมเข้มเป็นค่าเริ่มต้น — ปุ่มสลับใน navbar จะเปลี่ยน class นี้
-    <html lang="th" className="dark" suppressHydrationWarning>
+    // เว็บนี้เป็นธีมเข้มอย่างเดียว คลาส dark คงไว้เพราะ component ของ shadcn/ui
+    // มี utility แบบ dark:bg-input/30 เขียนอยู่ในตัวเอง (ดูคำอธิบายใน globals.css)
+    <html lang="th" className="dark">
       <body
         className={`${notoSansThai.variable} ${prompt.variable} font-sans antialiased`}
       >

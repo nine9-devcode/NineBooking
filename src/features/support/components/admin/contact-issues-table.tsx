@@ -46,6 +46,8 @@ import {
 import { toast } from "sonner"
 import { getMemberTypeLabel, MEMBER_TYPE_COLORS } from "@/lib/constants"
 import { getErrorMessage } from "@/lib/utils"
+import type { IssueCategory, IssueStatus } from "@prisma/client"
+import { ISSUE_CATEGORY, ISSUE_STATUS } from "@/components/ui/status-badge"
 
 function getMemberTypeBadgeVariant(memberType: string | null | undefined): "default" | "secondary" | "destructive" | "outline" {
   const variant = MEMBER_TYPE_COLORS[memberType || "other"]
@@ -81,32 +83,6 @@ export default function ContactIssuesTable({
   const router = useRouter()
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
-
-  const statusConfig = {
-    PENDING: {
-      label: "รอดำเนินการ",
-      icon: AlertCircle,
-      className: "bg-warning/10 text-warning border-warning/20"
-    },
-    IN_PROGRESS: {
-      label: "กำลังดำเนินการ",
-      icon: Clock,
-      className: "bg-info/10 text-info border-info/20"
-    },
-    CLOSED: {
-      label: "เสร็จสิ้น",
-      icon: CheckCircle2,
-      className: "bg-success/10 text-success border-success/20"
-    },
-  }
-
-  const categoryConfig: Record<string, { label: string; className: string }> = {
-    BOOKING: { label: "การจอง", className: "bg-chart-4/10 text-chart-4 border-chart-4/20" },
-    PAYMENT: { label: "การชำระเงิน", className: "bg-info/10 text-info border-info/20" },
-    USAGE_ISSUE: { label: "ปัญหาการใช้งาน", className: "bg-destructive/10 text-destructive border-destructive/20" },
-    ACCOUNT: { label: "บัญชีผู้ใช้", className: "bg-info/10 text-info border-info/20" },
-    OTHER: { label: "อื่นๆ", className: "bg-secondary/10 text-muted-foreground border-border" },
-  }
 
   const handleView = (id: string) => {
     router.push(`/admin/contact-issues/${id}`)
@@ -214,7 +190,7 @@ export default function ContactIssuesTable({
           </TableHeader>
           <TableBody>
             {data.map((issue) => {
-              const statusInfo = statusConfig[issue.status as keyof typeof statusConfig] || {
+              const statusInfo = ISSUE_STATUS[issue.status as IssueStatus] || {
                 label: issue.status,
                 icon: AlertCircle,
                 className: "bg-card text-muted-foreground border-border"
@@ -228,7 +204,7 @@ export default function ContactIssuesTable({
                     selectedIds.includes(issue.id)
                       ? "bg-primary/5"
                       : issue.isNew
-                      ? "bg-warning/5 border-l-2 border-l-amber-400"
+                      ? "bg-warning/5 border-l-2 border-l-warning"
                       : ""
                   }`}
                 >
@@ -246,7 +222,7 @@ export default function ContactIssuesTable({
                     <div className="flex items-center gap-1.5">
                       {issue.issueNumber}
                       {issue.isNew && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-warning text-foreground">
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-warning text-warning-foreground">
                           ใหม่
                         </span>
                       )}
@@ -326,12 +302,12 @@ export default function ContactIssuesTable({
                   </TableCell>
 
                   <TableCell className="hidden md:table-cell">
-                    {issue.category && categoryConfig[issue.category] ? (
+                    {issue.category && ISSUE_CATEGORY[issue.category as IssueCategory] ? (
                       <Badge
                         variant="outline"
-                        className={`${categoryConfig[issue.category].className} text-xs`}
+                        className={`${ISSUE_CATEGORY[issue.category as IssueCategory].className} text-xs`}
                       >
-                        {categoryConfig[issue.category].label}
+                        {ISSUE_CATEGORY[issue.category as IssueCategory].label}
                       </Badge>
                     ) : (
                       <span className="text-muted-foreground text-xs">-</span>

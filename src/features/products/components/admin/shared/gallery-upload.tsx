@@ -133,7 +133,7 @@ export function GalleryUpload({
               </Button>
               {/* Badge for new image */}
               {item.isNew && (
-                <div className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-warning text-foreground text-[10px] rounded">
+                <div className="absolute bottom-1 left-1 px-1.5 py-0.5 bg-warning text-warning-foreground text-[10px] rounded">
                   ใหม่
                 </div>
               )}

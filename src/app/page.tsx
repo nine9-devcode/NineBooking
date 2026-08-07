@@ -181,7 +181,7 @@ function HomePageContent() {
       />
 
       <div className="lg:ml-64 pt-16 flex-1">
-        <main className="min-h-screen bg-muted p-4 sm:p-6">
+        <main className="bg-muted p-4 sm:p-6">
           <div className="max-w-7xl mx-auto">
             {/* ส่วนหัว */}
             <div className="mb-6">

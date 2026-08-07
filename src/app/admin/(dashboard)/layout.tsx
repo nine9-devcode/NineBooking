@@ -28,7 +28,7 @@ export default function AdminDashboardLayout({
 
   return (
     <AdminNotificationProvider>
-    <div className="dark min-h-screen bg-background">
+    <div className="min-h-screen bg-background">
       {/* Navbar */}
       <AdminNavbar onMobileMenuToggle={() => setMobileOpen(prev => !prev)} />
 
@@ -53,7 +53,7 @@ export default function AdminDashboardLayout({
         "pt-16 transition-all duration-300",
         collapsed ? "md:pl-16" : "md:pl-64"
       )}>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {children}
         </div>
       </main>

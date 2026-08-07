@@ -66,59 +66,20 @@
   --radius-4xl: calc(var(--radius) + 16px);
 }
 
-/* ธีมสว่าง — ยังใช้เฉดน้ำเงินเดียวกัน แต่กลับด้านความสว่าง */
+/* ==========================================================================
+   โทเคนสีของธีม — น้ำเงินหมึก (dark navy)
+   ==========================================================================
+
+   โปรเจกนี้เป็นธีมเข้มอย่างเดียวโดยตั้งใจ ไม่ได้ทำ light theme ค้างไว้
+
+   คลาส `dark` ที่ <html> ยังอยู่เพราะ component ของ shadcn/ui หลายตัว
+   มี utility แบบ `dark:bg-input/30` เขียนไว้ในตัวเอง ถ้าถอดคลาสนี้ออก
+   ช่องกรอกและปุ่มจะเพี้ยนทันที — ตัวโทเคนเองอยู่ที่ :root จึงใช้ได้เสมอ
+   ไม่ว่าจะมีคลาสนั้นหรือไม่
+   ========================================================================== */
 :root {
   --radius: 0.625rem;
 
-  --background: oklch(0.985 0.004 250);
-  --foreground: oklch(0.21 0.03 258);
-
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.03 258);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.03 258);
-
-  --primary: oklch(0.52 0.17 258);
-  --primary-foreground: oklch(0.99 0 0);
-
-  --secondary: oklch(0.955 0.008 250);
-  --secondary-foreground: oklch(0.28 0.035 258);
-  --muted: oklch(0.955 0.008 250);
-  --muted-foreground: oklch(0.5 0.025 256);
-  --accent: oklch(0.93 0.02 254);
-  --accent-foreground: oklch(0.28 0.035 258);
-
-  --destructive: oklch(0.58 0.21 25);
-  --destructive-foreground: oklch(0.99 0 0);
-  --success: oklch(0.55 0.14 155);
-  --success-foreground: oklch(0.99 0 0);
-  --warning: oklch(0.68 0.14 75);
-  --warning-foreground: oklch(0.2 0.03 258);
-  --info: oklch(0.55 0.14 240);
-  --info-foreground: oklch(0.99 0 0);
-
-  --border: oklch(0.9 0.012 252);
-  --input: oklch(0.9 0.012 252);
-  --ring: oklch(0.52 0.17 258);
-
-  --chart-1: oklch(0.55 0.17 258);
-  --chart-2: oklch(0.62 0.13 215);
-  --chart-3: oklch(0.62 0.12 180);
-  --chart-4: oklch(0.58 0.18 295);
-  --chart-5: oklch(0.7 0.15 70);
-
-  --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.21 0.03 258);
-  --sidebar-primary: oklch(0.52 0.17 258);
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.955 0.008 250);
-  --sidebar-accent-foreground: oklch(0.28 0.035 258);
-  --sidebar-border: oklch(0.9 0.012 252);
-  --sidebar-ring: oklch(0.52 0.17 258);
-}
-
-/* ธีมเข้ม (ค่าเริ่มต้นของเว็บ) — น้ำเงินหมึก */
-.dark {
   --background: oklch(0.17 0.03 260);
   --foreground: oklch(0.97 0.005 250);
 
@@ -137,6 +98,8 @@
   --accent: oklch(0.33 0.05 258);
   --accent-foreground: oklch(0.97 0.005 250);
 
+  /* สีสื่อความหมาย — *-foreground คู่กันมีไว้ใช้บนพื้นทึบของสีนั้น
+     ถ้าใช้เป็นพื้นจางแบบ bg-warning/10 ให้ใช้ text-warning ไม่ใช่ text-warning-foreground */
   --destructive: oklch(0.62 0.19 25);
   --destructive-foreground: oklch(0.99 0 0);
   --success: oklch(0.65 0.15 155);
@@ -150,6 +113,8 @@
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.65 0.16 258);
 
+  /* ลำดับสีของกราฟ — ต้องตรงกับ src/config/chart-theme.ts
+     ที่นั่นเก็บเป็น hex เพราะ Recharts รับสีผ่าน prop ไม่ใช่ CSS */
   --chart-1: oklch(0.65 0.16 258);
   --chart-2: oklch(0.7 0.13 215);
   --chart-3: oklch(0.72 0.12 180);
@@ -177,9 +142,6 @@
 
   /* ให้สีที่เบราว์เซอร์วาดเอง (scrollbar, ช่องกรอก) ตามธีมด้วย */
   :root {
-    color-scheme: light;
-  }
-  .dark {
     color-scheme: dark;
   }
 }

@@ -100,7 +100,7 @@ export function ProductGallery({
 
             {/* Zoom hint */}
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors flex items-center justify-center">
-              <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 text-foreground px-3 py-1.5 rounded-full text-sm">
+              <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/50 text-white px-3 py-1.5 rounded-full text-sm">
                 คลิกเพื่อขยาย
               </span>
             </div>
@@ -131,7 +131,7 @@ export function ProductGallery({
 
             {/* Image Counter */}
             {allImages.length > 1 && (
-              <div className="absolute bottom-3 right-3 bg-black/50 text-foreground px-2.5 py-1 rounded-full text-sm">
+              <div className="absolute bottom-3 right-3 bg-black/50 text-white px-2.5 py-1 rounded-full text-sm">
                 {selectedIndex + 1} / {allImages.length}
               </div>
             )}
@@ -144,6 +144,7 @@ export function ProductGallery({
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
           onClick={() => setLightboxOpen(false)}
+              aria-label="ปิดภาพขยาย"
         >
           {/* Close Button */}
           <button
@@ -161,18 +162,20 @@ export function ProductGallery({
                   e.stopPropagation()
                   goToPrevious()
                 }}
+                aria-label="ภาพก่อนหน้า"
                 className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
               >
-                <ChevronLeft className="w-8 h-8 text-foreground" />
+                <ChevronLeft className="w-8 h-8 text-white" aria-hidden="true" />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
                   goToNext()
                 }}
+                aria-label="ภาพถัดไป"
                 className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
               >
-                <ChevronRight className="w-8 h-8 text-foreground" />
+                <ChevronRight className="w-8 h-8 text-white" aria-hidden="true" />
               </button>
             </>
           )}
@@ -194,7 +197,7 @@ export function ProductGallery({
 
           {/* Counter */}
           {allImages.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-foreground px-4 py-2 rounded-full">
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 text-white px-4 py-2 rounded-full">
               {selectedIndex + 1} / {allImages.length}
             </div>
           )}

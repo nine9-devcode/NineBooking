@@ -13,6 +13,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { TrendingUp, ShoppingCart, Eye, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { chartTheme, chartTooltipStyle } from "@/config/chart-theme";
 
 interface YearlyStats {
   year: number;
@@ -84,14 +85,14 @@ export function YearlyChart() {
   const tabConfig = {
     orders: {
       label: 'ยอดจอง',
-      color: '#f97316',
+      color: chartTheme.series[0],
       gradient: 'colorOrders',
       total: data.totalOrders,
       icon: ShoppingCart,
     },
     views: {
       label: 'ยอดเข้าชม',
-      color: '#3b82f6',
+      color: chartTheme.series[2],
       gradient: 'colorViews',
       total: data.totalViews,
       icon: Eye,
@@ -189,33 +190,29 @@ export function YearlyChart() {
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+              <stop offset="5%" stopColor={chartTheme.series[0]} stopOpacity={0.3}/>
+              <stop offset="95%" stopColor={chartTheme.series[0]} stopOpacity={0}/>
             </linearGradient>
             <linearGradient id="colorViews" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+              <stop offset="5%" stopColor={chartTheme.series[2]} stopOpacity={0.3}/>
+              <stop offset="95%" stopColor={chartTheme.series[2]} stopOpacity={0}/>
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke={chartTheme.grid} vertical={false} />
           <XAxis 
             dataKey="month" 
-            stroke="#6b7280"
-            tick={{ fill: '#9ca3af', fontSize: 12 }}
-            axisLine={{ stroke: '#374151' }}
+            stroke={chartTheme.axisLine}
+            tick={{ fill: chartTheme.axis, fontSize: 12 }}
+            axisLine={{ stroke: chartTheme.axisLine }}
           />
           <YAxis 
-            stroke="#6b7280"
-            tick={{ fill: '#9ca3af', fontSize: 12 }}
-            axisLine={{ stroke: '#374151' }}
+            stroke={chartTheme.axisLine}
+            tick={{ fill: chartTheme.axis, fontSize: 12 }}
+            axisLine={{ stroke: chartTheme.axisLine }}
           />
           <Tooltip
-            contentStyle={{
-              backgroundColor: '#111827',
-              border: '1px solid #374151',
-              borderRadius: '8px',
-            }}
-            labelStyle={{ color: '#fff', fontWeight: 'bold', marginBottom: '4px' }}
+            contentStyle={chartTooltipStyle}
+            labelStyle={{ color: chartTheme.tooltipText, fontWeight: 'bold', marginBottom: '4px' }}
             formatter={(value: any) => [
               `${value.toLocaleString()} ${activeTab === 'orders' ? 'ครั้ง' : 'ครั้ง'}`,
               currentConfig.label

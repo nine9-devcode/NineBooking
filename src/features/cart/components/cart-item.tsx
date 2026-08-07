@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useCart } from "@/features/cart/cart-context"
 import type { CartItem as CartItemType } from "@/features/cart/cart"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 
 // Type สำหรับ Grouped Cart Item
 export interface GroupedCartItem {
@@ -31,6 +32,7 @@ export function CartItemCard({ group, isSelected, onSelectChange }: CartItemProp
   const { updateCartItem, removeFromCart } = useCart()
   const [isUpdating, setIsUpdating] = useState<string | null>(null)
   const [isRemoving, setIsRemoving] = useState(false)
+  const [confirmRemoveOpen, setConfirmRemoveOpen] = useState(false)
 
   // อัพเดทจำนวนของ item
   const handleUpdateQuantity = async (itemId: string, newQuantity: number) => {
@@ -42,7 +44,6 @@ export function CartItemCard({ group, isSelected, onSelectChange }: CartItemProp
 
   // ลบทั้ง group (สินค้าหลัก + คู่ทั้งหมด)
   const handleRemoveGroup = async () => {
-    if (!window.confirm("ต้องการลบสินค้านี้และสินค้าคู่ทั้งหมดใช่หรือไม่?")) return
     setIsRemoving(true)
     
     // ลบ main item
@@ -137,13 +138,23 @@ export function CartItemCard({ group, isSelected, onSelectChange }: CartItemProp
           </div>
         </div>
 
+        <ConfirmDialog
+          open={confirmRemoveOpen}
+          onOpenChange={setConfirmRemoveOpen}
+          title="ลบสินค้านี้ออกจากตะกร้า?"
+          description="สินค้าหลักและสินค้าที่ใช้คู่กันทั้งหมดในรายการนี้จะถูกนำออก"
+          confirmLabel="ลบออก"
+          onConfirm={handleRemoveGroup}
+        />
+
         {/* Remove Group Button */}
         <div className="flex-shrink-0">
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleRemoveGroup}
+            onClick={() => setConfirmRemoveOpen(true)}
             disabled={isRemoving}
+            aria-label="ลบสินค้านี้ออกจากตะกร้า"
             className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
           >
             {isRemoving ? (

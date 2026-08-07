@@ -245,7 +245,7 @@ export default function ContactPage() {
   return (
     <>
       <Navbar currentPage="แจ้งปัญหา" />
-      <main className="min-h-screen bg-muted pt-20 sm:pt-24 pb-12">
+      <main className="min-h-screen bg-muted pt-16 pb-12">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <SupportHeader />

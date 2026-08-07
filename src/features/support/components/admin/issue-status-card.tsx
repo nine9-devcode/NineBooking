@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { AlertCircle, Clock, CheckCircle2 } from "lucide-react"
+import { ISSUE_STATUS } from "@/components/ui/status-badge"
 
 type IssueStatus = "PENDING" | "IN_PROGRESS" | "CLOSED"
 
@@ -18,46 +19,22 @@ interface IssueStatusCardProps {
   onStatusChange: (status: IssueStatus) => void
 }
 
-const statusConfig = {
-  PENDING: {
-    label: "รอดำเนินการ",
-    icon: AlertCircle,
-    bgColor: "bg-warning/10",
-    textColor: "text-warning",
-    borderColor: "border-warning/20",
-  },
-  IN_PROGRESS: {
-    label: "กำลังดำเนินการ",
-    icon: Clock,
-    bgColor: "bg-info/10",
-    textColor: "text-info",
-    borderColor: "border-info/20",
-  },
-  CLOSED: {
-    label: "เสร็จสิ้น",
-    icon: CheckCircle2,
-    bgColor: "bg-success/10",
-    textColor: "text-success",
-    borderColor: "border-success/20",
-  },
-}
-
 export function IssueStatusCard({ status, onStatusChange }: IssueStatusCardProps) {
-  const config = statusConfig[status] || statusConfig.PENDING
+  const config = ISSUE_STATUS[status] ?? ISSUE_STATUS.PENDING
   const StatusIcon = config.icon
 
   return (
-    <Card className={`${config.bgColor} ${config.borderColor} border`}>
+    <Card className={`${config.className} border`}>
       <CardContent className="p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4">
           {/* Current Status Display */}
           <div className="flex items-center gap-3 flex-1">
-            <div className={`p-3 rounded-lg ${config.bgColor} ${config.borderColor} border`}>
-              <StatusIcon className={`w-6 h-6 ${config.textColor}`} />
+            <div className={`p-3 rounded-lg   border`}>
+              <StatusIcon className={`w-6 h-6 `} />
             </div>
             <div>
               <p className="text-sm text-muted-foreground">สถานะปัจจุบัน</p>
-              <p className={`text-lg font-semibold ${config.textColor}`}>
+              <p className={`text-lg font-semibold `}>
                 {config.label}
               </p>
             </div>

@@ -30,6 +30,8 @@ import {
   Calendar,
   Link2,
 } from "lucide-react"
+import type { OrderStatus } from "@prisma/client"
+import { OrderStatusBadge } from "@/components/ui/status-badge"
 
 interface PairedProduct {
   name: string
@@ -72,29 +74,6 @@ interface OrdersTableProps {
   orders: OrderPreview[]
   loading: boolean
   emptyMessage?: string
-}
-
-const STATUS_CONFIG = {
-  PENDING: {
-    label: "รอดำเนินการ",
-    color: "bg-warning/10 text-warning",
-    icon: Clock,
-  },
-  CONFIRMED: {
-    label: "ยืนยันแล้ว",
-    color: "bg-info/10 text-info",
-    icon: CheckCircle2,
-  },
-  COMPLETED: {
-    label: "เสร็จสิ้น",
-    color: "bg-success/10 text-success",
-    icon: CheckCircle2,
-  },
-  CANCELLED: {
-    label: "ยกเลิก",
-    color: "bg-destructive/10 text-destructive",
-    icon: XCircle,
-  },
 }
 
 function getMemberTypeBadgeVariant(memberType: string | null | undefined): "default" | "secondary" | "destructive" | "outline" {
@@ -152,16 +131,12 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
             </TableHeader>
             <TableBody>
               {orders.map((order) => {
-                const statusConfig =
-                  STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG] ||
-                  STATUS_CONFIG.PENDING
-                const StatusIcon = statusConfig.icon
 
                 return (
                   <TableRow
                     key={order.id}
                     className={`border-border hover:bg-secondary/50 ${
-                      order.isNew ? "bg-warning/5 border-l-2 border-l-amber-400" : ""
+                      order.isNew ? "bg-warning/5 border-l-2 border-l-warning" : ""
                     }`}
                   >
                     {/* Order Number */}
@@ -319,14 +294,9 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
                     <TableCell>
                       <div className="space-y-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}
-                          >
-                            <StatusIcon className="w-3 h-3" />
-                            {statusConfig.label}
-                          </span>
+                          <OrderStatusBadge status={order.status as OrderStatus} />
                           {order.isNew && (
-                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-warning text-foreground">
+                            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-warning text-warning-foreground">
                               ใหม่
                             </span>
                           )}

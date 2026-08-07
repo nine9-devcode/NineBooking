@@ -35,7 +35,7 @@ export function NotificationBell() {
         <Button 
           variant="ghost" 
           size="icon" 
-          className="relative text-foreground hover:text-foreground hover:bg-white/10"
+          className="relative text-foreground hover:text-foreground hover:bg-accent"
         >
           <Bell 
             className={`h-5 w-5 transition-transform ${
@@ -52,7 +52,7 @@ export function NotificationBell() {
       
       <DropdownMenuContent 
         align="end" 
-        className="w-[380px] p-0 bg-background border-border shadow-xl"
+        className="w-[min(380px,calc(100vw-2rem))] p-0 bg-background border-border shadow-xl"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border px-4 py-3 bg-card/80">

@@ -1,57 +1,19 @@
 // components/admin/quotations/constants.ts
 
-import { 
-  FileEdit, 
-  Send, 
-  CheckCircle2, 
-  XCircle, 
-  Clock,
-  LucideIcon 
-} from "lucide-react"
+import { QUOTATION_STATUS } from "@/components/ui/status-badge"
 import { StatusConfig } from "./types"
 
-// Status Configuration
-export const QUOTATION_STATUS_CONFIG: Record<string, StatusConfig> = {
-  DRAFT: {
-    label: "ร่าง",
-    color: "bg-muted text-foreground border-border",
-    darkColor: "bg-secondary/20 text-muted-foreground border-border",
-    icon: FileEdit,
-  },
-  SENT: {
-    label: "ยืนยัน",
-    color: "bg-info/10 text-info border-info/40",
-    darkColor: "bg-info/20 text-info border-info/30",
-    icon: Send,
-  },
-  ACCEPTED: {
-    label: "เสร็จสิ้น",
-    color: "bg-success/10 text-success border-success/40",
-    darkColor: "bg-success/20 text-success border-success/30",
-    icon: CheckCircle2,
-  },
-  REJECTED: {
-    label: "ปฏิเสธ",
-    color: "bg-destructive/10 text-destructive border-destructive/40",
-    darkColor: "bg-destructive/20 text-destructive border-destructive/30",
-    icon: XCircle,
-  },
-  EXPIRED: {
-    label: "หมดอายุ",
-    color: "bg-warning/10 text-warning border-warning/40",
-    darkColor: "bg-warning/20 text-warning border-warning/30",
-    icon: Clock,
-  },
-}
+// ค่าจริงอยู่ที่ components/ui/status-badge.tsx ที่เดียว
+export const QUOTATION_STATUS_CONFIG: Record<string, StatusConfig> = Object.fromEntries(
+  Object.entries(QUOTATION_STATUS).map(([status, meta]) => [
+    status,
+    { label: meta.label, icon: meta.icon, color: meta.className, darkColor: meta.className },
+  ])
+)
 
-// Status Options สำหรับ Select
-export const QUOTATION_STATUS_OPTIONS = [
-  { value: "DRAFT", label: "ร่าง" },
-  { value: "SENT", label: "ยืนยัน" },
-  { value: "ACCEPTED", label: "เสร็จสิ้น" },
-  { value: "REJECTED", label: "ปฏิเสธ" },
-  { value: "EXPIRED", label: "หมดอายุ" },
-]
+export const QUOTATION_STATUS_OPTIONS = Object.entries(QUOTATION_STATUS).map(
+  ([value, meta]) => ({ value, label: meta.label })
+)
 
 // Helper function
 export function getQuotationStatusConfig(status: string): StatusConfig {

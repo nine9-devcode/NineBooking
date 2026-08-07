@@ -41,7 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="p-4 flex-1 flex flex-col">
           {/* Category Badge - แสดงปกติ */}
           <div className="mb-2">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary-50 text-primary border border-primary-100">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/25">
               {product.category.name}
             </span>
           </div>

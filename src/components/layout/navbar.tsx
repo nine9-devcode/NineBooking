@@ -87,6 +87,8 @@ export function Navbar({
             {isHomePage && (
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
+                aria-label={sidebarOpen ? "ปิดเมนูหมวดหมู่" : "เปิดเมนูหมวดหมู่"}
+                aria-expanded={sidebarOpen}
                 className="lg:hidden p-2 hover:bg-muted rounded-lg"
               >
                 {sidebarOpen ? (
@@ -264,7 +266,7 @@ export function Navbar({
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="bg-primary hover:bg-primary-600" size="sm">
+                  <Button className="bg-primary hover:bg-primary/90" size="sm">
                     สมัครสมาชิก
                   </Button>
                 </Link>

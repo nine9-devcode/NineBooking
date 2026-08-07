@@ -152,7 +152,7 @@ export function CategorySidebar({
                 "w-full flex items-center justify-between px-4 py-3 rounded-lg transition-colors font-medium",
                 selectedCategoryId === null
                   ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-primary-50 hover:text-primary"
+                  : "text-foreground hover:bg-primary/10 hover:text-primary"
               )}
             >
               <div className="flex items-center gap-3 min-w-0">
@@ -216,7 +216,7 @@ export function CategorySidebar({
                       "flex-1 min-w-0 flex items-center justify-between px-3 py-2.5 rounded-lg transition-colors font-medium text-left",
                       isSelected
                         ? "bg-primary text-primary-foreground"
-                        : "text-foreground hover:bg-primary-50 hover:text-primary"
+                        : "text-foreground hover:bg-primary/10 hover:text-primary"
                     )}
                   >
                     <span className="truncate min-w-0 flex-1">{category.name}</span>
@@ -257,7 +257,7 @@ export function CategorySidebar({
                               "w-full flex items-center justify-between pl-10 pr-4 py-2 rounded-lg transition-colors text-sm",
                               isChildSelected
                                 ? "bg-primary text-primary-foreground"
-                                : "text-muted-foreground hover:bg-primary-50 hover:text-primary"
+                                : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
                             )}
                           >
                             <span className="truncate min-w-0 flex-1">{child.name}</span>

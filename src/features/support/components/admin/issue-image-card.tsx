@@ -115,7 +115,7 @@ export function IssueImageCard({ imageUrls }: IssueImageCardProps) {
 
             {/* Image counter */}
             {imageUrls.length > 1 && lightboxIndex !== null && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-foreground px-3 py-1 rounded-full text-sm">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
                 {lightboxIndex + 1} / {imageUrls.length}
               </div>
             )}

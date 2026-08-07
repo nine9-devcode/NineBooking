@@ -1,40 +1,38 @@
-// ไฟล์: components/orders/constants.ts
+import type { OrderStatus } from "@prisma/client"
 
-import { Clock, CheckCircle2, XCircle } from "lucide-react"
+import { ORDER_STATUS } from "@/components/ui/status-badge"
 
-export const STATUS_CONFIG = {
-  PENDING: {
-    label: "รอดำเนินการ",
-    color: "bg-warning/10 text-warning",
-    borderColor: "border-warning/40",
-    icon: Clock,
-    description: "ทางร้านกำลังตรวจสอบรายการจอง",
-  },
-  CONFIRMED: {
-    label: "ยืนยันแล้ว",
-    color: "bg-info/10 text-info",
-    borderColor: "border-info/40",
-    icon: CheckCircle2,
-    description: "ทางร้านยืนยันการจองเรียบร้อยแล้ว",
-  },
-  COMPLETED: {
-    label: "เสร็จสิ้น",
-    color: "bg-success/10 text-success",
-    borderColor: "border-success/40",
-    icon: CheckCircle2,
-    description: "การจองดำเนินการเสร็จสิ้นแล้ว",
-  },
-  CANCELLED: {
-    label: "ยกเลิก",
-    color: "bg-destructive/10 text-destructive",
-    borderColor: "border-destructive/40",
-    icon: XCircle,
-    description: "การจองถูกยกเลิก",
-  },
-} as const
+/**
+ * รูปร่างเดิมที่หน้าเก่าๆ ยังเรียกใช้อยู่ แต่ค่าจริงมาจาก ORDER_STATUS ที่เดียว
+ *
+ * เดิมมี STATUS_CONFIG สี่ชุดกระจายอยู่คนละไฟล์ คนละรูปร่าง (บางชุดมี borderColor
+ * บางชุดมี darkColor บางชุดมี bgColor) แก้ข้อความที่หนึ่งแล้วอีกสามที่ไม่ตาม
+ */
+export const STATUS_CONFIG = Object.fromEntries(
+  Object.entries(ORDER_STATUS).map(([status, meta]) => [
+    status,
+    {
+      label: meta.label,
+      icon: meta.icon,
+      description: meta.description,
+      color: meta.className,
+      // แยกไว้เพื่อความเข้ากันได้กับโค้ดเดิม — เส้นขอบรวมอยู่ใน className แล้ว
+      borderColor: "",
+    },
+  ])
+) as Record<
+  OrderStatus,
+  {
+    label: string
+    icon: (typeof ORDER_STATUS)[OrderStatus]["icon"]
+    description?: string
+    color: string
+    borderColor: string
+  }
+>
 
-export type OrderStatusKey = keyof typeof STATUS_CONFIG
+export type OrderStatusKey = OrderStatus
 
 export function getStatusConfig(status: string) {
-  return STATUS_CONFIG[status as OrderStatusKey] || STATUS_CONFIG.PENDING
+  return STATUS_CONFIG[status as OrderStatus] ?? STATUS_CONFIG.PENDING
 }

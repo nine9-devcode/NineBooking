@@ -15,6 +15,8 @@ import {
   XCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import type { OrderStatus } from "@prisma/client";
+import { OrderStatusBadge } from "@/components/ui/status-badge";
 
 interface RecentOrder {
   id: string;
@@ -30,37 +32,6 @@ interface RecentOrder {
   };
 }
 
-const STATUS_CONFIG: Record<string, {
-  label: string; 
-  color: string; 
-  bgColor: string;
-  icon: React.ElementType;
-}> = {
-  PENDING: { 
-    label: 'รอดำเนินการ', 
-    color: 'text-warning', 
-    bgColor: 'bg-warning/10',
-    icon: Clock,
-  },
-  CONFIRMED: { 
-    label: 'ยืนยันแล้ว', 
-    color: 'text-info', 
-    bgColor: 'bg-info/10',
-    icon: CheckCircle2,
-  },
-  COMPLETED: { 
-    label: 'เสร็จสิ้น', 
-    color: 'text-success', 
-    bgColor: 'bg-success/10',
-    icon: CheckCircle2,
-  },
-  CANCELLED: { 
-    label: 'ยกเลิก', 
-    color: 'text-destructive', 
-    bgColor: 'bg-destructive/10',
-    icon: XCircle,
-  },
-};
 
 export function RecentOrdersTable() {
   const [orders, setOrders] = useState<RecentOrder[]>([]);
@@ -127,8 +98,6 @@ export function RecentOrdersTable() {
       ) : (
         <div className="space-y-3">
           {orders.map((order) => {
-            const statusConfig = STATUS_CONFIG[order.status] || STATUS_CONFIG.PENDING;
-            const StatusIcon = statusConfig.icon;
 
             return (
               <Link
@@ -161,10 +130,7 @@ export function RecentOrdersTable() {
                     <span className="text-foreground font-medium text-sm">
                       {order.orderNumber}
                     </span>
-                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${statusConfig.bgColor} ${statusConfig.color}`}>
-                      <StatusIcon className="w-3 h-3" />
-                      {statusConfig.label}
-                    </span>
+                    <OrderStatusBadge status={order.status as OrderStatus} showIcon={false} />
                   </div>
                   <p className="text-muted-foreground text-sm truncate">
                     {order.customer.nickname || order.customer.name || order.customer.email}

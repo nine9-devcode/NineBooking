@@ -87,7 +87,7 @@ export function ProductsSort({ value, onChange, totalItems }: ProductsSortProps)
       <div className="relative" ref={dropdownRef}>
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg hover:border-primary hover:bg-primary-50 transition-colors text-sm font-medium text-foreground"
+          className="flex items-center gap-2 px-4 py-2 bg-card border border-border rounded-lg hover:border-primary hover:bg-primary/10 transition-colors text-sm font-medium text-foreground"
         >
           <ArrowUpDown className="w-4 h-4" />
           <span className="hidden sm:inline">เรียงตาม:</span>

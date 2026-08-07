@@ -1,4 +1,5 @@
 import { Clock, CheckCircle2, XCircle, LucideIcon } from "lucide-react"
+import { ORDER_STATUS } from "@/components/ui/status-badge"
 
 // ===== Types =====
 export interface OrderDetail {
@@ -99,39 +100,18 @@ export interface StatusConfig {
 }
 
 // ===== Constants =====
-export const STATUS_CONFIG: Record<string, StatusConfig> = {
-  PENDING: {
-    label: "รอดำเนินการ",
-    color: "bg-warning/10 text-warning border-warning/40",
-    darkColor: "bg-warning/20 text-warning border-warning/30",
-    icon: Clock,
-  },
-  CONFIRMED: {
-    label: "ยืนยันแล้ว",
-    color: "bg-info/10 text-info border-info/40",
-    darkColor: "bg-info/20 text-info border-info/30",
-    icon: CheckCircle2,
-  },
-  COMPLETED: {
-    label: "เสร็จสิ้น",
-    color: "bg-success/10 text-success border-success/40",
-    darkColor: "bg-success/20 text-success border-success/30",
-    icon: CheckCircle2,
-  },
-  CANCELLED: {
-    label: "ยกเลิก",
-    color: "bg-destructive/10 text-destructive border-destructive/40",
-    darkColor: "bg-destructive/20 text-destructive border-destructive/30",
-    icon: XCircle,
-  },
-}
+// ค่าจริงอยู่ที่ components/ui/status-badge.tsx ที่เดียว ที่นี่แค่แปลงรูปร่างให้เข้ากับโค้ดเดิม
+export const STATUS_CONFIG: Record<string, StatusConfig> = Object.fromEntries(
+  Object.entries(ORDER_STATUS).map(([status, meta]) => [
+    status,
+    { label: meta.label, icon: meta.icon, color: meta.className, darkColor: meta.className },
+  ])
+)
 
-export const STATUS_OPTIONS = [
-  { value: "PENDING", label: "รอดำเนินการ" },
-  { value: "CONFIRMED", label: "ยืนยันแล้ว" },
-  { value: "COMPLETED", label: "เสร็จสิ้น" },
-  { value: "CANCELLED", label: "ยกเลิก" },
-]
+export const STATUS_OPTIONS = Object.entries(ORDER_STATUS).map(([value, meta]) => ({
+  value,
+  label: meta.label,
+}))
 
 // ===== Helpers =====
 export function getStatusConfig(status: string): StatusConfig {

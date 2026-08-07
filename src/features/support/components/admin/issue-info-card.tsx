@@ -4,14 +4,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { MessageSquare } from "lucide-react"
-
-const CATEGORY_CONFIG: Record<string, { label: string; className: string }> = {
-  BOOKING: { label: "การจอง", className: "bg-chart-4/10 text-chart-4 border-chart-4/20" },
-  PAYMENT: { label: "การชำระเงิน", className: "bg-info/10 text-info border-info/20" },
-  USAGE_ISSUE: { label: "ปัญหาการใช้งาน", className: "bg-destructive/10 text-destructive border-destructive/20" },
-  ACCOUNT: { label: "บัญชีผู้ใช้", className: "bg-info/10 text-info border-info/20" },
-  OTHER: { label: "อื่นๆ", className: "bg-secondary/10 text-muted-foreground border-border" },
-}
+import type { IssueCategory } from "@prisma/client"
+import { ISSUE_CATEGORY } from "@/components/ui/status-badge"
 
 interface IssueInfoCardProps {
   subject: string
@@ -20,7 +14,7 @@ interface IssueInfoCardProps {
 }
 
 export function IssueInfoCard({ subject, description, category }: IssueInfoCardProps) {
-  const categoryInfo = category ? CATEGORY_CONFIG[category] : null
+  const categoryInfo = category ? ISSUE_CATEGORY[category as IssueCategory] : null
 
   return (
     <Card className="bg-card/50 border-border">

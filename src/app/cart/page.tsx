@@ -7,6 +7,7 @@ import Link from "next/link"
 import { Navbar } from "@/components/layout/navbar"
 import { CartItemCard, groupCartItems, GroupedCartItem } from "@/features/cart/components/cart-item"
 import { Button } from "@/components/ui/button"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useCart } from "@/features/cart/cart-context"
 import { Footer } from "@/components/layout/footer"
 import {
@@ -109,12 +110,9 @@ export default function CartPage() {
     }
   }
 
-  // Handle clear cart
-  const handleClearCart = async () => {
-    if (window.confirm("คุณต้องการล้างตะกร้าทั้งหมดใช่หรือไม่?")) {
-      await clearCart()
-    }
-  }
+  // ใช้ ConfirmDialog แทน window.confirm ที่เป็นกล่องของระบบปฏิบัติการ
+  // (โผล่มาสีขาวกลางเว็บพื้นเข้ม และสไตล์ไม่ได้เลย)
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false)
 
   // คำนวณสรุปจากกลุ่มที่เลือก
   const selectedGroupsList = groupedItems.filter((g) => selectedGroups.has(g.groupId))
@@ -177,12 +175,23 @@ export default function CartPage() {
               </div>
             </div>
 
+            <ConfirmDialog
+              open={confirmClearOpen}
+              onOpenChange={setConfirmClearOpen}
+              title="ล้างตะกร้าทั้งหมด?"
+              description="สินค้าทุกรายการในตะกร้าจะถูกนำออก การกระทำนี้ย้อนกลับไม่ได้"
+              confirmLabel="ล้างตะกร้า"
+              onConfirm={async () => {
+                await clearCart()
+              }}
+            />
+
             {/* Clear Cart Button */}
             {items.length > 0 && (
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleClearCart}
+                onClick={() => setConfirmClearOpen(true)}
                 className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
               >
                 <Trash2 className="w-4 h-4 mr-2" />

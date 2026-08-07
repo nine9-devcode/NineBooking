@@ -12,24 +12,8 @@ import {
   MessageSquareText,
   Image as ImageIcon,
 } from 'lucide-react'
-
-const STATUS_CONFIG: Record<string, { label: string; className: string; icon: typeof Clock }> = {
-  PENDING: {
-    label: 'รอดำเนินการ',
-    className: 'bg-warning/10 text-warning border-warning/40',
-    icon: Clock,
-  },
-  IN_PROGRESS: {
-    label: 'กำลังดำเนินการ',
-    className: 'bg-info/10 text-info border-info/40',
-    icon: Loader2,
-  },
-  CLOSED: {
-    label: 'ปิดเรื่องแล้ว',
-    className: 'bg-success/10 text-success border-success/40',
-    icon: CheckCircle2,
-  },
-}
+import type { IssueStatus } from "@prisma/client"
+import { ISSUE_STATUS } from "@/components/ui/status-badge"
 
 interface Issue {
   id: string
@@ -51,7 +35,7 @@ interface IssueHistoryItemProps {
 export function IssueHistoryItem({ issue }: IssueHistoryItemProps) {
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const statusConfig = STATUS_CONFIG[issue.status] || STATUS_CONFIG.PENDING
+  const statusConfig = ISSUE_STATUS[issue.status as IssueStatus] ?? ISSUE_STATUS.PENDING
   const StatusIcon = statusConfig.icon
   const categoryInfo = CATEGORY_MAP[issue.category]
 

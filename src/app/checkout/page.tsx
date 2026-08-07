@@ -169,7 +169,7 @@ function CheckoutContent() {
             </div>
 
             {/* Sticky Mobile Submit Bar */}
-            <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] p-4 lg:hidden">
+            <div className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border shadow-lg p-4 lg:hidden">
               <div className="flex items-center justify-between max-w-6xl mx-auto">
                 <div>
                   <p className="text-sm text-muted-foreground">รวมทั้งหมด</p>

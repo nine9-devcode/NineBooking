@@ -337,7 +337,7 @@ export function CategoriesTable({
           <Button
             onClick={handleSaveSortOrder}
             disabled={savingSort}
-            className="bg-warning hover:bg-warning text-foreground"
+            className="bg-warning hover:bg-warning text-warning-foreground"
             size="sm"
           >
             {savingSort ? (

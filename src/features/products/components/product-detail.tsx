@@ -311,7 +311,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
                 <div className="mb-3">
                   <Link
                     href={`/?category=${product.category.slug}`}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary-50 text-primary border border-primary-100 hover:bg-primary-100 transition-colors"
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/25 hover:bg-primary/20 transition-colors"
                   >
                     {product.category.name}
                   </Link>
