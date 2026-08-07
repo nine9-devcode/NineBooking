@@ -66,11 +66,21 @@ export function OrdersFilters({
               <SelectValue placeholder="สถานะทั้งหมด" />
             </SelectTrigger>
             <SelectContent className="bg-background border-border">
-              <SelectItem value="all" className="text-foreground">สถานะทั้งหมด</SelectItem>
-              <SelectItem value="PENDING" className="text-foreground">รอดำเนินการ</SelectItem>
-              <SelectItem value="CONFIRMED" className="text-foreground">ยืนยันแล้ว</SelectItem>
-              <SelectItem value="COMPLETED" className="text-foreground">เสร็จสิ้น</SelectItem>
-              <SelectItem value="CANCELLED" className="text-foreground">ยกเลิก</SelectItem>
+              <SelectItem value="all" className="text-foreground">
+                สถานะทั้งหมด
+              </SelectItem>
+              <SelectItem value="PENDING" className="text-foreground">
+                รอดำเนินการ
+              </SelectItem>
+              <SelectItem value="CONFIRMED" className="text-foreground">
+                ยืนยันแล้ว
+              </SelectItem>
+              <SelectItem value="COMPLETED" className="text-foreground">
+                เสร็จสิ้น
+              </SelectItem>
+              <SelectItem value="CANCELLED" className="text-foreground">
+                ยกเลิก
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -83,9 +93,15 @@ export function OrdersFilters({
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-background border-border">
-              <SelectItem value="10" className="text-foreground">10 รายการ</SelectItem>
-              <SelectItem value="25" className="text-foreground">25 รายการ</SelectItem>
-              <SelectItem value="50" className="text-foreground">50 รายการ</SelectItem>
+              <SelectItem value="10" className="text-foreground">
+                10 รายการ
+              </SelectItem>
+              <SelectItem value="25" className="text-foreground">
+                25 รายการ
+              </SelectItem>
+              <SelectItem value="50" className="text-foreground">
+                50 รายการ
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -96,7 +112,7 @@ export function OrdersFilters({
             <Calendar className="w-4 h-4" />
             <span className="text-sm font-medium whitespace-nowrap">ช่วงวันที่:</span>
           </div>
-          
+
           <div className="flex flex-1 flex-wrap items-center gap-2">
             <Input
               type="date"
@@ -113,7 +129,7 @@ export function OrdersFilters({
               className="w-full sm:w-40 bg-card border-border text-foreground [color-scheme:dark]"
               placeholder="ถึงวันที่"
             />
-            
+
             {hasDateFilter && (
               <Button
                 variant="ghost"

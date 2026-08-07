@@ -11,12 +11,9 @@ export async function GET(
 ) {
   try {
     const session = await auth()
-    
+
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -55,18 +52,12 @@ export async function GET(
     })
 
     if (!order) {
-      return NextResponse.json(
-        { error: "ไม่พบคำสั่งจอง" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบคำสั่งจอง" }, { status: 404 })
     }
 
     // ตรวจสอบว่าเป็น order ของ user นี้
     if (order.userId !== userId) {
-      return NextResponse.json(
-        { error: "คุณไม่มีสิทธิ์ดูคำสั่งจองนี้" },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: "คุณไม่มีสิทธิ์ดูคำสั่งจองนี้" }, { status: 403 })
     }
 
     return NextResponse.json({
@@ -74,13 +65,13 @@ export async function GET(
         id: order.id,
         orderNumber: order.orderNumber,
         status: order.status,
-        
+
         // ข้อมูลผู้จอง
         customerName: order.customerName,
         customerNickname: order.customerNickname,
         customerEmail: order.customerEmail,
         customerPhone: order.customerPhone,
-        
+
         // ที่อยู่
         shippingAddress: order.shippingAddress,
         shippingProvince: order.shippingProvince,
@@ -88,16 +79,16 @@ export async function GET(
         shippingSubDistrict: order.shippingSubDistrict,
         shippingPostalCode: order.shippingPostalCode,
         shippingResidenceType: order.shippingResidenceType,
-        
+
         // หมายเหตุ
         customerNote: order.customerNote,
         adminNote: order.adminNote,
-        
+
         // รายการสินค้า
         items: order.orderItems.map((item) => ({
           id: item.id,
           quantity: item.quantity,
-          
+
           // สินค้าหลัก
           product: {
             id: item.productId,
@@ -106,7 +97,7 @@ export async function GET(
             slug: item.product?.slug || null,
             isActive: item.product?.isActive ?? false,
           },
-          
+
           // สินค้าคู่
           pairedProduct: item.pairedProductId
             ? {
@@ -118,11 +109,11 @@ export async function GET(
               }
             : null,
         })),
-        
+
         // สรุป
         totalItems: order.orderItems.length,
         totalQuantity: order.orderItems.reduce((sum, item) => sum + item.quantity, 0),
-        
+
         // เวลา
         createdAt: order.createdAt,
         updatedAt: order.updatedAt,
@@ -130,10 +121,7 @@ export async function GET(
     })
   } catch (error) {
     console.error("Error fetching order:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
@@ -144,12 +132,9 @@ export async function PATCH(
 ) {
   try {
     const session = await auth()
-    
+
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -159,10 +144,7 @@ export async function PATCH(
 
     // ตรวจสอบ action
     if (action !== "cancel") {
-      return NextResponse.json(
-        { error: "Invalid action" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Invalid action" }, { status: 400 })
     }
 
     // ดึง Order
@@ -177,18 +159,12 @@ export async function PATCH(
     })
 
     if (!order) {
-      return NextResponse.json(
-        { error: "ไม่พบคำสั่งจอง" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบคำสั่งจอง" }, { status: 404 })
     }
 
     // ตรวจสอบว่าเป็น order ของ user นี้
     if (order.userId !== userId) {
-      return NextResponse.json(
-        { error: "คุณไม่มีสิทธิ์ยกเลิกคำสั่งจองนี้" },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: "คุณไม่มีสิทธิ์ยกเลิกคำสั่งจองนี้" }, { status: 403 })
     }
 
     // ตรวจสอบว่าสถานะเป็น PENDING เท่านั้น
@@ -223,9 +199,6 @@ export async function PATCH(
     })
   } catch (error) {
     console.error("Error cancelling order:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการยกเลิกคำสั่งจอง" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการยกเลิกคำสั่งจอง" }, { status: 500 })
   }
 }

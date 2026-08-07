@@ -4,12 +4,12 @@ import { useState, useRef } from "react"
 import { Upload, X, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { 
-  getFileIcon, 
-  getFileIconColor, 
+import {
+  getFileIcon,
+  getFileIconColor,
   formatFileSize,
   getFileValidationError,
-  getAcceptString 
+  getAcceptString,
 } from "@/lib/file-utils"
 
 interface DatasheetFileUploadProps {
@@ -92,7 +92,7 @@ export function DatasheetFileUpload({
 
   // Show preview if file selected or uploading
   if (selectedFile || uploading) {
-    const fileExt = selectedFile ? `.${selectedFile.name.split('.').pop()}` : ""
+    const fileExt = selectedFile ? `.${selectedFile.name.split(".").pop()}` : ""
     const FileIconComponent = getFileIcon(fileExt)
     const iconColor = getFileIconColor(fileExt)
 

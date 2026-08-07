@@ -10,10 +10,7 @@ export async function POST(request: NextRequest) {
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -64,10 +61,7 @@ export async function POST(request: NextRequest) {
       })
 
       if (!notification) {
-        return NextResponse.json(
-          { error: "ไม่พบ notification" },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: "ไม่พบ notification" }, { status: 404 })
       }
 
       await prisma.userOrderNotification.update({
@@ -87,9 +81,6 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error("Error marking notification as read:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาด" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาด" }, { status: 500 })
   }
 }

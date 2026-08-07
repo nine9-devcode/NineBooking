@@ -1,15 +1,15 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { CATEGORY_MAP } from './category-select'
+import { useState } from "react"
+import { Badge } from "@/components/ui/badge"
+import { CATEGORY_MAP } from "./category-select"
 import {
   ChevronDown,
   ChevronUp,
   Clock,
   MessageSquareText,
   Image as ImageIcon,
-} from 'lucide-react'
+} from "lucide-react"
 import type { IssueStatus } from "@prisma/client"
 import { ISSUE_STATUS } from "@/components/ui/status-badge"
 
@@ -37,21 +37,21 @@ export function IssueHistoryItem({ issue }: IssueHistoryItemProps) {
   const StatusIcon = statusConfig.icon
   const categoryInfo = CATEGORY_MAP[issue.category]
 
-  const formattedDate = new Date(issue.createdAt).toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  const formattedDate = new Date(issue.createdAt).toLocaleDateString("th-TH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   })
 
   const respondedDate = issue.respondedAt
-    ? new Date(issue.respondedAt).toLocaleDateString('th-TH', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+    ? new Date(issue.respondedAt).toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       })
     : null
 
@@ -70,10 +70,7 @@ export function IssueHistoryItem({ issue }: IssueHistoryItemProps) {
               <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">
                 {issue.issueNumber}
               </span>
-              <Badge
-                variant="outline"
-                className={`text-xs ${statusConfig.className}`}
-              >
+              <Badge variant="outline" className={`text-xs ${statusConfig.className}`}>
                 <StatusIcon className="w-3 h-3" />
                 {statusConfig.label}
               </Badge>
@@ -157,21 +154,17 @@ export function IssueHistoryItem({ issue }: IssueHistoryItemProps) {
             <div className="bg-success/10 border border-success/40 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <MessageSquareText className="w-4 h-4 text-success" />
-                <h4 className="text-sm font-semibold text-success">
-                  การตอบกลับจากทีมงาน
-                </h4>
+                <h4 className="text-sm font-semibold text-success">การตอบกลับจากทีมงาน</h4>
               </div>
               <p className="text-sm text-success whitespace-pre-wrap leading-relaxed">
                 {issue.adminResponse}
               </p>
-              {respondedDate && (
-                <p className="text-xs text-success mt-2">{respondedDate}</p>
-              )}
+              {respondedDate && <p className="text-xs text-success mt-2">{respondedDate}</p>}
             </div>
           )}
 
           {/* No response yet */}
-          {!issue.adminResponse && issue.status !== 'CLOSED' && (
+          {!issue.adminResponse && issue.status !== "CLOSED" && (
             <div className="bg-muted border border-border rounded-lg p-4 text-center">
               <Clock className="w-5 h-5 text-muted-foreground mx-auto mb-1" />
               <p className="text-sm text-muted-foreground">

@@ -72,8 +72,7 @@ export async function consume(key: string, rule: RateLimitRule): Promise<RateLim
   })
 
   if (next.count > rule.max) {
-    const blockMs =
-      rule.blockMs ?? rule.windowMs - (now.getTime() - next.windowStart.getTime())
+    const blockMs = rule.blockMs ?? rule.windowMs - (now.getTime() - next.windowStart.getTime())
     const blockedUntil = new Date(now.getTime() + Math.max(blockMs, 1000))
 
     await prisma.rateLimit.update({ where: { key }, data: { blockedUntil } })

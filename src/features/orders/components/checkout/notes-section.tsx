@@ -16,9 +16,7 @@ export function NotesSection({ value, onChange, isLoading }: NotesSectionProps) 
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <FileText className="w-5 h-5 text-primary" />
-        <h2 className="text-lg font-semibold text-foreground">
-          หมายเหตุเพิ่มเติม
-        </h2>
+        <h2 className="text-lg font-semibold text-foreground">หมายเหตุเพิ่มเติม</h2>
         <span className="text-sm text-muted-foreground">(ถ้ามี)</span>
       </div>
 

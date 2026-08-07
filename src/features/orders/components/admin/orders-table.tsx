@@ -20,13 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import {
-  Loader2,
-  Package,
-  Eye,
-  Calendar,
-  Link2,
-} from "lucide-react"
+import { Loader2, Package, Eye, Calendar, Link2 } from "lucide-react"
 import type { OrderStatus } from "@prisma/client"
 import { OrderStatusBadge } from "@/components/ui/status-badge"
 
@@ -73,10 +67,17 @@ interface OrdersTableProps {
   emptyMessage?: string
 }
 
-function getMemberTypeBadgeVariant(memberType: string | null | undefined): "default" | "secondary" | "destructive" | "outline" {
-  const variant = MEMBER_TYPE_COLORS[memberType || 'other']
+function getMemberTypeBadgeVariant(
+  memberType: string | null | undefined
+): "default" | "secondary" | "destructive" | "outline" {
+  const variant = MEMBER_TYPE_COLORS[memberType || "other"]
   // เช็ค type safety ให้ตรงกับ shadcn badge variants
-  if (variant === "default" || variant === "secondary" || variant === "destructive" || variant === "outline") {
+  if (
+    variant === "default" ||
+    variant === "secondary" ||
+    variant === "destructive" ||
+    variant === "outline"
+  ) {
     return variant
   }
   return "secondary"
@@ -100,12 +101,8 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
       <div className="bg-card/50 rounded-xl border border-border">
         <div className="text-center py-20">
           <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">
-            ไม่พบคำสั่งจอง
-          </h3>
-          <p className="text-muted-foreground">
-            {emptyMessage || "ยังไม่มีคำสั่งจองในระบบ"}
-          </p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">ไม่พบคำสั่งจอง</h3>
+          <p className="text-muted-foreground">{emptyMessage || "ยังไม่มีคำสั่งจองในระบบ"}</p>
         </div>
       </div>
     )
@@ -119,16 +116,21 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
                 <TableHead className="w-48 text-muted-foreground">เลขที่ใบจอง</TableHead>
-                <TableHead className="hidden sm:table-cell text-muted-foreground">ลูกค้า</TableHead>
-                <TableHead className="hidden md:table-cell w-64 text-muted-foreground">สินค้า</TableHead>
+                <TableHead className="hidden sm:table-cell text-muted-foreground">
+                  ลูกค้า
+                </TableHead>
+                <TableHead className="hidden md:table-cell w-64 text-muted-foreground">
+                  สินค้า
+                </TableHead>
                 <TableHead className="w-32 text-muted-foreground">สถานะ</TableHead>
-                <TableHead className="hidden sm:table-cell w-40 text-muted-foreground">วันที่</TableHead>
+                <TableHead className="hidden sm:table-cell w-40 text-muted-foreground">
+                  วันที่
+                </TableHead>
                 <TableHead className="w-24 text-center text-muted-foreground">จัดการ</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {orders.map((order) => {
-
                 return (
                   <TableRow
                     key={order.id}
@@ -139,9 +141,7 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
                     {/* Order Number */}
                     <TableCell>
                       <div>
-                        <p className="font-semibold text-foreground">
-                          {order.orderNumber}
-                        </p>
+                        <p className="font-semibold text-foreground">{order.orderNumber}</p>
                         <p className="text-xs text-muted-foreground">
                           {order.itemCount} รายการ • {order.totalQuantity} ชิ้น
                         </p>
@@ -208,7 +208,9 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
                                       </div>
                                     </TooltipTrigger>
                                     <TooltipContent className="bg-card border-border text-foreground max-w-[250px] break-words z-50">
-                                      <p className="text-xs font-semibold mb-1 text-muted-foreground">หมายเหตุสมาชิก:</p>
+                                      <p className="text-xs font-semibold mb-1 text-muted-foreground">
+                                        หมายเหตุสมาชิก:
+                                      </p>
                                       {order.customer.memberTypeNote}
                                     </TooltipContent>
                                   </Tooltip>
@@ -262,22 +264,26 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
                                   x{item.quantity}
                                 </span>
                               </p>
-                              
+
                               {/* สินค้าที่จับคู่ */}
                               {item.pairedProducts && item.pairedProducts.length > 0 && (
                                 <div className="flex items-center gap-1 mt-0.5">
                                   <Link2 className="w-3 h-3 text-primary flex-shrink-0" />
                                   <p className="text-xs text-muted-foreground truncate">
-                                    คู่กับ: {item.pairedProducts.map(p => 
-                                      `${p.name}${p.quantity > 1 ? ` x${p.quantity}` : ''}`
-                                    ).join(", ")}
+                                    คู่กับ:{" "}
+                                    {item.pairedProducts
+                                      .map(
+                                        (p) =>
+                                          `${p.name}${p.quantity > 1 ? ` x${p.quantity}` : ""}`
+                                      )
+                                      .join(", ")}
                                   </p>
                                 </div>
                               )}
                             </div>
                           </div>
                         ))}
-                        
+
                         {/* แสดงจำนวนที่เหลือ */}
                         {order.previewItems.length > 2 && (
                           <p className="text-xs text-muted-foreground pl-10">
@@ -300,7 +306,9 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
                         </div>
                         {order.status === "CANCELLED" && order.cancelledBy && (
                           <span className="text-[10px] text-muted-foreground">
-                            {order.cancelledBy === "CUSTOMER" ? "ยกเลิกโดยลูกค้า" : "ยกเลิกโดยแอดมิน"}
+                            {order.cancelledBy === "CUSTOMER"
+                              ? "ยกเลิกโดยลูกค้า"
+                              : "ยกเลิกโดยแอดมิน"}
                           </span>
                         )}
                       </div>
@@ -326,7 +334,11 @@ export function OrdersTable({ orders, loading, emptyMessage }: OrdersTableProps)
                     <TableCell>
                       <div className="flex items-center justify-center">
                         <Link href={`/admin/orders/${order.id}`}>
-                          <Button variant="ghost" size="sm" className="text-foreground hover:text-foreground hover:bg-secondary">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-foreground hover:text-foreground hover:bg-secondary"
+                          >
                             <Eye className="w-4 h-4 mr-1" />
                             ดู
                           </Button>

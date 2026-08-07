@@ -5,7 +5,11 @@ import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
 import Link from "next/link"
 import { Navbar } from "@/components/layout/navbar"
-import { CartItemCard, groupCartItems, GroupedCartItem } from "@/features/cart/components/cart-item"
+import {
+  CartItemCard,
+  groupCartItems,
+  GroupedCartItem,
+} from "@/features/cart/components/cart-item"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useCart } from "@/features/cart/cart-context"
@@ -32,52 +36,50 @@ export default function CartPage() {
   const [isInitialized, setIsInitialized] = useState(false)
 
   useEffect(() => {
-      // ไม่บันทึก selection จนกว่าจะโหลดเสร็จ
-      if (!isInitialized) return
+    // ไม่บันทึก selection จนกว่าจะโหลดเสร็จ
+    if (!isInitialized) return
 
-      if (groupedItems.length > 0) {
-        const selectedArray = Array.from(selectedGroups)
-        localStorage.setItem("cart_selection", JSON.stringify(selectedArray))
-      }
-    }, [selectedGroups, groupedItems, isInitialized])
+    if (groupedItems.length > 0) {
+      const selectedArray = Array.from(selectedGroups)
+      localStorage.setItem("cart_selection", JSON.stringify(selectedArray))
+    }
+  }, [selectedGroups, groupedItems, isInitialized])
 
   // Group items เมื่อ items เปลี่ยน
   useEffect(() => {
-      const groups = groupCartItems(items)
-      setGroupedItems(groups)
+    const groups = groupCartItems(items)
+    setGroupedItems(groups)
 
-      // ถ้าไม่มีของ ไม่ต้องทำอะไร
-      if (groups.length === 0) return
+    // ถ้าไม่มีของ ไม่ต้องทำอะไร
+    if (groups.length === 0) return
 
-      const savedSelection = localStorage.getItem("cart_selection")
-      let hasLoadedFromStorage = false
+    const savedSelection = localStorage.getItem("cart_selection")
+    let hasLoadedFromStorage = false
 
-      if (savedSelection) {
-        try {
-          const parsedSelection = JSON.parse(savedSelection)
-          const savedSet = new Set(parsedSelection)
-          
-          const currentGroupIds = groups.map(g => g.groupId)
-          const validSelection = currentGroupIds.filter(id => savedSet.has(id))
-          
-          // ถ้ามีค่าที่เคยเซฟไว้ (หรือเคยเซฟว่าเป็นค่าว่าง [])
-          setSelectedGroups(new Set(validSelection as string[]))
-          hasLoadedFromStorage = true
-          
-        } catch (e) {
-          console.error("Error parsing cart selection", e)
-        }
+    if (savedSelection) {
+      try {
+        const parsedSelection = JSON.parse(savedSelection)
+        const savedSet = new Set(parsedSelection)
+
+        const currentGroupIds = groups.map((g) => g.groupId)
+        const validSelection = currentGroupIds.filter((id) => savedSet.has(id))
+
+        // ถ้ามีค่าที่เคยเซฟไว้ (หรือเคยเซฟว่าเป็นค่าว่าง [])
+        setSelectedGroups(new Set(validSelection as string[]))
+        hasLoadedFromStorage = true
+      } catch (e) {
+        console.error("Error parsing cart selection", e)
       }
+    }
 
-      // ถ้าไม่มีเซฟไว้เลย ให้เลือกทั้งหมดเป็น Default
-      if (!hasLoadedFromStorage) {
-         setSelectedGroups(new Set(groups.map((g) => g.groupId)))
-      }
-      
-      // บอกว่าโหลดเสร็จแล้ว (ยอมให้ Save ได้ใน Effect ถัดไป)
-      setIsInitialized(true)
+    // ถ้าไม่มีเซฟไว้เลย ให้เลือกทั้งหมดเป็น Default
+    if (!hasLoadedFromStorage) {
+      setSelectedGroups(new Set(groups.map((g) => g.groupId)))
+    }
 
-    }, [items])
+    // บอกว่าโหลดเสร็จแล้ว (ยอมให้ Save ได้ใน Effect ถัดไป)
+    setIsInitialized(true)
+  }, [items])
 
   // Redirect ถ้ายังไม่ได้ login
   useEffect(() => {
@@ -166,11 +168,9 @@ export default function CartPage() {
               <div>
                 <h1 className="text-2xl font-bold text-foreground">ตะกร้าสินค้า</h1>
                 <p className="text-sm text-muted-foreground">
-                  {isLoading ? (
-                    "กำลังโหลด..."
-                  ) : (
-                    `${groupedItems.length} รายการ (${totalItems} ชิ้น)`
-                  )}
+                  {isLoading
+                    ? "กำลังโหลด..."
+                    : `${groupedItems.length} รายการ (${totalItems} ชิ้น)`}
                 </p>
               </div>
             </div>
@@ -271,9 +271,7 @@ export default function CartPage() {
               <div className="lg:w-80 xl:w-96">
                 <div className="lg:sticky lg:top-24">
                   <div className="bg-card rounded-2xl border border-border p-6 shadow-sm">
-                    <h3 className="text-lg font-semibold text-foreground mb-4">
-                      สรุปการจอง
-                    </h3>
+                    <h3 className="text-lg font-semibold text-foreground mb-4">สรุปการจอง</h3>
 
                     {/* สรุปจำนวน */}
                     <div className="space-y-3 mb-6">

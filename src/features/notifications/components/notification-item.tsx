@@ -1,10 +1,10 @@
-'use client'
+"use client"
 
-import { useRouter } from 'next/navigation'
-import { formatDistanceToNow } from 'date-fns'
-import { th } from 'date-fns/locale'
-import { Clock, User, AlertCircle, ShoppingCart } from 'lucide-react'
-import { UnifiedNotification } from '@/features/notifications/hooks/use-notifications'
+import { useRouter } from "next/navigation"
+import { formatDistanceToNow } from "date-fns"
+import { th } from "date-fns/locale"
+import { Clock, User, AlertCircle, ShoppingCart } from "lucide-react"
+import { UnifiedNotification } from "@/features/notifications/hooks/use-notifications"
 
 interface NotificationItemProps {
   notification: UnifiedNotification
@@ -16,8 +16,8 @@ export function NotificationItem({ notification, onRead }: NotificationItemProps
 
   const handleClick = () => {
     onRead()
-    
-    if (notification.type === 'order') {
+
+    if (notification.type === "order") {
       router.push(`/admin/orders/${notification.orderId}`)
     } else {
       router.push(`/admin/contact-issues/${notification.issueId}`)
@@ -30,23 +30,23 @@ export function NotificationItem({ notification, onRead }: NotificationItemProps
   })
 
   const displayName = () => {
-    if (notification.type === 'order') {
+    if (notification.type === "order") {
       const { customerNickname, customerName } = notification
       if (customerNickname && customerName) {
         return `${customerNickname} (${customerName})`
       }
-      return customerNickname || customerName || 'ไม่ระบุชื่อ'
+      return customerNickname || customerName || "ไม่ระบุชื่อ"
     } else {
       const { userNickname, userName } = notification
       if (userNickname && userName) {
         return `${userNickname} (${userName})`
       }
-      return userNickname || userName || 'ไม่ระบุชื่อ'
+      return userNickname || userName || "ไม่ระบุชื่อ"
     }
   }
 
   const getIcon = () => {
-    return notification.type === 'order' ? (
+    return notification.type === "order" ? (
       <ShoppingCart className="h-3.5 w-3.5" />
     ) : (
       <AlertCircle className="h-3.5 w-3.5" />
@@ -55,23 +55,24 @@ export function NotificationItem({ notification, onRead }: NotificationItemProps
 
   const getBadgeColor = () => {
     if (!notification.isRead) {
-      return notification.type === 'order'
-        ? 'bg-primary/20 text-primary'
-        : 'bg-destructive/10 text-destructive'
+      return notification.type === "order"
+        ? "bg-primary/20 text-primary"
+        : "bg-destructive/10 text-destructive"
     }
-    return 'bg-secondary text-muted-foreground'
+    return "bg-secondary text-muted-foreground"
   }
 
   const getBadgeText = () => {
     if (!notification.isRead) {
-      return notification.type === 'order' ? 'คำสั่งจองใหม่!' : 'ปัญหาใหม่!'
+      return notification.type === "order" ? "คำสั่งจองใหม่!" : "ปัญหาใหม่!"
     }
-    return notification.type === 'order' ? 'คำสั่งจอง' : 'แจ้งปัญหา'
+    return notification.type === "order" ? "คำสั่งจอง" : "แจ้งปัญหา"
   }
 
-  const ariaLabel = notification.type === 'order'
-    ? `ดูคำสั่งจอง ${notification.orderNumber}`
-    : `ดูปัญหา ${notification.issueNumber}`
+  const ariaLabel =
+    notification.type === "order"
+      ? `ดูคำสั่งจอง ${notification.orderNumber}`
+      : `ดูปัญหา ${notification.issueNumber}`
 
   return (
     <button
@@ -80,11 +81,12 @@ export function NotificationItem({ notification, onRead }: NotificationItemProps
       className={`
         w-full p-3 text-left rounded-lg transition-all duration-200
         border border-transparent
-        ${!notification.isRead 
-          ? notification.type === 'order'
-            ? 'bg-primary/10 hover:bg-primary/15 border-primary/20'
-            : 'bg-destructive/10 hover:bg-destructive/15 border-destructive/20'
-          : 'bg-card/50 hover:bg-card'
+        ${
+          !notification.isRead
+            ? notification.type === "order"
+              ? "bg-primary/10 hover:bg-primary/15 border-primary/20"
+              : "bg-destructive/10 hover:bg-destructive/15 border-destructive/20"
+            : "bg-card/50 hover:bg-card"
         }
       `}
     >
@@ -92,9 +94,11 @@ export function NotificationItem({ notification, onRead }: NotificationItemProps
       <div className="flex items-center justify-between gap-2 mb-2">
         <div className="flex items-center gap-2">
           {!notification.isRead && (
-            <span className={`flex h-2 w-2 rounded-full animate-pulse ${
-              notification.type === 'order' ? 'bg-primary' : 'bg-destructive'
-            }`} />
+            <span
+              className={`flex h-2 w-2 rounded-full animate-pulse ${
+                notification.type === "order" ? "bg-primary" : "bg-destructive"
+              }`}
+            />
           )}
           <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${getBadgeColor()}`}>
             {getBadgeText()}
@@ -105,14 +109,14 @@ export function NotificationItem({ notification, onRead }: NotificationItemProps
           {timeAgo}
         </span>
       </div>
-      
+
       {/* Row 2: Order/Issue Number */}
       <div className="mb-2">
         <span className="text-sm font-semibold text-foreground">
-          {notification.type === 'order' ? notification.orderNumber : notification.issueNumber}
+          {notification.type === "order" ? notification.orderNumber : notification.issueNumber}
         </span>
       </div>
-      
+
       {/* Row 3: Details */}
       <div className="flex items-center justify-between text-xs text-muted-foreground">
         <div className="flex items-center gap-1.5">
@@ -122,10 +126,9 @@ export function NotificationItem({ notification, onRead }: NotificationItemProps
         <div className="flex items-center gap-1.5">
           {getIcon()}
           <span className="truncate max-w-[120px]">
-            {notification.type === 'order'
+            {notification.type === "order"
               ? `${notification.totalItems} รายการ`
-              : notification.subject
-            }
+              : notification.subject}
           </span>
         </div>
       </div>

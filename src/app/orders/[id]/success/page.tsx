@@ -5,13 +5,7 @@ import { useParams, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Navbar } from "@/components/layout/navbar"
 import { Button } from "@/components/ui/button"
-import { 
-  CheckCircle2, 
-  ShoppingBag, 
-  ArrowRight, 
-  FileText,
-  Loader2
-} from "lucide-react"
+import { CheckCircle2, ShoppingBag, ArrowRight, FileText, Loader2 } from "lucide-react"
 
 interface OrderSummary {
   id: string
@@ -24,7 +18,7 @@ export default function OrderSuccessPage() {
   const params = useParams()
   const router = useRouter()
   const orderId = params.id as string
-  
+
   const [order, setOrder] = useState<OrderSummary | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -38,7 +32,7 @@ export default function OrderSuccessPage() {
             id: data.order.id,
             orderNumber: data.order.orderNumber,
             customerName: data.order.customerName,
-            totalQuantity: data.order.totalQuantity
+            totalQuantity: data.order.totalQuantity,
           })
         }
       } catch (err) {
@@ -62,7 +56,7 @@ export default function OrderSuccessPage() {
   return (
     <>
       <Navbar currentPage="จองสำเร็จ" />
-      
+
       <div className="pt-16 min-h-screen bg-muted flex items-center justify-center">
         <div className="max-w-md w-full px-6 py-12 bg-card rounded-2xl shadow-sm border border-border text-center">
           {/* Success Icon */}
@@ -77,7 +71,8 @@ export default function OrderSuccessPage() {
             ส่งรายการจองเรียบร้อยแล้ว!
           </h1>
           <p className="text-muted-foreground mb-8">
-            ขอบคุณคุณ <span className="font-medium text-foreground">{order?.customerName}</span> ที่ไว้วางใจใช้บริการของเรา
+            ขอบคุณคุณ <span className="font-medium text-foreground">{order?.customerName}</span>{" "}
+            ที่ไว้วางใจใช้บริการของเรา
           </p>
 
           {/* Order Info Card */}
@@ -88,7 +83,9 @@ export default function OrderSuccessPage() {
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">จำนวนสินค้า:</span>
-              <span className="text-sm font-medium text-foreground">{order?.totalQuantity} ชิ้น</span>
+              <span className="text-sm font-medium text-foreground">
+                {order?.totalQuantity} ชิ้น
+              </span>
             </div>
           </div>
 

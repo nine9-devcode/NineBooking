@@ -12,12 +12,12 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url)
     const { limit } = parsePagination(searchParams, { defaultLimit: 20, maxLimit: 50 })
-    const unreadOnly = searchParams.get('unreadOnly') === 'true'
+    const unreadOnly = searchParams.get("unreadOnly") === "true"
 
     // ดึง notifications
     const notifications = await prisma.orderNotification.findMany({
       where: unreadOnly ? { isRead: false } : undefined,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: limit,
     })
 
@@ -29,14 +29,14 @@ export async function GET(req: Request) {
     // นับจำนวนทั้งหมด
     const totalCount = await prisma.orderNotification.count()
 
-    return NextResponse.json({ 
-      notifications, 
+    return NextResponse.json({
+      notifications,
       unreadCount,
       totalCount,
     })
   } catch (error) {
-    console.error('Failed to fetch notifications:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("Failed to fetch notifications:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
@@ -56,13 +56,13 @@ export async function PATCH() {
       prisma.issueNotification.updateMany({
         where: { isRead: false },
         data: { isRead: true },
-      })
+      }),
     ])
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Failed to mark all as read:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("Failed to mark all as read:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }
 
@@ -74,13 +74,12 @@ export async function DELETE() {
 
     await prisma.$transaction([
       prisma.orderNotification.deleteMany({}),
-      prisma.issueNotification.deleteMany({}) // เพิ่มส่วนนี้
+      prisma.issueNotification.deleteMany({}), // เพิ่มส่วนนี้
     ])
-    
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Failed to clear notifications:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error("Failed to clear notifications:", error)
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

@@ -1,10 +1,10 @@
-'use client'
+"use client"
 
-import { useState, useEffect, useRef, useCallback } from 'react'
-import { toast } from 'sonner'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, useRef, useCallback } from "react"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
-export type NotificationType = 'order' | 'issue'
+export type NotificationType = "order" | "issue"
 
 export interface BaseNotification {
   id: string
@@ -14,7 +14,7 @@ export interface BaseNotification {
 }
 
 export interface OrderNotification extends BaseNotification {
-  type: 'order'
+  type: "order"
   orderId: string
   orderNumber: string
   customerName: string
@@ -23,7 +23,7 @@ export interface OrderNotification extends BaseNotification {
 }
 
 export interface IssueNotification extends BaseNotification {
-  type: 'issue'
+  type: "issue"
   issueId: string
   issueNumber: string
   userName: string
@@ -59,12 +59,12 @@ export function useNotifications() {
   const fetchNotifications = useCallback(async () => {
     try {
       const [ordersRes, issuesRes] = await Promise.all([
-        fetch('/api/admin/notifications?limit=20'),
-        fetch('/api/admin/issue-notifications?limit=20')
+        fetch("/api/admin/notifications?limit=20"),
+        fetch("/api/admin/issue-notifications?limit=20"),
       ])
 
       if (!ordersRes.ok || !issuesRes.ok) {
-        console.error('Failed to fetch notifications: API returned error')
+        console.error("Failed to fetch notifications: API returned error")
         setIsLoading(false)
         return
       }
@@ -73,16 +73,20 @@ export function useNotifications() {
       const issuesData = await issuesRes.json()
 
       // แปลงเป็น unified format
-      const orderNotifs: OrderNotification[] = (ordersData.notifications || []).map((n: any) => ({
-        ...n,
-        type: 'order' as const
-      }))
+      const orderNotifs: OrderNotification[] = (ordersData.notifications || []).map(
+        (n: any) => ({
+          ...n,
+          type: "order" as const,
+        })
+      )
 
-      const issueNotifs: IssueNotification[] = (issuesData.notifications || []).map((n: any) => ({
-        ...n,
-        type: 'issue' as const,
-        issueId: n.issueId || n.id
-      }))
+      const issueNotifs: IssueNotification[] = (issuesData.notifications || []).map(
+        (n: any) => ({
+          ...n,
+          type: "issue" as const,
+          issueId: n.issueId || n.id,
+        })
+      )
 
       // รวมและเรียงตามวันที่ล่าสุด
       const combined = [...orderNotifs, ...issueNotifs].sort(
@@ -99,7 +103,7 @@ export function useNotifications() {
       setTotalCount((ordersData.totalCount || combined.length) + (issuesData.totalCount || 0))
       setIsLoading(false)
     } catch (error) {
-      console.error('Failed to fetch notifications:', error)
+      console.error("Failed to fetch notifications:", error)
       setIsLoading(false)
     }
   }, [])
@@ -117,7 +121,7 @@ export function useNotifications() {
         orderEventSourceRef.current.close()
       }
 
-      const eventSource = new EventSource('/api/admin/notifications/stream')
+      const eventSource = new EventSource("/api/admin/notifications/stream")
       orderEventSourceRef.current = eventSource
 
       eventSource.onmessage = (event) => {
@@ -126,12 +130,12 @@ export function useNotifications() {
 
           const orderNotif: OrderNotification = {
             ...notification,
-            type: 'order'
+            type: "order",
           }
 
-          setNotifications(prev => [orderNotif, ...prev])
-          setUnreadCount(prev => prev + 1)
-          setTotalCount(prev => prev + 1)
+          setNotifications((prev) => [orderNotif, ...prev])
+          setUnreadCount((prev) => prev + 1)
+          setTotalCount((prev) => prev + 1)
 
           triggerBellAnimation()
 
@@ -139,11 +143,11 @@ export function useNotifications() {
             ? `${notification.customerNickname} (${notification.customerName})`
             : notification.customerName
 
-          toast.info('คำสั่งจองใหม่!', {
+          toast.info("คำสั่งจองใหม่!", {
             description: `${notification.orderNumber} • ${displayName} • ${notification.totalItems} รายการ`,
             action: {
-              label: 'ดูรายละเอียด',
-              onClick: () => router.push(`/admin/orders/${notification.orderId}`)
+              label: "ดูรายละเอียด",
+              onClick: () => router.push(`/admin/orders/${notification.orderId}`),
             },
             duration: 5000,
           })
@@ -183,7 +187,7 @@ export function useNotifications() {
         issueEventSourceRef.current.close()
       }
 
-      const eventSource = new EventSource('/api/admin/issue-notifications/stream')
+      const eventSource = new EventSource("/api/admin/issue-notifications/stream")
       issueEventSourceRef.current = eventSource
 
       eventSource.onmessage = (event) => {
@@ -192,13 +196,13 @@ export function useNotifications() {
 
           const issueNotif: IssueNotification = {
             ...notification,
-            type: 'issue',
-            issueId: notification.issueId || notification.id
+            type: "issue",
+            issueId: notification.issueId || notification.id,
           }
 
-          setNotifications(prev => [issueNotif, ...prev])
-          setUnreadCount(prev => prev + 1)
-          setTotalCount(prev => prev + 1)
+          setNotifications((prev) => [issueNotif, ...prev])
+          setUnreadCount((prev) => prev + 1)
+          setTotalCount((prev) => prev + 1)
 
           triggerBellAnimation()
 
@@ -206,11 +210,11 @@ export function useNotifications() {
             ? `${notification.userNickname} (${notification.userName})`
             : notification.userName
 
-          toast.info('ปัญหาใหม่!', {
+          toast.info("ปัญหาใหม่!", {
             description: `${notification.issueNumber} • ${displayName} • ${notification.subject}`,
             action: {
-              label: 'ดูรายละเอียด',
-              onClick: () => router.push(`/admin/contact-issues/${notification.issueId}`)
+              label: "ดูรายละเอียด",
+              onClick: () => router.push(`/admin/contact-issues/${notification.issueId}`),
             },
             duration: 5000,
           })
@@ -251,27 +255,32 @@ export function useNotifications() {
   }, [])
 
   // Mark single notification as read
-  const markAsRead = async (notificationId: string, targetId: string, type: NotificationType) => {
+  const markAsRead = async (
+    notificationId: string,
+    targetId: string,
+    type: NotificationType
+  ) => {
     try {
-      const endpoint = type === 'order'
-        ? `/api/admin/notifications/${notificationId}`
-        : `/api/admin/issue-notifications/${notificationId}`
+      const endpoint =
+        type === "order"
+          ? `/api/admin/notifications/${notificationId}`
+          : `/api/admin/issue-notifications/${notificationId}`
 
       await fetch(endpoint, {
-        method: 'PATCH',
+        method: "PATCH",
       })
 
-      setNotifications(prev =>
-        prev.map(n => (n.id === notificationId ? { ...n, isRead: true } : n))
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
       )
-      setUnreadCount(prev => Math.max(0, prev - 1))
-      if (type === 'order') {
-        setOrdersUnreadCount(prev => Math.max(0, prev - 1))
+      setUnreadCount((prev) => Math.max(0, prev - 1))
+      if (type === "order") {
+        setOrdersUnreadCount((prev) => Math.max(0, prev - 1))
       } else {
-        setIssuesUnreadCount(prev => Math.max(0, prev - 1))
+        setIssuesUnreadCount((prev) => Math.max(0, prev - 1))
       }
     } catch (error) {
-      console.error('Failed to mark as read:', error)
+      console.error("Failed to mark as read:", error)
     }
   }
 
@@ -279,8 +288,8 @@ export function useNotifications() {
   const refreshCounts = async () => {
     try {
       const [ordersRes, issuesRes] = await Promise.all([
-        fetch('/api/admin/notifications?limit=1'),
-        fetch('/api/admin/issue-notifications?limit=1'),
+        fetch("/api/admin/notifications?limit=1"),
+        fetch("/api/admin/issue-notifications?limit=1"),
       ])
       if (!ordersRes.ok || !issuesRes.ok) return
       const [od, id] = await Promise.all([ordersRes.json(), issuesRes.json()])
@@ -296,25 +305,25 @@ export function useNotifications() {
   const markAllAsRead = async () => {
     try {
       await Promise.all([
-        fetch('/api/admin/notifications', {
-          method: 'PATCH',
+        fetch("/api/admin/notifications", {
+          method: "PATCH",
         }),
-        fetch('/api/admin/issue-notifications', {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
+        fetch("/api/admin/issue-notifications", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}),
-        })
+        }),
       ])
 
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })))
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
       setUnreadCount(0)
       setOrdersUnreadCount(0)
       setIssuesUnreadCount(0)
 
-      toast.success('อ่านการแจ้งเตือนทั้งหมดแล้ว')
+      toast.success("อ่านการแจ้งเตือนทั้งหมดแล้ว")
     } catch (error) {
-      console.error('Failed to mark all as read:', error)
-      toast.error('เกิดข้อผิดพลาด')
+      console.error("Failed to mark all as read:", error)
+      toast.error("เกิดข้อผิดพลาด")
     }
   }
 
@@ -322,14 +331,14 @@ export function useNotifications() {
   const clearAll = async () => {
     try {
       await Promise.all([
-        fetch('/api/admin/notifications', {
-          method: 'DELETE',
+        fetch("/api/admin/notifications", {
+          method: "DELETE",
         }),
-        fetch('/api/admin/issue-notifications', {
-          method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
+        fetch("/api/admin/issue-notifications", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({}),
-        })
+        }),
       ])
 
       setNotifications([])
@@ -338,10 +347,10 @@ export function useNotifications() {
       setIssuesUnreadCount(0)
       setTotalCount(0)
 
-      toast.success('ล้างการแจ้งเตือนทั้งหมดแล้ว')
+      toast.success("ล้างการแจ้งเตือนทั้งหมดแล้ว")
     } catch (error) {
-      console.error('Failed to clear notifications:', error)
-      toast.error('เกิดข้อผิดพลาด')
+      console.error("Failed to clear notifications:", error)
+      toast.error("เกิดข้อผิดพลาด")
     }
   }
 

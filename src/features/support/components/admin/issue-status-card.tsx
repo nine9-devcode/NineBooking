@@ -34,33 +34,43 @@ export function IssueStatusCard({ status, onStatusChange }: IssueStatusCardProps
             </div>
             <div>
               <p className="text-sm text-muted-foreground">สถานะปัจจุบัน</p>
-              <p className={`text-lg font-semibold `}>
-                {config.label}
-              </p>
+              <p className={`text-lg font-semibold `}>{config.label}</p>
             </div>
           </div>
 
           {/* Status Selector */}
           <div className="flex items-center gap-3">
             <span className="text-sm text-muted-foreground hidden sm:inline">เปลี่ยนเป็น:</span>
-            <Select value={status} onValueChange={(value) => onStatusChange(value as IssueStatus)}>
+            <Select
+              value={status}
+              onValueChange={(value) => onStatusChange(value as IssueStatus)}
+            >
               <SelectTrigger className="w-full sm:w-52 bg-card border-border text-foreground">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent className="bg-background border-border">
-                <SelectItem value="PENDING" className="text-foreground hover:bg-card focus:bg-card">
+                <SelectItem
+                  value="PENDING"
+                  className="text-foreground hover:bg-card focus:bg-card"
+                >
                   <div className="flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 text-warning" />
                     รอดำเนินการ
                   </div>
                 </SelectItem>
-                <SelectItem value="IN_PROGRESS" className="text-foreground hover:bg-card focus:bg-card">
+                <SelectItem
+                  value="IN_PROGRESS"
+                  className="text-foreground hover:bg-card focus:bg-card"
+                >
                   <div className="flex items-center gap-2">
                     <Clock className="w-4 h-4 text-info" />
                     กำลังดำเนินการ
                   </div>
                 </SelectItem>
-                <SelectItem value="CLOSED" className="text-foreground hover:bg-card focus:bg-card">
+                <SelectItem
+                  value="CLOSED"
+                  className="text-foreground hover:bg-card focus:bg-card"
+                >
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-success" />
                     เสร็จสิ้น

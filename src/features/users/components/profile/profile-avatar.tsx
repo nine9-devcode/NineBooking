@@ -28,7 +28,9 @@ export function ProfileAvatar({ name, image, size = "md" }: ProfileAvatarProps) 
   // ถ้ามีรูปโปรไฟล์
   if (image) {
     return (
-      <div className={`relative ${sizeClasses[size]} rounded-full overflow-hidden ${borderClasses[size]} border-primary shadow-lg`}>
+      <div
+        className={`relative ${sizeClasses[size]} rounded-full overflow-hidden ${borderClasses[size]} border-primary shadow-lg`}
+      >
         <Image
           src={image}
           alt={name || "Profile"}
@@ -38,7 +40,7 @@ export function ProfileAvatar({ name, image, size = "md" }: ProfileAvatarProps) 
           quality={95}
           priority
           style={{
-            imageRendering: 'crisp-edges',
+            imageRendering: "crisp-edges",
           }}
         />
       </div>
@@ -47,13 +49,13 @@ export function ProfileAvatar({ name, image, size = "md" }: ProfileAvatarProps) 
 
   // ถ้าไม่มีรูป → แสดงตัวอักษรแรก
   const initial = name?.charAt(0).toUpperCase() || "U"
-  
+
   return (
-    <div 
+    <div
       className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-primary to-primary flex items-center justify-center text-foreground font-bold ${borderClasses[size]} border-primary shadow-lg`}
       style={{
-        textRendering: 'geometricPrecision',
-        WebkitFontSmoothing: 'antialiased',
+        textRendering: "geometricPrecision",
+        WebkitFontSmoothing: "antialiased",
       }}
     >
       {initial}

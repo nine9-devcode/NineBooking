@@ -1,13 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { Package, Save, Loader2 } from "lucide-react"
@@ -69,18 +63,12 @@ export function CategoriesTable({
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
 
   // State สำหรับเก็บ pairings ของแต่ละ category
-  const [categoryPairings, setCategoryPairings] = useState<
-    Record<string, PairedCategory[]>
-  >({})
+  const [categoryPairings, setCategoryPairings] = useState<Record<string, PairedCategory[]>>({})
   const [, setLoadingPairings] = useState(false)
 
   // State สำหรับ sortOrder
-  const [localSortOrders, setLocalSortOrders] = useState<
-    Record<string, number>
-  >({})
-  const [originalSortOrders, setOriginalSortOrders] = useState<
-    Record<string, number>
-  >({})
+  const [localSortOrders, setLocalSortOrders] = useState<Record<string, number>>({})
+  const [originalSortOrders, setOriginalSortOrders] = useState<Record<string, number>>({})
   const [hasChanges, setHasChanges] = useState(false)
   const [savingSort, setSavingSort] = useState(false)
   const [movingId, setMovingId] = useState<string | null>(null)
@@ -163,9 +151,7 @@ export function CategoriesTable({
   // Fetch pairings ของ category เดียว
   const fetchCategoryPairings = async (categoryId: string) => {
     try {
-      const res = await fetch(
-        `/api/admin/category-pairings?categoryId=${categoryId}`
-      )
+      const res = await fetch(`/api/admin/category-pairings?categoryId=${categoryId}`)
       const data = await res.json()
       if (res.ok) {
         setCategoryPairings((prev) => ({
@@ -179,16 +165,13 @@ export function CategoriesTable({
   }
 
   // Handle sortOrder change (manual input)
-  const handleSortOrderChange = useCallback(
-    (categoryId: string, newSortOrder: number) => {
-      setLocalSortOrders((prev) => ({
-        ...prev,
-        [categoryId]: newSortOrder,
-      }))
-      setHasChanges(true)
-    },
-    []
-  )
+  const handleSortOrderChange = useCallback((categoryId: string, newSortOrder: number) => {
+    setLocalSortOrders((prev) => ({
+      ...prev,
+      [categoryId]: newSortOrder,
+    }))
+    setHasChanges(true)
+  }, [])
 
   // Save sortOrder changes (manual input - ส่งเฉพาะที่เปลี่ยน)
   const handleSaveSortOrder = async () => {
@@ -234,7 +217,10 @@ export function CategoriesTable({
     // หา siblings (หมวดเดียวกัน: parent เดียวกัน)
     const siblings = categories
       .filter((c) => c.parentId === cat.parentId)
-      .sort((a, b) => (localSortOrders[a.id] ?? a.sortOrder) - (localSortOrders[b.id] ?? b.sortOrder))
+      .sort(
+        (a, b) =>
+          (localSortOrders[a.id] ?? a.sortOrder) - (localSortOrders[b.id] ?? b.sortOrder)
+      )
 
     const currentIndex = siblings.findIndex((c) => c.id === categoryId)
     const targetIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1
@@ -297,7 +283,10 @@ export function CategoriesTable({
 
     const siblings = categories
       .filter((c) => c.parentId === cat.parentId)
-      .sort((a, b) => (localSortOrders[a.id] ?? a.sortOrder) - (localSortOrders[b.id] ?? b.sortOrder))
+      .sort(
+        (a, b) =>
+          (localSortOrders[a.id] ?? a.sortOrder) - (localSortOrders[b.id] ?? b.sortOrder)
+      )
 
     const currentIndex = siblings.findIndex((c) => c.id === categoryId)
     if (direction === "up") return currentIndex > 0
@@ -308,12 +297,8 @@ export function CategoriesTable({
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <Package className="w-16 h-16 text-foreground mb-4" />
-        <h3 className="text-lg font-semibold text-foreground mb-2">
-          ยังไม่มีหมวดหมู่
-        </h3>
-        <p className="text-muted-foreground mb-4">
-          เริ่มต้นสร้างหมวดหมู่สินค้าแรกของคุณ
-        </p>
+        <h3 className="text-lg font-semibold text-foreground mb-2">ยังไม่มีหมวดหมู่</h3>
+        <p className="text-muted-foreground mb-4">เริ่มต้นสร้างหมวดหมู่สินค้าแรกของคุณ</p>
       </div>
     )
   }
@@ -352,48 +337,60 @@ export function CategoriesTable({
 
       <div className="border border-border rounded-lg overflow-hidden">
         <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-background hover:bg-background">
-              <TableHead className="hidden md:table-cell text-muted-foreground w-28">ลำดับ</TableHead>
-              <TableHead className="text-muted-foreground">ชื่อหมวดหมู่</TableHead>
-              <TableHead className="hidden md:table-cell text-muted-foreground">คำอธิบาย</TableHead>
-              <TableHead className="hidden sm:table-cell text-muted-foreground text-center">สินค้า</TableHead>
-              <TableHead className="hidden md:table-cell text-muted-foreground text-center">
-                หมวดย่อย
-              </TableHead>
-              <TableHead className="hidden md:table-cell text-muted-foreground">จับคู่กับ</TableHead>
-              <TableHead className="text-muted-foreground text-center">สถานะ</TableHead>
-              <TableHead className="hidden md:table-cell text-muted-foreground">วันที่สร้าง</TableHead>
-              <TableHead className="text-muted-foreground text-right">จัดการ</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {categories.map((category) => (
-              <CategoryRow
-                key={category.id}
-                category={{
-                  ...category,
-                  sortOrder: localSortOrders[category.id] ?? category.sortOrder ?? 1,
-                }}
-                pairings={categoryPairings[category.id] || []}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onOpenPairing={handleOpenPairing}
-                onSortOrderChange={handleSortOrderChange}
-                onMoveUp={() => handleMoveCategory(category.id, "up")}
-                onMoveDown={() => handleMoveCategory(category.id, "down")}
-                canMoveUp={canMove(category.id, "up")}
-                canMoveDown={canMove(category.id, "down")}
-                isMoving={movingId === category.id}
-                savingSort={savingSort}
-                parentSortOrder={category.parentId ? parentSortOrderMap[category.parentId] : undefined}
-                onToggleStatus={onToggleStatus}
-                togglingId={togglingId}
-              />
-            ))}
-          </TableBody>
-        </Table>
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-background hover:bg-background">
+                <TableHead className="hidden md:table-cell text-muted-foreground w-28">
+                  ลำดับ
+                </TableHead>
+                <TableHead className="text-muted-foreground">ชื่อหมวดหมู่</TableHead>
+                <TableHead className="hidden md:table-cell text-muted-foreground">
+                  คำอธิบาย
+                </TableHead>
+                <TableHead className="hidden sm:table-cell text-muted-foreground text-center">
+                  สินค้า
+                </TableHead>
+                <TableHead className="hidden md:table-cell text-muted-foreground text-center">
+                  หมวดย่อย
+                </TableHead>
+                <TableHead className="hidden md:table-cell text-muted-foreground">
+                  จับคู่กับ
+                </TableHead>
+                <TableHead className="text-muted-foreground text-center">สถานะ</TableHead>
+                <TableHead className="hidden md:table-cell text-muted-foreground">
+                  วันที่สร้าง
+                </TableHead>
+                <TableHead className="text-muted-foreground text-right">จัดการ</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {categories.map((category) => (
+                <CategoryRow
+                  key={category.id}
+                  category={{
+                    ...category,
+                    sortOrder: localSortOrders[category.id] ?? category.sortOrder ?? 1,
+                  }}
+                  pairings={categoryPairings[category.id] || []}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                  onOpenPairing={handleOpenPairing}
+                  onSortOrderChange={handleSortOrderChange}
+                  onMoveUp={() => handleMoveCategory(category.id, "up")}
+                  onMoveDown={() => handleMoveCategory(category.id, "down")}
+                  canMoveUp={canMove(category.id, "up")}
+                  canMoveDown={canMove(category.id, "down")}
+                  isMoving={movingId === category.id}
+                  savingSort={savingSort}
+                  parentSortOrder={
+                    category.parentId ? parentSortOrderMap[category.parentId] : undefined
+                  }
+                  onToggleStatus={onToggleStatus}
+                  togglingId={togglingId}
+                />
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
 

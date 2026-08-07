@@ -75,10 +75,10 @@ export default function CompleteProfilePage() {
   const hasAddressData = () =>
     Boolean(
       formData.address ||
-        formData.province ||
-        formData.district ||
-        formData.subDistrict ||
-        formData.postalCode
+      formData.province ||
+      formData.district ||
+      formData.subDistrict ||
+      formData.postalCode
     )
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -133,8 +133,7 @@ export default function CompleteProfilePage() {
         window.location.href = "/login?message=profile-completed"
       }, 1000)
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
+      const message = err instanceof Error ? err.message : "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
       toast.error(message)
       setError(message)
       setIsLoading(false)
@@ -227,9 +226,7 @@ export default function CompleteProfilePage() {
                 <Info className="mt-0.5 h-4 w-4 shrink-0" />
                 <div>
                   <p className="font-medium">ข้อมูลเพิ่มเติม (ไม่บังคับ)</p>
-                  <p className="mt-1 text-xs">
-                    ข้ามไปก่อนแล้วมาเพิ่มทีหลังในหน้าโปรไฟล์ได้
-                  </p>
+                  <p className="mt-1 text-xs">ข้ามไปก่อนแล้วมาเพิ่มทีหลังในหน้าโปรไฟล์ได้</p>
                 </div>
               </div>
 

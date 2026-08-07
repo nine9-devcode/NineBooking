@@ -19,13 +19,13 @@ import {
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { DatasheetFileUpload } from "./datasheet-file-upload"
-import { 
-  getFileIcon, 
-  getFileIconColor, 
+import {
+  getFileIcon,
+  getFileIconColor,
   formatFileSize,
   getFileExtension,
 } from "@/lib/file-utils"
-import { 
+import {
   DATASHEET_CONFIG,
   type DatasheetItem,
   type DatasheetJSON,
@@ -48,11 +48,7 @@ function isValidUrl(string: string): boolean {
   }
 }
 
-export function DatasheetInput({
-  values,
-  onChange,
-  disabled = false,
-}: DatasheetInputProps) {
+export function DatasheetInput({ values, onChange, disabled = false }: DatasheetInputProps) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
@@ -76,14 +72,14 @@ export function DatasheetInput({
   // Remove datasheet
   const handleRemove = (id: string) => {
     const item = values.find((v) => v.id === id)
-    
+
     if (item?.uploading) {
       toast.error("กรุณารอให้อัปโหลดเสร็จก่อน")
       return
     }
 
     onChange(values.filter((item) => item.id !== id))
-    
+
     setErrors((prev) => {
       const newErrors = { ...prev }
       delete newErrors[id]
@@ -93,20 +89,12 @@ export function DatasheetInput({
 
   // Update datasheet name
   const handleNameChange = (id: string, name: string) => {
-    onChange(
-      values.map((item) =>
-        item.id === id ? { ...item, name } : item
-      )
-    )
+    onChange(values.map((item) => (item.id === id ? { ...item, name } : item)))
   }
 
   // Update URL value
   const handleUrlChange = (id: string, url: string) => {
-    onChange(
-      values.map((item) =>
-        item.id === id ? { ...item, value: url } : item
-      )
-    )
+    onChange(values.map((item) => (item.id === id ? { ...item, value: url } : item)))
 
     if (url && !isValidUrl(url)) {
       setErrors((prev) => ({
@@ -125,7 +113,7 @@ export function DatasheetInput({
   // Change type (URL <-> File)
   const handleTypeChange = (id: string, type: DatasheetType) => {
     const item = values.find((v) => v.id === id)
-    
+
     if (item?.uploading) {
       toast.error("กรุณารอให้อัปโหลดเสร็จก่อน")
       return
@@ -159,7 +147,7 @@ export function DatasheetInput({
     onChange(
       values.map((item) =>
         item.id === id
-          ? { 
+          ? {
               ...item,
               file: file,
               fileName: file.name,
@@ -208,9 +196,7 @@ export function DatasheetInput({
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <FileText className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-foreground">
-            Datasheet Links
-          </span>
+          <span className="text-sm font-medium text-foreground">Datasheet Links</span>
           <span className="text-xs text-muted-foreground">
             ({values.length}/{DATASHEET_CONFIG.maxItems})
           </span>
@@ -243,9 +229,7 @@ export function DatasheetInput({
       {/* Datasheet Items */}
       <div className="space-y-3">
         {values.map((item, index) => {
-          const FileIconComponent = item.fileType
-            ? getFileIcon(`.${item.fileType}`)
-            : FileText
+          const FileIconComponent = item.fileType ? getFileIcon(`.${item.fileType}`) : FileText
           const iconColor = item.fileType
             ? getFileIconColor(`.${item.fileType}`)
             : "text-muted-foreground"
@@ -284,13 +268,11 @@ export function DatasheetInput({
                 {/* Type Tabs */}
                 <Tabs
                   value={item.type}
-                  onValueChange={(value) =>
-                    handleTypeChange(item.id, value as DatasheetType)
-                  }
+                  onValueChange={(value) => handleTypeChange(item.id, value as DatasheetType)}
                 >
                   <TabsList className="grid w-full grid-cols-2 bg-background border border-border p-1 h-auto rounded-lg">
-                    <TabsTrigger 
-                      value="url" 
+                    <TabsTrigger
+                      value="url"
                       disabled={disabled || item.uploading}
                       className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2 rounded-md"
                     >
@@ -298,8 +280,8 @@ export function DatasheetInput({
                       URL
                     </TabsTrigger>
 
-                    <TabsTrigger 
-                      value="file" 
+                    <TabsTrigger
+                      value="file"
                       disabled={disabled || item.uploading}
                       className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2 rounded-md"
                     >
@@ -315,14 +297,11 @@ export function DatasheetInput({
                     <div className="relative">
                       <Input
                         value={item.value}
-                        onChange={(e) =>
-                          handleUrlChange(item.id, e.target.value)
-                        }
+                        onChange={(e) => handleUrlChange(item.id, e.target.value)}
                         placeholder="https://example.com/datasheet.pdf"
                         className={cn(
                           "bg-background border-border text-foreground h-10 pr-20",
-                          errors[item.id] &&
-                            "border-destructive/40 focus:border-destructive/40"
+                          errors[item.id] && "border-destructive/40 focus:border-destructive/40"
                         )}
                         disabled={disabled}
                       />
@@ -379,9 +358,7 @@ export function DatasheetInput({
                               {item.fileName || "ไฟล์ที่อัปโหลด"}
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              {item.fileSize
-                                ? formatFileSize(item.fileSize)
-                                : ""}
+                              {item.fileSize ? formatFileSize(item.fileSize) : ""}
                             </p>
                           </div>
                           <div className="flex items-center gap-2">
@@ -450,15 +427,13 @@ export function DatasheetInput({
 }
 
 // Helper function: Convert DatasheetItem[] to JSON for API
-export function datasheetsToJson(
-  items: DatasheetItem[]
-): DatasheetJSON[] | null {
+export function datasheetsToJson(items: DatasheetItem[]): DatasheetJSON[] | null {
   const validItems = items.filter((item) => {
     if (item.type === "url") {
       return item.name && item.value && isValidUrl(item.value)
     }
     if (item.type === "file") {
-      return item.name && item.value 
+      return item.name && item.value
     }
     return false
   })
@@ -476,9 +451,7 @@ export function datasheetsToJson(
 }
 
 // Helper function: Convert JSON to DatasheetItem[] for form
-export function jsonToDatasheets(
-  json: DatasheetJSON[] | null
-): DatasheetItem[] {
+export function jsonToDatasheets(json: DatasheetJSON[] | null): DatasheetItem[] {
   if (!json || !Array.isArray(json)) return []
 
   return json.map((item, index) => ({

@@ -53,7 +53,9 @@ export interface GroupedOrderItem<T> {
  * สินค้าที่ถูกลบไปแล้ว (productId เป็น null) จัดกลุ่มด้วยชื่อที่ snapshot ไว้แทน
  * เพื่อไม่ให้ทุกตัวถูกยุบรวมกันเป็นก้อนเดียวเพราะคีย์เป็น null เหมือนกันหมด
  */
-export function groupOrderItems<T extends OrderItemSnapshot>(items: T[]): GroupedOrderItem<T>[] {
+export function groupOrderItems<T extends OrderItemSnapshot>(
+  items: T[]
+): GroupedOrderItem<T>[] {
   const groups = new Map<string, GroupedOrderItem<T>>()
 
   for (const item of items) {

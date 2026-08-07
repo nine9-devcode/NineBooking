@@ -121,12 +121,8 @@ export function PairedProducts({
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <LinkIcon className="w-5 h-5 text-warning" />
-        <h3 className="font-semibold text-foreground">
-          สินค้าที่ใช้คู่กัน
-        </h3>
-        <span className="text-sm text-muted-foreground">
-          (เลือกได้หลายชิ้น - ไม่บังคับ)
-        </span>
+        <h3 className="font-semibold text-foreground">สินค้าที่ใช้คู่กัน</h3>
+        <span className="text-sm text-muted-foreground">(เลือกได้หลายชิ้น - ไม่บังคับ)</span>
       </div>
 
       {/* Category Tabs */}
@@ -196,10 +192,7 @@ export function PairedProducts({
               </Link>
 
               {/* Clickable Area for Selection */}
-              <button
-                onClick={() => toggleProduct(product)}
-                className="w-full text-left"
-              >
+              <button onClick={() => toggleProduct(product)} className="w-full text-left">
                 {/* Selected Indicator */}
                 {selected && (
                   <div className="absolute -top-2 -left-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center z-10">
@@ -256,9 +249,7 @@ export function PairedProducts({
                       >
                         <Minus className="w-3 h-3" />
                       </button>
-                      <span className="w-8 text-center text-sm font-medium">
-                        {qty}
-                      </span>
+                      <span className="w-8 text-center text-sm font-medium">{qty}</span>
                       <button
                         type="button"
                         onClick={(e) => {
@@ -282,8 +273,9 @@ export function PairedProducts({
       {selectedProducts.length > 0 && (
         <div className="mt-4 pt-4 border-t border-warning/40">
           <p className="text-sm text-warning mb-2 flex items-center gap-1">
-            <Check className="w-3.5 h-3.5" /> เลือกสินค้าคู่แล้ว <strong>{selectedProducts.length}</strong> รายการ
-            (รวม <strong>{totalSelectedItems}</strong> ชิ้น)
+            <Check className="w-3.5 h-3.5" /> เลือกสินค้าคู่แล้ว{" "}
+            <strong>{selectedProducts.length}</strong> รายการ (รวม{" "}
+            <strong>{totalSelectedItems}</strong> ชิ้น)
           </p>
           <div className="flex flex-wrap gap-2">
             {selectedProducts.map((sp) => (

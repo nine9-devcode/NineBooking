@@ -10,10 +10,7 @@ export async function POST(request: NextRequest) {
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -51,15 +48,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, message: "Marked as read" })
     }
 
-    return NextResponse.json(
-      { error: "กรุณาระบุ issueId หรือ markAll" },
-      { status: 400 }
-    )
+    return NextResponse.json({ error: "กรุณาระบุ issueId หรือ markAll" }, { status: 400 })
   } catch (error) {
     console.error("Error marking support notification as read:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาด" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาด" }, { status: 500 })
   }
 }

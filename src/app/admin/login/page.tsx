@@ -4,25 +4,10 @@ import { useCallback, useEffect, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { getSession, signIn, signOut } from "next-auth/react"
-import {
-  AlertTriangle,
-  Eye,
-  EyeOff,
-  Loader2,
-  Lock,
-  Mail,
-  Shield,
-  Timer,
-} from "lucide-react"
+import { AlertTriangle, Eye, EyeOff, Loader2, Lock, Mail, Shield, Timer } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -56,9 +41,7 @@ export default function AdminLoginPage() {
 
       const minutes = Math.floor(diff / 60000)
       const seconds = Math.floor((diff % 60000) / 1000)
-      setCountdown(
-        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
-      )
+      setCountdown(`${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`)
     }
 
     tick()

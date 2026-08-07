@@ -33,7 +33,7 @@ export function MaintenanceSettingsCard() {
     try {
       setIsLoading(true)
       const response = await fetch("/api/admin/settings")
-      
+
       if (!response.ok) {
         throw new Error("ไม่สามารถดึงข้อมูลการตั้งค่าได้")
       }
@@ -148,9 +148,7 @@ export function MaintenanceSettingsCard() {
           </div>
           <div className="flex-1 space-y-1">
             <p className="text-sm font-medium text-info">
-              {settings.showHomePage
-                ? "เว็บไซต์เปิดใช้งาน"
-                : "เว็บไซต์ปิดการใช้งาน"}
+              {settings.showHomePage ? "เว็บไซต์เปิดใช้งาน" : "เว็บไซต์ปิดการใช้งาน"}
             </p>
             <p className="text-xs text-info/80">
               {settings.showHomePage

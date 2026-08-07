@@ -22,12 +22,7 @@ const product = (id: string, name: string) => ({
  * ตะกร้าเก็บสินค้าหลัก 1 แถวและสินค้าคู่แยกอีกแถวหนึ่ง
  * ฟังก์ชันนี้ต้องรวมแถวที่เป็นสินค้าเดียวกันให้แสดงเป็นก้อนเดียว
  */
-function item(
-  id: string,
-  productId: string,
-  quantity: number,
-  pairedId?: string
-): BaseItem {
+function item(id: string, productId: string, quantity: number, pairedId?: string): BaseItem {
   return {
     id,
     quantity,

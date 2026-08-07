@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle } from "lucide-react"
 
 interface DescriptionTextareaProps {
   value: string
@@ -8,12 +8,12 @@ interface DescriptionTextareaProps {
   maxLength?: number
 }
 
-export function DescriptionTextarea({ 
-  value, 
-  onChange, 
-  error, 
+export function DescriptionTextarea({
+  value,
+  onChange,
+  error,
   disabled,
-  maxLength = 500
+  maxLength = 500,
 }: DescriptionTextareaProps) {
   return (
     <div>
@@ -29,7 +29,7 @@ export function DescriptionTextarea({
         maxLength={maxLength}
         placeholder="อธิบายสิ่งที่เกิดขึ้น...&#10;เช่น เมื่อกดปุ่มจองแล้วหน้าจอหมุนค้าง ไม่สามารถดำเนินการต่อได้"
         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none transition-colors ${
-          error ? 'border-destructive/40' : 'border-border'
+          error ? "border-destructive/40" : "border-border"
         }`}
         disabled={disabled}
       />

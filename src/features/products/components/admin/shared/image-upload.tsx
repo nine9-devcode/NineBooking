@@ -20,11 +20,11 @@ interface ImageUploadProps {
   disabled?: boolean
 }
 
-export function ImageUpload({ 
-  value, 
-  onChange, 
+export function ImageUpload({
+  value,
+  onChange,
   existingUrl,
-  disabled = false 
+  disabled = false,
 }: ImageUploadProps) {
   const [preview, setPreview] = useState<string>("")
 
@@ -132,9 +132,7 @@ export function ImageUpload({
 }
 
 // อัปโหลดรูปผ่าน /api/upload/image
-export async function uploadImage(
-  imageValue: ImageValue
-): Promise<string> {
+export async function uploadImage(imageValue: ImageValue): Promise<string> {
   // If existing URL (no file), return as-is
   if (!imageValue.file && imageValue.url) {
     return imageValue.url

@@ -31,7 +31,7 @@ export async function PATCH(
     const { name, slug, description, isActive, parentId } = body
 
     // ตรวจสอบว่าหมวดหมู่มีอยู่จริง
-    const existingCategory = await prisma.category.findUnique({
+    const existingCategory = (await prisma.category.findUnique({
       where: { id: params.id },
       include: {
         children: {
@@ -41,13 +41,10 @@ export async function PATCH(
           select: { children: true, products: true },
         },
       },
-    }) as CategoryWithChildren | null
+    })) as CategoryWithChildren | null
 
     if (!existingCategory) {
-      return NextResponse.json(
-        { error: "ไม่พบหมวดหมู่" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบหมวดหมู่" }, { status: 404 })
     }
 
     // ตรวจสอบว่า slug ซ้ำหรือไม่ (ยกเว้นหมวดหมู่ตัวเอง)
@@ -57,10 +54,7 @@ export async function PATCH(
       })
 
       if (duplicateSlug) {
-        return NextResponse.json(
-          { error: "Slug นี้ถูกใช้งานแล้ว" },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: "Slug นี้ถูกใช้งานแล้ว" }, { status: 400 })
       }
     }
 
@@ -94,10 +88,7 @@ export async function PATCH(
         })
 
         if (!parentCategory) {
-          return NextResponse.json(
-            { error: "ไม่พบหมวดหมู่หลัก" },
-            { status: 404 }
-          )
+          return NextResponse.json({ error: "ไม่พบหมวดหมู่หลัก" }, { status: 404 })
         }
 
         // จำกัด 2 ระดับ - ไม่อนุญาตให้เป็น child ของ child
@@ -126,7 +117,7 @@ export async function PATCH(
         slug: slug || existingCategory.slug,
         description: description !== undefined ? description : existingCategory.description,
         isActive: isActive !== undefined ? isActive : existingCategory.isActive,
-        parentId: parentId !== undefined ? (parentId || null) : existingCategory.parentId,
+        parentId: parentId !== undefined ? parentId || null : existingCategory.parentId,
       },
       include: {
         parent: {
@@ -144,10 +135,7 @@ export async function PATCH(
     return NextResponse.json(category)
   } catch (error) {
     console.error("Error updating category:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการอัปเดตหมวดหมู่" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการอัปเดตหมวดหมู่" }, { status: 500 })
   }
 }
 
@@ -176,7 +164,7 @@ export async function DELETE(
       where: { id: params.id },
       include: {
         _count: {
-          select: { 
+          select: {
             products: true,
             children: true,
           },
@@ -192,16 +180,13 @@ export async function DELETE(
     })
 
     if (!category) {
-      return NextResponse.json(
-        { error: "ไม่พบหมวดหมู่" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบหมวดหมู่" }, { status: 404 })
     }
 
     // ตรวจสอบว่ามีสินค้าในหมวดหมู่หรือไม่
     if (category._count.products > 0) {
       return NextResponse.json(
-        { 
+        {
           error: `ไม่สามารถลบได้ เนื่องจากมีสินค้า ${category._count.products} รายการในหมวดหมู่นี้`,
           productsCount: category._count.products,
         },
@@ -220,7 +205,7 @@ export async function DELETE(
         0
       )
       return NextResponse.json(
-        { 
+        {
           error: `ไม่สามารถลบได้ เนื่องจากมีสินค้า ${totalChildProducts} รายการในหมวดหมู่ย่อย`,
           productsCount: totalChildProducts,
           childrenWithProducts: childrenWithProducts.map((c) => ({
@@ -238,15 +223,12 @@ export async function DELETE(
       where: { id: params.id },
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: "ลบหมวดหมู่สำเร็จ",
       deletedChildren: category._count.children,
     })
   } catch (error) {
     console.error("Error deleting category:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการลบหมวดหมู่" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการลบหมวดหมู่" }, { status: 500 })
   }
 }

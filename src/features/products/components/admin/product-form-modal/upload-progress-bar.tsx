@@ -23,17 +23,16 @@ export function UploadProgressBar({ progress }: UploadProgressBarProps) {
           ) : (
             <Loader2 className="w-5 h-5 text-primary animate-spin" />
           )}
-          <span className={cn(
-            "text-sm font-medium",
-            isComplete ? "text-success" : "text-foreground"
-          )}>
+          <span
+            className={cn(
+              "text-sm font-medium",
+              isComplete ? "text-success" : "text-foreground"
+            )}
+          >
             {progress.currentStep}
           </span>
         </div>
-        <span className={cn(
-          "text-sm font-bold",
-          isComplete ? "text-success" : "text-primary"
-        )}>
+        <span className={cn("text-sm font-bold", isComplete ? "text-success" : "text-primary")}>
           {progress.progress}%
         </span>
       </div>

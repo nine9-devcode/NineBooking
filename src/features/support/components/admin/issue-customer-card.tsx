@@ -89,10 +89,7 @@ export function IssueCustomerCard({ user }: IssueCustomerCardProps) {
           <div className="flex-1 min-w-0">
             <p className="text-xs text-muted-foreground">เบอร์โทร</p>
             {user?.phone ? (
-              <a
-                href={`tel:${user.phone}`}
-                className="text-primary hover:underline"
-              >
+              <a href={`tel:${user.phone}`} className="text-primary hover:underline">
                 {user.phone}
               </a>
             ) : (

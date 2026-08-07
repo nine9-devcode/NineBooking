@@ -1,73 +1,64 @@
 // app/api/admin/orders/[id]/quotation/route.tsx
 // GET /api/admin/orders/[id]/quotation - Export order as Quotation PDF
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
-import { prisma } from '@/lib/db';
-import { renderToBuffer } from '@react-pdf/renderer';
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  Image,
-  StyleSheet,
-  Font,
-} from '@react-pdf/renderer';
-import path from 'path';
-import fs from 'fs';
+import { prisma } from "@/lib/db"
+import { renderToBuffer } from "@react-pdf/renderer"
+import { Document, Page, Text, View, Image, StyleSheet, Font } from "@react-pdf/renderer"
+import path from "path"
+import fs from "fs"
 import { companyDefaults, PDF_LOGO_RELATIVE_PATH } from "@/config/company"
 import { pdfTheme } from "@/config/pdf-theme"
 
 // Register Thai font (Sarabun)
-const fontDir = path.join(process.cwd(), 'public', 'fonts');
+const fontDir = path.join(process.cwd(), "public", "fonts")
 
 Font.register({
-  family: 'Sarabun',
+  family: "Sarabun",
   fonts: [
-    { 
-      src: path.join(fontDir, 'Sarabun-Regular.ttf'), 
-      fontWeight: 'normal' 
+    {
+      src: path.join(fontDir, "Sarabun-Regular.ttf"),
+      fontWeight: "normal",
     },
-    { 
-      src: path.join(fontDir, 'Sarabun-Bold.ttf'), 
-      fontWeight: 'bold' 
+    {
+      src: path.join(fontDir, "Sarabun-Bold.ttf"),
+      fontWeight: "bold",
     },
-    { 
-      src: path.join(fontDir, 'Sarabun-Medium.ttf'), 
-      fontWeight: 'medium' 
+    {
+      src: path.join(fontDir, "Sarabun-Medium.ttf"),
+      fontWeight: "medium",
     },
-    
-    { src: path.join(fontDir, 'Sarabun-Italic.ttf'),
-      fontStyle: 'italic' },
+
+    { src: path.join(fontDir, "Sarabun-Italic.ttf"), fontStyle: "italic" },
   ],
-});
+})
 
 // Styles for Quotation PDF
 const styles = StyleSheet.create({
   page: {
     padding: 30,
-    fontFamily: 'Sarabun',
+    fontFamily: "Sarabun",
     fontSize: 10,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   // Header with logo and company info
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 15,
     paddingBottom: 10,
     borderBottomWidth: 2,
-    borderBottomColor: '#000000',
+    borderBottomColor: "#000000",
   },
   logoSection: {
     width: 150,
   },
   logo: {
     width: 140,
-    height: 'auto',
-    objectFit: 'contain',
+    height: "auto",
+    objectFit: "contain",
   },
   companyInfoSection: {
     flex: 1,
@@ -75,19 +66,19 @@ const styles = StyleSheet.create({
   },
   companyName: {
     fontSize: 11,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
     marginBottom: 2,
   },
   companyNameEng: {
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
     marginBottom: 4,
   },
   companyAddress: {
     fontSize: 8,
-    color: '#000000',
+    color: "#000000",
     lineHeight: 1.3,
   },
   // Quote info section (right side)
@@ -97,23 +88,23 @@ const styles = StyleSheet.create({
   },
   quoteTitle: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#000000',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#000000",
+    textAlign: "center",
     marginBottom: 6,
   },
   quoteInfoRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 3,
   },
   quoteLabel: {
     fontSize: 9,
-    color: '#000000',
+    color: "#000000",
     width: 50,
   },
   quoteValue: {
     fontSize: 9,
-    color: '#000000',
+    color: "#000000",
     flex: 1,
   },
   // Customer section
@@ -123,22 +114,22 @@ const styles = StyleSheet.create({
   },
   customerTitle: {
     fontSize: 10,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 6,
-    color: '#000000',
+    color: "#000000",
   },
   customerInfoRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 3,
   },
   customerLabel: {
     fontSize: 9,
-    color: '#000000',
+    color: "#000000",
     width: 100,
   },
   customerValue: {
     fontSize: 9,
-    color: '#000000',
+    color: "#000000",
     flex: 1,
   },
   // Table
@@ -147,43 +138,43 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   tableHeader: {
-    flexDirection: 'row',
-    backgroundColor: '#ffffff',
+    flexDirection: "row",
+    backgroundColor: "#ffffff",
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#000000',
+    borderColor: "#000000",
     paddingVertical: 5,
     paddingHorizontal: 4,
   },
   tableHeaderCell: {
     fontSize: 9,
-    fontWeight: 'bold',
-    color: '#000000',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#000000",
+    textAlign: "center",
   },
   tableRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     borderBottomWidth: 1,
-    borderBottomColor: '#cccccc',
+    borderBottomColor: "#cccccc",
     paddingVertical: 6,
     paddingHorizontal: 4,
   },
   tableCell: {
     fontSize: 9,
-    color: '#000000',
+    color: "#000000",
   },
   // Nested paired product
   pairedRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingVertical: 5,
     paddingHorizontal: 4,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: "#e0e0e0",
   },
   treeIcon: {
     fontSize: 8,
-    color: '#666666',
+    color: "#666666",
     marginRight: 4,
   },
   pairedBadge: {
@@ -197,71 +188,71 @@ const styles = StyleSheet.create({
   },
   noPairedText: {
     fontSize: 8,
-    color: '#999999',
-    fontStyle: 'italic',
+    color: "#999999",
+    fontStyle: "italic",
     paddingLeft: 20,
     paddingVertical: 4,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: "#e0e0e0",
   },
   // Summary section
   summarySection: {
     marginTop: 10,
     paddingTop: 10,
     borderTopWidth: 1,
-    borderTopColor: '#000000',
+    borderTopColor: "#000000",
   },
   summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     marginBottom: 4,
     paddingRight: 10,
   },
   summaryLabel: {
     fontSize: 9,
-    color: '#000000',
+    color: "#000000",
     marginRight: 15,
     width: 150,
-    textAlign: 'right',
+    textAlign: "right",
   },
   summaryValue: {
     fontSize: 9,
-    color: '#000000',
+    color: "#000000",
     width: 100,
-    textAlign: 'right',
+    textAlign: "right",
   },
   totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    justifyContent: "flex-end",
     marginTop: 5,
     paddingTop: 5,
     paddingRight: 10,
     borderTopWidth: 1,
-    borderTopColor: '#cccccc',
+    borderTopColor: "#cccccc",
   },
   totalLabel: {
     fontSize: 10,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
     marginRight: 15,
     width: 150,
-    textAlign: 'right',
+    textAlign: "right",
   },
   totalValue: {
     fontSize: 10,
-    fontWeight: 'bold',
-    color: '#000000',
+    fontWeight: "bold",
+    color: "#000000",
     width: 100,
-    textAlign: 'right',
+    textAlign: "right",
   },
   totalInWords: {
     fontSize: 8,
-    color: '#000000',
-    textAlign: 'right',
+    color: "#000000",
+    textAlign: "right",
     marginTop: 2,
     marginRight: 10,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   // Notes section
   notesSection: {
@@ -270,144 +261,142 @@ const styles = StyleSheet.create({
   },
   notesTitle: {
     fontSize: 9,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 4,
-    color: '#000000',
+    color: "#000000",
   },
   notesText: {
     fontSize: 8,
     lineHeight: 1.4,
-    color: '#000000',
+    color: "#000000",
   },
   notesBullet: {
     fontSize: 8,
-    color: '#000000',
+    color: "#000000",
     marginBottom: 2,
   },
   // Additional info
   additionalInfo: {
     marginTop: 10,
     fontSize: 8,
-    color: '#000000',
+    color: "#000000",
   },
   // Signature section
   signatureSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 30,
     paddingTop: 15,
   },
   signatureBox: {
-    width: '48%',
-    alignItems: 'center',
+    width: "48%",
+    alignItems: "center",
   },
   signatureCompany: {
     fontSize: 8,
-    color: '#000000',
+    color: "#000000",
     marginBottom: 5,
-    textAlign: 'center',
+    textAlign: "center",
   },
   signatureLine: {
-    width: '100%',
+    width: "100%",
     borderBottomWidth: 1,
-    borderBottomColor: '#000000',
+    borderBottomColor: "#000000",
     marginBottom: 5,
     height: 40,
   },
   signatureLabel: {
     fontSize: 8,
-    color: '#000000',
+    color: "#000000",
   },
   signatureDate: {
     fontSize: 8,
-    color: '#000000',
+    color: "#000000",
     marginTop: 3,
   },
-});
+})
 
 // Helper: Format date to Thai format
 const formatThaiDate = (date: Date): string => {
-  const d = new Date(date);
-  const day = d.getDate().toString().padStart(2, '0');
-  const month = d.toLocaleDateString('th-TH', { month: 'long' });
-  const year = d.getFullYear() + 543;
-  return `${day} ${month} ${year}`;
-};
+  const d = new Date(date)
+  const day = d.getDate().toString().padStart(2, "0")
+  const month = d.toLocaleDateString("th-TH", { month: "long" })
+  const year = d.getFullYear() + 543
+  return `${day} ${month} ${year}`
+}
 
 const formatShortDate = (date: Date): string => {
-  const d = new Date(date);
-  const day = d.getDate().toString().padStart(2, '0');
-  const month = (d.getMonth() + 1).toString().padStart(2, '0');
-  const year = d.getFullYear() + 543;
-  return `${day}/${month}/${year}`;
-};
+  const d = new Date(date)
+  const day = d.getDate().toString().padStart(2, "0")
+  const month = (d.getMonth() + 1).toString().padStart(2, "0")
+  const year = d.getFullYear() + 543
+  return `${day}/${month}/${year}`
+}
 
 // Type definitions
 interface PairedProduct {
-  name: string;
-  quantity: number;
+  name: string
+  quantity: number
 }
 
 interface GroupedItem {
-  productId: string;
-  productName: string;
-  quantity: number;
-  pairedProducts: PairedProduct[];
+  productId: string
+  productName: string
+  quantity: number
+  pairedProducts: PairedProduct[]
 }
 
 // Quotation PDF Component
 const QuotationPDF = ({ order }: { order: any }) => {
-  const logoPath = path.join(process.cwd(), ...PDF_LOGO_RELATIVE_PATH);
-    let logoBuffer = null;
+  const logoPath = path.join(process.cwd(), ...PDF_LOGO_RELATIVE_PATH)
+  let logoBuffer = null
 
-    try {
+  try {
     // อ่านไฟล์ภาพออกมาเป็น Buffer
-    logoBuffer = fs.readFileSync(logoPath); 
-    } catch (error) {
-    console.error("หาไฟล์รูปไม่เจอ:", logoPath);
+    logoBuffer = fs.readFileSync(logoPath)
+  } catch (error) {
+    console.error("หาไฟล์รูปไม่เจอ:", logoPath)
     // อาจจะใส่รูป default หรือปล่อยว่างไว้ถ้าหาไม่เจอ
-    }
+  }
 
   // Group items by main product
-  const groupedItems: GroupedItem[] = [];
-  
+  const groupedItems: GroupedItem[] = []
+
   order.orderItems.forEach((item: any) => {
-    let group = groupedItems.find(g => g.productId === item.productId);
-    
+    let group = groupedItems.find((g) => g.productId === item.productId)
+
     if (!group) {
       group = {
         productId: item.productId,
         productName: item.productName,
         quantity: 0,
         pairedProducts: [],
-      };
-      groupedItems.push(group);
+      }
+      groupedItems.push(group)
     }
-    
+
     if (item.pairedProductId && item.pairedProductName) {
-      const existingPaired = group.pairedProducts.find(
-        p => p.name === item.pairedProductName
-      );
-      
+      const existingPaired = group.pairedProducts.find((p) => p.name === item.pairedProductName)
+
       if (existingPaired) {
-        existingPaired.quantity += item.quantity;
+        existingPaired.quantity += item.quantity
       } else {
         group.pairedProducts.push({
           name: item.pairedProductName,
           quantity: item.quantity,
-        });
+        })
       }
     } else {
-      group.quantity += item.quantity;
+      group.quantity += item.quantity
     }
-  });
+  })
 
   // Calculate totals
-  const totalMainQuantity = groupedItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalMainQuantity = groupedItems.reduce((sum, item) => sum + item.quantity, 0)
   const totalPairedQuantity = groupedItems.reduce(
     (sum, item) => sum + item.pairedProducts.reduce((ps, p) => ps + p.quantity, 0),
     0
-  );
+  )
 
   return (
     <Document>
@@ -415,17 +404,14 @@ const QuotationPDF = ({ order }: { order: any }) => {
         {/* Header */}
         <View style={styles.header}>
           {/* Left: Logo */}
-                <View style={styles.logoSection}>
-                {/* เช็คก่อนว่าอ่านไฟล์ได้ไหม เพื่อกัน Error */}
-                {logoBuffer ? (
-                    <Image
-                    src={logoBuffer}
-                    style={styles.logo}
-                    />
-                ) : (
-                    <Text>Image not found</Text>
-                )}
-                </View>
+          <View style={styles.logoSection}>
+            {/* เช็คก่อนว่าอ่านไฟล์ได้ไหม เพื่อกัน Error */}
+            {logoBuffer ? (
+              <Image src={logoBuffer} style={styles.logo} />
+            ) : (
+              <Text>Image not found</Text>
+            )}
+          </View>
 
           {/* Center: Company Info */}
           <View style={styles.companyInfoSection}>
@@ -470,26 +456,26 @@ const QuotationPDF = ({ order }: { order: any }) => {
         {/* Customer Section */}
         <View style={styles.customerSection}>
           <Text style={styles.customerTitle}>ลูกค้า</Text>
-          
+
           {/* ชื่อลูกค้า */}
           <View style={styles.customerInfoRow}>
             <Text style={styles.customerLabel}>ชื่อ:</Text>
             <Text style={styles.customerValue}>
               {order.customerName}
-              {order.customerNickname ? ` (${order.customerNickname})` : ''}
+              {order.customerNickname ? ` (${order.customerNickname})` : ""}
             </Text>
           </View>
 
           {/* เบอร์โทร */}
           <View style={styles.customerInfoRow}>
             <Text style={styles.customerLabel}>เบอร์โทร:</Text>
-            <Text style={styles.customerValue}>{order.customerPhone || '-'}</Text>
+            <Text style={styles.customerValue}>{order.customerPhone || "-"}</Text>
           </View>
 
           {/* อีเมล */}
           <View style={styles.customerInfoRow}>
             <Text style={styles.customerLabel}>อีเมล:</Text>
-            <Text style={styles.customerValue}>{order.customerEmail || '-'}</Text>
+            <Text style={styles.customerValue}>{order.customerEmail || "-"}</Text>
           </View>
 
           {/* ที่อยู่จัดส่ง - แสดงเป็นบรรทัดเดียว */}
@@ -510,7 +496,7 @@ const QuotationPDF = ({ order }: { order: any }) => {
           {order.shippingResidenceType && (
             <View style={styles.customerInfoRow}>
               <Text style={styles.customerLabel}>ประเภทที่อยู่:</Text>
-              <Text style={styles.customerValue}>{order.shippingResidenceType}          </Text>
+              <Text style={styles.customerValue}>{order.shippingResidenceType} </Text>
             </View>
           )}
         </View>
@@ -520,8 +506,10 @@ const QuotationPDF = ({ order }: { order: any }) => {
           {/* Table Header */}
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderCell, { width: 30 }]}>#</Text>
-            <Text style={[styles.tableHeaderCell, { flex: 1, textAlign: 'left' }]}>รายละเอียด</Text>
-            <Text style={[styles.tableHeaderCell, { width: 60 }]}>จำนวน    </Text>
+            <Text style={[styles.tableHeaderCell, { flex: 1, textAlign: "left" }]}>
+              รายละเอียด
+            </Text>
+            <Text style={[styles.tableHeaderCell, { width: 60 }]}>จำนวน </Text>
             <Text style={[styles.tableHeaderCell, { width: 80 }]}>ราคาต่อหน่วย</Text>
             <Text style={[styles.tableHeaderCell, { width: 80 }]}>ยอดรวม</Text>
           </View>
@@ -531,21 +519,15 @@ const QuotationPDF = ({ order }: { order: any }) => {
             <View key={item.productId}>
               {/* Main Product Row */}
               <View style={styles.tableRow}>
-                <Text style={[styles.tableCell, { width: 30, textAlign: 'center' }]}>
+                <Text style={[styles.tableCell, { width: 30, textAlign: "center" }]}>
                   {index + 1}
                 </Text>
-                <Text style={[styles.tableCell, { flex: 1 }]}>
-                  {item.productName}
-                </Text>
-                <Text style={[styles.tableCell, { width: 60, textAlign: 'center' }]}>
+                <Text style={[styles.tableCell, { flex: 1 }]}>{item.productName}</Text>
+                <Text style={[styles.tableCell, { width: 60, textAlign: "center" }]}>
                   {item.quantity}
                 </Text>
-                <Text style={[styles.tableCell, { width: 80, textAlign: 'right' }]}>
-                  0.00
-                </Text>
-                <Text style={[styles.tableCell, { width: 80, textAlign: 'right' }]}>
-                  0.00
-                </Text>
+                <Text style={[styles.tableCell, { width: 80, textAlign: "right" }]}>0.00</Text>
+                <Text style={[styles.tableCell, { width: 80, textAlign: "right" }]}>0.00</Text>
               </View>
 
               {/* Paired Products */}
@@ -553,22 +535,21 @@ const QuotationPDF = ({ order }: { order: any }) => {
                 item.pairedProducts.map((paired, pIndex) => (
                   <View key={pIndex} style={styles.pairedRow}>
                     <Text style={[styles.tableCell, { width: 30 }]}></Text>
-                    <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
                       <Text style={styles.treeIcon}>└─</Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}>
-                        {paired.name}
-                      </Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>{paired.name}</Text>
                       <Text style={styles.pairedBadge}>สินค้าที่ใช้คู่กัน</Text>
                     </View>
-                    <Text style={[styles.tableCell, { width: 60, textAlign: 'center', color: '#666666' }]}>
+                    <Text
+                      style={[
+                        styles.tableCell,
+                        { width: 60, textAlign: "center", color: "#666666" },
+                      ]}
+                    >
                       {paired.quantity}
                     </Text>
-                    <Text style={[styles.tableCell, { width: 80, textAlign: 'right' }]}>
-                      -
-                    </Text>
-                    <Text style={[styles.tableCell, { width: 80, textAlign: 'right' }]}>
-                      -
-                    </Text>
+                    <Text style={[styles.tableCell, { width: 80, textAlign: "right" }]}>-</Text>
+                    <Text style={[styles.tableCell, { width: 80, textAlign: "right" }]}>-</Text>
                   </View>
                 ))
               ) : (
@@ -584,7 +565,7 @@ const QuotationPDF = ({ order }: { order: any }) => {
         <View style={styles.summarySection}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>รวมเป็นเงิน</Text>
-            <Text style={styles.summaryValue}>- บาท     </Text>
+            <Text style={styles.summaryValue}>- บาท </Text>
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>ภาษีมูลค่าเพิ่ม 7%</Text>
@@ -594,32 +575,29 @@ const QuotationPDF = ({ order }: { order: any }) => {
             <Text style={styles.totalLabel}>จำนวนเงินรวมทั้งสิ้น </Text>
             <Text style={styles.totalValue}>- บาท</Text>
           </View>
-          <Text style={styles.totalInWords}>
-            
-          </Text>
+          <Text style={styles.totalInWords}></Text>
         </View>
 
         {/* Notes */}
         <View style={styles.notesSection}>
           <Text style={styles.notesTitle}>หมายเหตุ</Text>
           <Text style={styles.notesText}>
-            เมื่อลูกค้าต้องการซื้อสินค้า/บริการ {'\n'}
-            กรุณาชำระค่ามัดจำค่าาสินค้า ล็อคคิวติดตั้ง  {'\n'}
-            เป็นจำนวนเงิน 50% ของยอดทั้งหมด {'\n'}
-           งานติดตั้ง/ส่งสินค้า เรียบร้อยแล้ว กรุณาชำระยอดเงินที่เหลือทั้งหมด {'\n'}
-            สินค้ารับประกัน 2 ปี (ใช้งานปกติ เสียบปลั๊กตัวใหม่ ใช้งานต่อทันที) {'\n'}
-            * งานติดตั้งรวมค่าบริการ Service On site เป็นระยะเวลา 1 ปี นับจากวันที่ติดตั้งกับทางบริษัทฯ {'\n'}
+            เมื่อลูกค้าต้องการซื้อสินค้า/บริการ {"\n"}
+            กรุณาชำระค่ามัดจำค่าาสินค้า ล็อคคิวติดตั้ง {"\n"}
+            เป็นจำนวนเงิน 50% ของยอดทั้งหมด {"\n"}
+            งานติดตั้ง/ส่งสินค้า เรียบร้อยแล้ว กรุณาชำระยอดเงินที่เหลือทั้งหมด {"\n"}
+            สินค้ารับประกัน 2 ปี (ใช้งานปกติ เสียบปลั๊กตัวใหม่ ใช้งานต่อทันที) {"\n"}*
+            งานติดตั้งรวมค่าบริการ Service On site เป็นระยะเวลา 1 ปี
+            นับจากวันที่ติดตั้งกับทางบริษัทฯ {"\n"}
           </Text>
         </View>
 
         {/* Additional Note */}
         <View style={styles.additionalInfo}>
+          <Text style={styles.notesBullet}>* ใบเสนอราคา ทุกใบ ยืนยันราคา 15 วัน</Text>
           <Text style={styles.notesBullet}>
-            * ใบเสนอราคา ทุกใบ ยืนยันราคา 15 วัน
+            หากเกินกำหนด กรุณาขอใใบเสนอราคาใหม่ จากผู้ขายอีกครั้ง{" "}
           </Text>
-          <Text style={styles.notesBullet}>
-            หากเกินกำหนด กรุณาขอใใบเสนอราคาใหม่ จากผู้ขายอีกครั้ง        </Text>                                
-          
         </View>
 
         {/* Signature Section */}
@@ -627,17 +605,18 @@ const QuotationPDF = ({ order }: { order: any }) => {
           <View style={styles.signatureBox}>
             <Text style={styles.signatureCompany}>
               ในนาม
-               {/* {order.customerName} */}
+              {/* {order.customerName} */}
             </Text>
             <View style={styles.signatureLine} />
             <Text style={styles.signatureLabel}>ผู้มีอำนาจ </Text>
-            <Text style={styles.signatureDate}>วันที่__________________ </Text> 
+            <Text style={styles.signatureDate}>วันที่__________________ </Text>
           </View>
 
           <View style={styles.signatureBox}>
             <Text style={styles.signatureCompany}>
-              ในนาม บริษัท วิน ซิสเท่ม โซลูชั่น แอนด์ เซอร์วิส จำกัด            </Text>
-            
+              ในนาม บริษัท วิน ซิสเท่ม โซลูชั่น แอนด์ เซอร์วิส จำกัด{" "}
+            </Text>
+
             <View style={styles.signatureLine} />
             <Text style={styles.signatureLabel}>ผู้อนุมัติ</Text>
             <Text style={styles.signatureDate}>วันที่__________________ </Text>
@@ -645,8 +624,8 @@ const QuotationPDF = ({ order }: { order: any }) => {
         </View>
       </Page>
     </Document>
-  );
-};
+  )
+}
 
 // API Handler
 export async function GET(
@@ -657,7 +636,7 @@ export async function GET(
     const guard = await requireAdmin()
     if (!guard.ok) return guard.response
 
-    const { id } = await params;
+    const { id } = await params
 
     // Fetch order with all details
     const order = await prisma.order.findUnique({
@@ -688,28 +667,25 @@ export async function GET(
           },
         },
       },
-    });
+    })
 
     if (!order) {
-      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      return NextResponse.json({ error: "Order not found" }, { status: 404 })
     }
 
     // Generate PDF
-    const pdfBuffer = await renderToBuffer(<QuotationPDF order={order} />);
+    const pdfBuffer = await renderToBuffer(<QuotationPDF order={order} />)
 
     // Return PDF response
     return new NextResponse(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="quotation-${order.orderNumber}.pdf"`,
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="quotation-${order.orderNumber}.pdf"`,
       },
-    });
+    })
   } catch (error) {
-    console.error('Error generating quotation PDF:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate quotation PDF' },
-      { status: 500 }
-    );
+    console.error("Error generating quotation PDF:", error)
+    return NextResponse.json({ error: "Failed to generate quotation PDF" }, { status: 500 })
   }
 }

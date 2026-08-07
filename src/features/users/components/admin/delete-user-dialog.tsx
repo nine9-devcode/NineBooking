@@ -12,7 +12,15 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
 } from "@/components/ui/alert-dialog"
-import { Loader2, AlertTriangle, UserMinus, Mail, Phone, ShoppingBag, ShieldAlert } from "lucide-react"
+import {
+  Loader2,
+  AlertTriangle,
+  UserMinus,
+  Mail,
+  Phone,
+  ShoppingBag,
+  ShieldAlert,
+} from "lucide-react"
 import { toast } from "sonner"
 
 interface User {
@@ -35,12 +43,7 @@ interface DeleteUserDialogProps {
   user: User | null
 }
 
-export function DeleteUserDialog({
-  open,
-  onClose,
-  onSuccess,
-  user,
-}: DeleteUserDialogProps) {
+export function DeleteUserDialog({ open, onClose, onSuccess, user }: DeleteUserDialogProps) {
   const { data: session } = useSession()
   const [loading, setLoading] = useState(false)
 
@@ -48,7 +51,6 @@ export function DeleteUserDialog({
   const orderCount = user._count?.orders || 0
   const issueCount = user._count?.contactIssues || 0
 
-  
   // ตรวจสอบว่าเป็นตัวเอง
   const currentUserId = session?.user?.id
   const isSelf = currentUserId === user.id
@@ -101,11 +103,10 @@ export function DeleteUserDialog({
                   <ShieldAlert className="w-5 h-5 text-destructive" />
                 </div>
                 <div>
-                  <p className="text-destructive font-medium">
-                    ไม่สามารถลบบัญชีตัวเองได้
-                  </p>
+                  <p className="text-destructive font-medium">ไม่สามารถลบบัญชีตัวเองได้</p>
                   <p className="text-destructive/80 text-sm mt-1">
-                    คุณไม่สามารถลบบัญชีของตัวเองได้ หากต้องการลบบัญชี กรุณาให้ Admin ท่านอื่นดำเนินการแทน
+                    คุณไม่สามารถลบบัญชีของตัวเองได้ หากต้องการลบบัญชี กรุณาให้ Admin
+                    ท่านอื่นดำเนินการแทน
                   </p>
                 </div>
               </div>
@@ -127,7 +128,7 @@ export function DeleteUserDialog({
                     )}
                   </div>
                 </div>
-                
+
                 <div className="space-y-2 pl-2 border-l-2 border-border ml-4">
                   <div className="text-sm text-muted-foreground flex items-center gap-2">
                     <Mail className="w-4 h-4 text-muted-foreground" />
@@ -151,14 +152,12 @@ export function DeleteUserDialog({
                 <div className="bg-info/10 border border-info/30 rounded-xl p-4 space-y-2">
                   <p className="text-info font-medium text-sm">ข้อมูลต่อไปนี้จะถูกเก็บไว้</p>
                   <div className="space-y-1 text-info/80 text-xs pl-1">
-                    {orderCount > 0 && (
-                      <p>ใบจอง {orderCount} รายการ (รวมใบเสนอราคา)</p>
-                    )}
-                    {issueCount > 0 && (
-                      <p>ใบแจ้งปัญหา {issueCount} รายการ</p>
-                    )}
+                    {orderCount > 0 && <p>ใบจอง {orderCount} รายการ (รวมใบเสนอราคา)</p>}
+                    {issueCount > 0 && <p>ใบแจ้งปัญหา {issueCount} รายการ</p>}
                   </div>
-                  <p className="text-info/50 text-xs">ข้อมูลจะยังอยู่ในระบบ แต่จะไม่แสดงชื่อสมาชิก</p>
+                  <p className="text-info/50 text-xs">
+                    ข้อมูลจะยังอยู่ในระบบ แต่จะไม่แสดงชื่อสมาชิก
+                  </p>
                 </div>
               ) : (
                 <div className="bg-card/50 rounded-xl p-4 border border-border">

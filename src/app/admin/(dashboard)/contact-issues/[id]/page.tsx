@@ -152,7 +152,11 @@ export default function ContactIssueDetailPage({
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Left Column */}
         <div className="space-y-6">
-          <IssueInfoCard subject={issue.subject} description={issue.description} category={issue.category} />
+          <IssueInfoCard
+            subject={issue.subject}
+            description={issue.description}
+            category={issue.category}
+          />
           <IssueImageCard imageUrls={issue.imageUrls} />
         </div>
 

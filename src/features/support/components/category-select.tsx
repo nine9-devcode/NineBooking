@@ -1,26 +1,33 @@
-import { AlertCircle, CalendarDays, CreditCard, Bug, UserCircle, HelpCircle } from 'lucide-react'
+import {
+  AlertCircle,
+  CalendarDays,
+  CreditCard,
+  Bug,
+  UserCircle,
+  HelpCircle,
+} from "lucide-react"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from "@/components/ui/select"
 
 const CATEGORIES = [
-  { value: 'BOOKING', label: 'การจอง', icon: CalendarDays },
-  { value: 'PAYMENT', label: 'การชำระเงิน', icon: CreditCard },
-  { value: 'USAGE_ISSUE', label: 'ปัญหาการใช้งาน', icon: Bug },
-  { value: 'ACCOUNT', label: 'บัญชีผู้ใช้', icon: UserCircle },
-  { value: 'OTHER', label: 'อื่นๆ', icon: HelpCircle },
+  { value: "BOOKING", label: "การจอง", icon: CalendarDays },
+  { value: "PAYMENT", label: "การชำระเงิน", icon: CreditCard },
+  { value: "USAGE_ISSUE", label: "ปัญหาการใช้งาน", icon: Bug },
+  { value: "ACCOUNT", label: "บัญชีผู้ใช้", icon: UserCircle },
+  { value: "OTHER", label: "อื่นๆ", icon: HelpCircle },
 ] as const
 
 export const CATEGORY_MAP: Record<string, { label: string; icon: typeof CalendarDays }> = {
-  BOOKING: { label: 'การจอง', icon: CalendarDays },
-  PAYMENT: { label: 'การชำระเงิน', icon: CreditCard },
-  USAGE_ISSUE: { label: 'ปัญหาการใช้งาน', icon: Bug },
-  ACCOUNT: { label: 'บัญชีผู้ใช้', icon: UserCircle },
-  OTHER: { label: 'อื่นๆ', icon: HelpCircle },
+  BOOKING: { label: "การจอง", icon: CalendarDays },
+  PAYMENT: { label: "การชำระเงิน", icon: CreditCard },
+  USAGE_ISSUE: { label: "ปัญหาการใช้งาน", icon: Bug },
+  ACCOUNT: { label: "บัญชีผู้ใช้", icon: UserCircle },
+  OTHER: { label: "อื่นๆ", icon: HelpCircle },
 }
 
 interface CategorySelectProps {
@@ -39,7 +46,7 @@ export function CategorySelect({ value, onChange, error, disabled }: CategorySel
       <Select value={value} onValueChange={onChange} disabled={disabled}>
         <SelectTrigger
           className={`w-full px-4 py-3 h-auto text-sm ${
-            error ? 'border-destructive/40' : 'border-border'
+            error ? "border-destructive/40" : "border-border"
           } rounded-lg focus:ring-2 focus:ring-primary`}
         >
           <SelectValue placeholder="เลือกประเภทปัญหา" />

@@ -10,13 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { provinces } from "@/lib/thailand-addresses"
 import { MapPin } from "lucide-react"
 import { EditUserFormValues } from "./schema"
@@ -118,7 +112,9 @@ export function AddressTab({ form }: AddressTabProps) {
               >
                 <FormControl>
                   <SelectTrigger className="bg-card border-border text-foreground focus:border-primary disabled:opacity-50 min-w-0">
-                    <SelectValue placeholder={watchedProvinceCode ? "เลือกอำเภอ/เขต" : "เลือกจังหวัดก่อน"} />
+                    <SelectValue
+                      placeholder={watchedProvinceCode ? "เลือกอำเภอ/เขต" : "เลือกจังหวัดก่อน"}
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-card border-border max-h-60">
@@ -155,7 +151,9 @@ export function AddressTab({ form }: AddressTabProps) {
               >
                 <FormControl>
                   <SelectTrigger className="bg-card border-border text-foreground focus:border-primary disabled:opacity-50 min-w-0">
-                    <SelectValue placeholder={watchedDistrictCode ? "เลือกตำบล/แขวง" : "เลือกอำเภอก่อน"} />
+                    <SelectValue
+                      placeholder={watchedDistrictCode ? "เลือกตำบล/แขวง" : "เลือกอำเภอก่อน"}
+                    />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-card border-border max-h-60">

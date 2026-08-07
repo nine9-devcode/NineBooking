@@ -95,7 +95,10 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
 
   const handleSave = async () => {
     const ne = validateName(name)
-    if (ne) { setNameError(ne); return }
+    if (ne) {
+      setNameError(ne)
+      return
+    }
 
     // Validate password if filled
     if (newPassword || confirmPassword) {
@@ -169,7 +172,6 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
     }
   }
 
-
   if (!user) return null
 
   return (
@@ -227,7 +229,11 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => { setNewPhone(""); setPhoneError(""); setShowPhoneDialog(true) }}
+                  onClick={() => {
+                    setNewPhone("")
+                    setPhoneError("")
+                    setShowPhoneDialog(true)
+                  }}
                   disabled={isLoading}
                   className="border-border text-foreground hover:bg-secondary hover:text-foreground whitespace-nowrap"
                 >
@@ -235,7 +241,6 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
                   เปลี่ยนเบอร์
                 </Button>
               </div>
-              
             </div>
 
             {/* Divider */}
@@ -250,7 +255,10 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
                 <Input
                   type={showNewPassword ? "text" : "password"}
                   value={newPassword}
-                  onChange={(e) => { setNewPassword(e.target.value); setPasswordError("") }}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value)
+                    setPasswordError("")
+                  }}
                   placeholder="อย่างน้อย 6 ตัวอักษร"
                   disabled={isLoading}
                   className={`bg-card border-border text-foreground placeholder:text-muted-foreground pr-10 focus-visible:ring-primary ${passwordError ? "border-destructive/40" : ""}`}
@@ -261,7 +269,11 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   tabIndex={-1}
                 >
-                  {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showNewPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
 
@@ -288,7 +300,10 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
                 <Input
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmPassword}
-                  onChange={(e) => { setConfirmPassword(e.target.value); setPasswordError("") }}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value)
+                    setPasswordError("")
+                  }}
                   disabled={isLoading}
                   className={`bg-card border-border text-foreground placeholder:text-muted-foreground pr-10 focus-visible:ring-primary ${passwordError ? "border-destructive/40" : ""}`}
                 />
@@ -298,7 +313,11 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                   tabIndex={-1}
                 >
-                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
               {passwordError && <p className="text-sm text-destructive">{passwordError}</p>}
@@ -352,7 +371,9 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
             <div className="space-y-2">
               <Label className="text-foreground">
                 เบอร์โทรศัพท์ใหม่
-                <span className="text-xs text-muted-foreground ml-2">({newPhone.length}/10)</span>
+                <span className="text-xs text-muted-foreground ml-2">
+                  ({newPhone.length}/10)
+                </span>
               </Label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -392,7 +413,6 @@ export function EditAdminModal({ isOpen, user, onClose, onSuccess }: EditAdminMo
           </div>
         </DialogContent>
       </Dialog>
-
     </>
   )
 }

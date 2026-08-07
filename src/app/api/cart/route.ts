@@ -16,10 +16,7 @@ export async function GET(request: NextRequest) {
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -68,10 +65,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching cart:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูลตะกร้า" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูลตะกร้า" }, { status: 500 })
   }
 }
 
@@ -81,10 +75,7 @@ export async function POST(request: NextRequest) {
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -109,17 +100,11 @@ export async function POST(request: NextRequest) {
     })
 
     if (!product) {
-      return NextResponse.json(
-        { error: "ไม่พบสินค้า" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบสินค้า" }, { status: 404 })
     }
 
     if (!product.isActive) {
-      return NextResponse.json(
-        { error: "สินค้านี้ไม่พร้อมให้จองในขณะนี้" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "สินค้านี้ไม่พร้อมให้จองในขณะนี้" }, { status: 400 })
     }
 
     // ตรวจสอบ paired product (ถ้ามี)
@@ -130,10 +115,7 @@ export async function POST(request: NextRequest) {
       })
 
       if (!pairedProduct || !pairedProduct.isActive) {
-        return NextResponse.json(
-          { error: "สินค้าที่จับคู่ไม่พร้อมใช้งาน" },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: "สินค้าที่จับคู่ไม่พร้อมใช้งาน" }, { status: 400 })
       }
     }
 
@@ -233,10 +215,7 @@ export async function POST(request: NextRequest) {
     )
   } catch (error) {
     console.error("Error adding to cart:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการเพิ่มสินค้า" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการเพิ่มสินค้า" }, { status: 500 })
   }
 }
 
@@ -246,10 +225,7 @@ export async function DELETE(request: NextRequest) {
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -263,9 +239,6 @@ export async function DELETE(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error clearing cart:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการล้างตะกร้า" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการล้างตะกร้า" }, { status: 500 })
   }
 }

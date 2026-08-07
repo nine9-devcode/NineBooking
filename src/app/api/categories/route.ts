@@ -19,20 +19,14 @@ export async function GET(request: NextRequest) {
             },
           },
           // เรียงหมวดย่อยตาม sortOrder
-          orderBy: [
-            { sortOrder: "asc" },
-            { name: "asc" },
-          ],
+          orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
         },
         _count: {
           select: { products: { where: { isActive: true } } },
         },
       },
       // เรียงหมวดหลักตาม sortOrder
-      orderBy: [
-        { sortOrder: "asc" },
-        { name: "asc" },
-      ],
+      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     })
 
     // คำนวณจำนวนสินค้ารวม children
@@ -55,9 +49,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching categories:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูลหมวดหมู่" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูลหมวดหมู่" }, { status: 500 })
   }
 }

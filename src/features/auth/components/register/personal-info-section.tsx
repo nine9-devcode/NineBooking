@@ -60,9 +60,7 @@ export function PersonalInfoSection({
           maxLength={40}
           className={formErrors.name ? "border-destructive/40" : ""}
         />
-        {formErrors.name && (
-          <p className="text-sm text-destructive">{formErrors.name}</p>
-        )}
+        {formErrors.name && <p className="text-sm text-destructive">{formErrors.name}</p>}
         <p className="text-xs text-muted-foreground">
           ใส่ชื่อ-นามสกุลภาษาไทยหรืออังกฤษ (3-40 ตัวอักษร)
         </p>
@@ -110,9 +108,7 @@ export function PersonalInfoSection({
           autoComplete="email"
           className={formErrors.email ? "border-destructive/40" : ""}
         />
-        {formErrors.email && (
-          <p className="text-sm text-destructive">{formErrors.email}</p>
-        )}
+        {formErrors.email && <p className="text-sm text-destructive">{formErrors.email}</p>}
       </div>
 
       {/* รหัสผ่าน */}
@@ -145,9 +141,7 @@ export function PersonalInfoSection({
         {formErrors.password && (
           <p className="text-sm text-destructive">{formErrors.password}</p>
         )}
-        <p className="text-xs text-muted-foreground">
-          ใส่รหัสผ่านอย่างน้อย 6 ตัวอักษร
-        </p>
+        <p className="text-xs text-muted-foreground">ใส่รหัสผ่านอย่างน้อย 6 ตัวอักษร</p>
       </div>
 
       {/* ยืนยันรหัสผ่าน */}
@@ -205,9 +199,7 @@ export function PersonalInfoSection({
             className={formErrors.phone ? "border-destructive" : ""}
           />
         </div>
-        {formErrors.phone && (
-          <p className="text-sm text-destructive">{formErrors.phone}</p>
-        )}
+        {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
         <p className="text-xs text-muted-foreground">ใส่เบอร์โทรศัพท์ 10 หลัก</p>
       </div>
 
@@ -221,9 +213,7 @@ export function PersonalInfoSection({
           onValueChange={handleResidenceTypeChange}
           disabled={isLoading}
         >
-          <SelectTrigger 
-            className={formErrors.residenceType ? "border-destructive/40" : ""}
-          >
+          <SelectTrigger className={formErrors.residenceType ? "border-destructive/40" : ""}>
             <SelectValue placeholder="เลือกประเภทที่อยู่อาศัย" />
           </SelectTrigger>
           <SelectContent>
@@ -255,7 +245,11 @@ export function PersonalInfoSection({
             disabled={isLoading}
             required
             maxLength={50}
-            className={!formData.residenceTypeOther && formErrors.residenceType ? "border-destructive/40" : ""}
+            className={
+              !formData.residenceTypeOther && formErrors.residenceType
+                ? "border-destructive/40"
+                : ""
+            }
           />
         </div>
       )}

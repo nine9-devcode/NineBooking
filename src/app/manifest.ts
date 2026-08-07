@@ -15,8 +15,6 @@ export default function manifest(): MetadataRoute.Manifest {
     background_color: siteConfig.themeColor,
     theme_color: siteConfig.themeColor,
     categories: ["business", "shopping"],
-    icons: [
-      { src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" },
-    ],
+    icons: [{ src: "/icon.svg", sizes: "any", type: "image/svg+xml", purpose: "any" }],
   }
 }

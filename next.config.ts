@@ -20,9 +20,7 @@ const nextConfig: NextConfig = {
       {
         // ไฟล์ static ที่ชื่อมี hash อยู่แล้ว แคชยาวได้
         source: "/(.*)\\.(ico|png|jpg|jpeg|svg|gif|webp|woff|woff2)",
-        headers: [
-          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-        ],
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
       },
     ]
   },

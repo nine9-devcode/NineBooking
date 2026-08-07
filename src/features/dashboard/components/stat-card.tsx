@@ -36,9 +36,7 @@ export function StatCard({
           <div className="space-y-2 flex-1">
             <p className="text-sm text-muted-foreground font-medium">{title}</p>
             <p className="text-3xl font-bold text-foreground">{value}</p>
-            {description && (
-              <p className="text-sm text-muted-foreground">{description}</p>
-            )}
+            {description && <p className="text-sm text-muted-foreground">{description}</p>}
             {trend && (
               <div className="flex items-center gap-1">
                 <span

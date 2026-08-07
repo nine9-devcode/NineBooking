@@ -1,5 +1,5 @@
-import { Camera, X, AlertCircle, Plus } from 'lucide-react'
-import { useState, useRef } from 'react'
+import { Camera, X, AlertCircle, Plus } from "lucide-react"
+import { useState, useRef } from "react"
 
 interface MultiImageUploadProps {
   images: File[]
@@ -29,7 +29,7 @@ export function MultiImageUpload({
     if (!fileList) return
 
     const newFiles: File[] = []
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"]
     const maxSize = 5 * 1024 * 1024
 
     const remaining = maxImages - images.length
@@ -47,7 +47,7 @@ export function MultiImageUpload({
 
     // Reset input
     if (inputRef.current) {
-      inputRef.current.value = ''
+      inputRef.current.value = ""
     }
   }
 
@@ -142,13 +142,15 @@ export function MultiImageUpload({
             disabled={disabled}
             className={`flex flex-col items-center justify-center w-full h-48 sm:h-56 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200 ${
               isDragging
-                ? 'border-primary/40 bg-primary/10 scale-[1.02]'
+                ? "border-primary/40 bg-primary/10 scale-[1.02]"
                 : error
-                ? 'border-destructive/40 bg-destructive/10'
-                : 'border-border bg-muted hover:border-primary/40 hover:bg-primary/10'
-            } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  ? "border-destructive/40 bg-destructive/10"
+                  : "border-border bg-muted hover:border-primary/40 hover:bg-primary/10"
+            } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            <Camera className={`w-12 h-12 sm:w-14 sm:h-14 mb-3 ${error ? 'text-destructive' : 'text-muted-foreground'}`} />
+            <Camera
+              className={`w-12 h-12 sm:w-14 sm:h-14 mb-3 ${error ? "text-destructive" : "text-muted-foreground"}`}
+            />
             <p className="text-sm sm:text-base text-muted-foreground font-semibold">
               คลิกเพื่ออัปโหลดรูปภาพ
             </p>

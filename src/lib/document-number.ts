@@ -67,9 +67,7 @@ export async function nextIssueNumber(tx: Prisma.TransactionClient): Promise<str
 }
 
 /** QT-2026-0001 — เลขฐานของใบเสนอราคา ส่วน version ต่อท้ายจัดการแยกในฟีเจอร์นั้น */
-export async function nextQuotationBaseNumber(
-  tx: Prisma.TransactionClient
-): Promise<string> {
+export async function nextQuotationBaseNumber(tx: Prisma.TransactionClient): Promise<string> {
   const period = localYearKey()
   const sequence = await nextSequence(tx, "QUOTATION", period)
 

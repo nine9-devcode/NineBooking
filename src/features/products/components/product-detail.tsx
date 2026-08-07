@@ -11,7 +11,10 @@ import { Navbar } from "@/components/layout/navbar"
 import { ProductGallery } from "@/features/products/components/product-gallery"
 import { ProductCard } from "@/features/products/components/product-card"
 import { AddToCartButton } from "@/features/cart/components/add-to-cart-button"
-import { PairedProducts, SelectedPairedProduct } from "@/features/products/components/paired-products"
+import {
+  PairedProducts,
+  SelectedPairedProduct,
+} from "@/features/products/components/paired-products"
 import { Footer } from "@/components/layout/footer"
 import DOMPurify from "dompurify"
 import {
@@ -103,7 +106,9 @@ export function ProductDetail({ slug }: ProductDetailProps) {
   // State สำหรับ Paired Products
   const [pairedCategories, setPairedCategories] = useState<PairedCategory[]>([])
   const [pairedProducts, setPairedProducts] = useState<PairedProduct[]>([])
-  const [selectedPairedProducts, setSelectedPairedProducts] = useState<SelectedPairedProduct[]>([])
+  const [selectedPairedProducts, setSelectedPairedProducts] = useState<SelectedPairedProduct[]>(
+    []
+  )
 
   // Ref เพื่อป้องกันการเรียก View API ซ้ำ
   const viewTrackedRef = useRef<string | null>(null)
@@ -125,7 +130,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
 
       try {
         const res = await fetch(`/api/products/${slug}`)
-        
+
         if (!res.ok) {
           if (res.status === 404) {
             setError("ไม่พบสินค้าที่ค้นหา")
@@ -157,7 +162,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
       if (!product || viewTrackedRef.current === slug) return
       try {
         await fetch(`/api/products/${slug}/view`, {
-          method: 'POST',
+          method: "POST",
         })
         viewTrackedRef.current = slug
       } catch (err) {
@@ -177,7 +182,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
 
       try {
         const res = await fetch(`/api/products/${slug}/paired`)
-        
+
         if (res.ok) {
           const data = await res.json()
           setPairedCategories(data.pairedCategories || [])
@@ -288,9 +293,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
             <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
 
             {/* Product Name */}
-            <span className="text-foreground font-medium truncate">
-              {product.name}
-            </span>
+            <span className="text-foreground font-medium truncate">{product.name}</span>
           </nav>
 
           {/* Product Content */}
@@ -324,9 +327,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
 
                 {/* Subtitle */}
                 {product.subtitle && (
-                  <p className="text-lg text-muted-foreground mb-4">
-                    {product.subtitle}
-                  </p>
+                  <p className="text-lg text-muted-foreground mb-4">{product.subtitle}</p>
                 )}
 
                 {/* Divider */}
@@ -338,9 +339,11 @@ export function ProductDetail({ slug }: ProductDetailProps) {
                     <h2 className="text-lg font-semibold text-foreground mb-3">
                       รายละเอียดสินค้า
                     </h2>
-                    <div 
+                    <div
                       className="product-description"
-                      dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(product.description) }}
+                      dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(product.description),
+                      }}
                     />
                   </div>
                 )}
@@ -383,8 +386,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
                           >
                             <Icon className={`w-5 h-5 ${iconColor}`} />
                             <span className="font-medium">
-                              {datasheet.type === "url" ? "เปิด" : "ดาวน์โหลด"}{" "}
-                              {datasheet.name}
+                              {datasheet.type === "url" ? "เปิด" : "ดาวน์โหลด"} {datasheet.name}
                             </span>
                             <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-muted-foreground" />
                           </a>
@@ -431,10 +433,7 @@ export function ProductDetail({ slug }: ProductDetailProps) {
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {relatedProducts.map((relProduct) => (
-                  <ProductCard
-                    key={relProduct.id}
-                    product={relProduct}
-                  />
+                  <ProductCard key={relProduct.id} product={relProduct} />
                 ))}
               </div>
             </div>

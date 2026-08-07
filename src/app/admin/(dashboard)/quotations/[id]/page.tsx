@@ -146,9 +146,7 @@ export default function QuotationDetailPage() {
 
   const handleItemPriceChange = (tempId: string, value: number) => {
     setItems((prev) =>
-      prev.map((item) =>
-        item.tempId === tempId ? { ...item, unitPrice: value } : item
-      )
+      prev.map((item) => (item.tempId === tempId ? { ...item, unitPrice: value } : item))
     )
   }
 
@@ -297,10 +295,7 @@ export default function QuotationDetailPage() {
         <div className="flex items-center gap-2 flex-wrap">
           {/* Link to Order */}
           <Link href={`/admin/orders/${quotation.orderId}`}>
-            <Button
-              variant="outline"
-              className="border-border text-foreground hover:bg-card"
-            >
+            <Button variant="outline" className="border-border text-foreground hover:bg-card">
               <ExternalLink className="w-4 h-4 mr-2" />
               ดูคำสั่งจอง
             </Button>
@@ -319,9 +314,7 @@ export default function QuotationDetailPage() {
           {/* Download */}
           <Button
             variant="outline"
-            onClick={() =>
-              window.open(`/api/admin/quotations/${quotationId}/pdf`, "_blank")
-            }
+            onClick={() => window.open(`/api/admin/quotations/${quotationId}/pdf`, "_blank")}
             className="border-border text-foreground hover:bg-card"
           >
             <Download className="w-4 h-4 mr-2" />
@@ -434,10 +427,7 @@ export default function QuotationDetailPage() {
         {/* Right Column - Sidebar */}
         <div className="space-y-6">
           {/* Customer Info */}
-          <QuotationCustomerInfo
-            customer={quotation.customer}
-            user={quotation.user}
-          />
+          <QuotationCustomerInfo customer={quotation.customer} user={quotation.user} />
 
           {/* Shipping Info */}
           <QuotationShippingInfo shipping={quotation.shipping} />

@@ -22,11 +22,11 @@ export interface QuotationTotals {
 // Helper: Group items by main/paired
 export function groupQuotationItems(items: QuotationItemFormData[]): GroupedQuotationItem[] {
   const groups: GroupedQuotationItem[] = []
-  const mainItems = items.filter(i => !i.isPairedProduct)
+  const mainItems = items.filter((i) => !i.isPairedProduct)
 
-  mainItems.forEach(mainItem => {
+  mainItems.forEach((mainItem) => {
     const pairedItems = items.filter(
-      i => i.isPairedProduct && i.pairedWithTempId === mainItem.tempId
+      (i) => i.isPairedProduct && i.pairedWithTempId === mainItem.tempId
     )
     groups.push({ main: mainItem, paired: pairedItems })
   })
@@ -40,25 +40,24 @@ export function calculateTotals(
   includeVat: boolean,
   vatPercent: number
 ): QuotationTotals {
-  const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
+  const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
   const vatAmount = includeVat ? subtotal * (vatPercent / 100) : 0
   const totalAmount = subtotal + vatAmount
   return { subtotal, vatAmount, totalAmount }
 }
 
 // Helper: Map QuotationItem to FormData
-export function mapItemsToFormData(
-  items: QuotationItem[]
-): QuotationItemFormData[] {
+export function mapItemsToFormData(items: QuotationItem[]): QuotationItemFormData[] {
   return items.map((item) => ({
     tempId: item.id,
     productId: item.productId,
     productName: item.productName,
     productImage: item.productImage,
     isPairedProduct: item.isPairedProduct,
-    pairedWithTempId: item.pairedWithIndex !== null
-      ? items.find((i) => i.sortOrder === item.pairedWithIndex)?.id || null
-      : null,
+    pairedWithTempId:
+      item.pairedWithIndex !== null
+        ? items.find((i) => i.sortOrder === item.pairedWithIndex)?.id || null
+        : null,
     quantity: item.quantity,
     unitPrice: item.unitPrice,
   }))

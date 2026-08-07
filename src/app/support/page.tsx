@@ -1,15 +1,15 @@
 // app/support/page.tsx
-'use client'
+"use client"
 
-import { useState, useEffect, useCallback } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import { Loader2, Send, History } from 'lucide-react'
-import { toast } from 'sonner'
-import { Navbar } from '@/components/layout/navbar'
-import { Footer } from '@/components/layout/footer'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { useSupportNotifications } from '@/features/notifications/hooks/use-support-notifications'
+import { useState, useEffect, useCallback } from "react"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
+import { Loader2, Send, History } from "lucide-react"
+import { toast } from "sonner"
+import { Navbar } from "@/components/layout/navbar"
+import { Footer } from "@/components/layout/footer"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
+import { useSupportNotifications } from "@/features/notifications/hooks/use-support-notifications"
 import {
   SupportHeader,
   SubjectInput,
@@ -21,7 +21,7 @@ import {
   SupportFooter,
   SupportFormCard,
   IssueHistoryList,
-} from '@/features/support/components'
+} from "@/features/support/components"
 
 export default function ContactPage() {
   const { status } = useSession()
@@ -29,20 +29,20 @@ export default function ContactPage() {
   const { refresh: refreshSupportNotifications } = useSupportNotifications()
 
   // Tab State
-  const [activeTab, setActiveTab] = useState('report')
+  const [activeTab, setActiveTab] = useState("report")
 
   // Form State
   const [formData, setFormData] = useState({
-    subject: '',
-    description: '',
+    subject: "",
+    description: "",
   })
-  const [category, setCategory] = useState('')
+  const [category, setCategory] = useState("")
   const [images, setImages] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
 
   // UI State
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitStatus, setSubmitStatus] = useState<'success' | 'loading' | null>(null)
+  const [submitStatus, setSubmitStatus] = useState<"success" | "loading" | null>(null)
   const [errors, setErrors] = useState<any>({})
   const [countdown, setCountdown] = useState(0)
 
@@ -52,24 +52,24 @@ export default function ContactPage() {
 
   // Authentication Check
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/login')
+    if (status === "unauthenticated") {
+      router.push("/login")
     }
   }, [status, router])
 
   // Mark support notifications as read เมื่อเข้าหน้านี้
   useEffect(() => {
-    if (status !== 'authenticated') return
-    fetch('/api/user/support-notifications/read', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    if (status !== "authenticated") return
+    fetch("/api/user/support-notifications/read", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ markAll: true }),
     }).then(() => refreshSupportNotifications())
   }, [status, refreshSupportNotifications])
 
   // Countdown Timer
   useEffect(() => {
-    if (submitStatus === 'success' && countdown > 0) {
+    if (submitStatus === "success" && countdown > 0) {
       const timer = setTimeout(() => {
         setCountdown((prev) => prev - 1)
       }, 1000)
@@ -81,18 +81,18 @@ export default function ContactPage() {
   const fetchIssues = useCallback(async () => {
     setHistoryLoading(true)
     try {
-      const res = await fetch('/api/support')
+      const res = await fetch("/api/support")
       const data = await res.json()
       setIssues(data.issues || [])
     } catch {
-      toast.error('ไม่สามารถโหลดประวัติได้')
+      toast.error("ไม่สามารถโหลดประวัติได้")
     } finally {
       setHistoryLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    if (activeTab === 'history') {
+    if (activeTab === "history") {
       fetchIssues()
     }
   }, [activeTab, fetchIssues])
@@ -101,27 +101,27 @@ export default function ContactPage() {
   const handleSubjectChange = (value: string) => {
     setFormData((prev) => ({ ...prev, subject: value }))
     if (errors.subject) {
-      setErrors((prev: any) => ({ ...prev, subject: '' }))
+      setErrors((prev: any) => ({ ...prev, subject: "" }))
     }
   }
 
   const handleDescriptionChange = (value: string) => {
     setFormData((prev) => ({ ...prev, description: value }))
     if (errors.description) {
-      setErrors((prev: any) => ({ ...prev, description: '' }))
+      setErrors((prev: any) => ({ ...prev, description: "" }))
     }
   }
 
   const handleCategoryChange = (value: string) => {
     setCategory(value)
     if (errors.category) {
-      setErrors((prev: any) => ({ ...prev, category: '' }))
+      setErrors((prev: any) => ({ ...prev, category: "" }))
     }
   }
 
   const handleImagesChange = (files: File[]) => {
     setImages(files)
-    setErrors((prev: any) => ({ ...prev, image: '' }))
+    setErrors((prev: any) => ({ ...prev, image: "" }))
 
     // Generate previews
     const previews: string[] = []
@@ -152,17 +152,17 @@ export default function ContactPage() {
     const newErrors: any = {}
 
     if (!category) {
-      newErrors.category = 'กรุณาเลือกประเภทปัญหา'
+      newErrors.category = "กรุณาเลือกประเภทปัญหา"
     }
 
     if (!formData.subject.trim()) {
-      newErrors.subject = 'กรุณาระบุหัวข้อปัญหา'
+      newErrors.subject = "กรุณาระบุหัวข้อปัญหา"
     }
 
     if (!formData.description.trim()) {
-      newErrors.description = 'กรุณาอธิบายรายละเอียดปัญหา'
+      newErrors.description = "กรุณาอธิบายรายละเอียดปัญหา"
     } else if (formData.description.trim().length < 10) {
-      newErrors.description = 'กรุณาอธิบายรายละเอียดอย่างน้อย 10 ตัวอักษร'
+      newErrors.description = "กรุณาอธิบายรายละเอียดอย่างน้อย 10 ตัวอักษร"
     }
 
     setErrors(newErrors)
@@ -173,65 +173,61 @@ export default function ContactPage() {
     if (!validateForm()) return
 
     setIsSubmitting(true)
-    setSubmitStatus('loading')
+    setSubmitStatus("loading")
 
     try {
       const formDataToSend = new FormData()
-      formDataToSend.append('subject', formData.subject.trim())
-      formDataToSend.append('description', formData.description.trim())
-      formDataToSend.append('category', category)
+      formDataToSend.append("subject", formData.subject.trim())
+      formDataToSend.append("description", formData.description.trim())
+      formDataToSend.append("category", category)
 
       images.forEach((img) => {
-        formDataToSend.append('files', img)
+        formDataToSend.append("files", img)
       })
 
-      const response = await fetch('/api/support', {
-        method: 'POST',
+      const response = await fetch("/api/support", {
+        method: "POST",
         body: formDataToSend,
       })
 
-      const contentType = response.headers.get('content-type')
-      if (!contentType?.includes('application/json')) {
-        throw new Error('ระบบตอบกลับไม่ถูกต้อง')
+      const contentType = response.headers.get("content-type")
+      if (!contentType?.includes("application/json")) {
+        throw new Error("ระบบตอบกลับไม่ถูกต้อง")
       }
 
       const data = await response.json()
 
       if (!response.ok) {
-        throw new Error(data.error || 'เกิดข้อผิดพลาดในการส่งข้อมูล')
+        throw new Error(data.error || "เกิดข้อผิดพลาดในการส่งข้อมูล")
       }
 
-      setSubmitStatus('success')
+      setSubmitStatus("success")
       setCountdown(3)
 
       // Reset form after 3 seconds
       setTimeout(() => {
-        setFormData({ subject: '', description: '' })
-        setCategory('')
+        setFormData({ subject: "", description: "" })
+        setCategory("")
         setImages([])
         setImagePreviews([])
         setSubmitStatus(null)
         setCountdown(0)
       }, 3000)
     } catch (error) {
-      console.error('Submit error:', error)
+      console.error("Submit error:", error)
       setSubmitStatus(null)
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : 'เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ'
-      )
+      toast.error(error instanceof Error ? error.message : "เกิดข้อผิดพลาดที่ไม่ทราบสาเหตุ")
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleViewHistory = () => {
-    setActiveTab('history')
+    setActiveTab("history")
   }
 
   // Loading State
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <>
         <Navbar currentPage="แจ้งปัญหา" />
@@ -315,18 +311,12 @@ export default function ContactPage() {
                 />
 
                 {/* Submit Button */}
-                <SubmitButton
-                  onClick={handleSubmit}
-                  isSubmitting={isSubmitting}
-                />
+                <SubmitButton onClick={handleSubmit} isSubmitting={isSubmitting} />
               </TabsContent>
 
               {/* History Tab */}
               <TabsContent value="history">
-                <IssueHistoryList
-                  issues={issues}
-                  loading={historyLoading}
-                />
+                <IssueHistoryList issues={issues} loading={historyLoading} />
               </TabsContent>
             </Tabs>
           </SupportFormCard>

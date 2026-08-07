@@ -17,7 +17,10 @@ test.describe("เส้นทางการจอง", () => {
     await page.getByRole("link", { name: /กล้อง/ }).first().click()
     await expect(page).toHaveURL(/\/products\//)
 
-    await page.getByRole("button", { name: /เพิ่มลงตะกร้า|หยิบใส่ตะกร้า/ }).first().click()
+    await page
+      .getByRole("button", { name: /เพิ่มลงตะกร้า|หยิบใส่ตะกร้า/ })
+      .first()
+      .click()
 
     await page.goto("/cart")
     await expect(page.getByRole("heading", { name: "ตะกร้าสินค้า" })).toBeVisible()

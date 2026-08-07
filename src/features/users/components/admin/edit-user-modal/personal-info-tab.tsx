@@ -31,9 +31,10 @@ export function PersonalInfoTab({ form }: PersonalInfoTabProps) {
   const watchedResidenceType = form.watch("residenceType")
 
   // ตรวจสอบว่าค่าปัจจุบันเป็นค่าที่กำหนดไว้หรือไม่
-  const isPresetValue = RESIDENCE_TYPES.some(t => t.value === watchedResidenceType)
+  const isPresetValue = RESIDENCE_TYPES.some((t) => t.value === watchedResidenceType)
   // ถ้าไม่ใช่ค่า preset และไม่ใช่ "other" แสดงว่าเป็นค่า custom ที่เคยกรอกไว้
-  const isCustomValue = watchedResidenceType && watchedResidenceType !== "other" && !isPresetValue
+  const isCustomValue =
+    watchedResidenceType && watchedResidenceType !== "other" && !isPresetValue
   // แสดง input กรอกเองเมื่อเลือก "other" หรือมีค่า custom
   const showCustomInput = watchedResidenceType === "other" || isCustomValue
 
@@ -180,7 +181,7 @@ export function PersonalInfoTab({ form }: PersonalInfoTabProps) {
                 <Home className="w-3.5 h-3.5" />
                 ประเภทที่อยู่อาศัย <span className="text-destructive">*</span>
               </FormLabel>
-              <Select 
+              <Select
                 onValueChange={(value) => {
                   if (value === "other") {
                     // ถ้าเลือก "อื่นๆ" ให้ set เป็น "other" ก่อน แล้วค่อยให้กรอก
@@ -188,13 +189,21 @@ export function PersonalInfoTab({ form }: PersonalInfoTabProps) {
                   } else {
                     field.onChange(value)
                   }
-                }} 
-                value={isCustomValue || watchedResidenceType === "other" ? "other" : (field.value || "")}
+                }}
+                value={
+                  isCustomValue || watchedResidenceType === "other"
+                    ? "other"
+                    : field.value || ""
+                }
               >
                 <FormControl>
                   <SelectTrigger className="bg-card border-border text-foreground focus:border-primary min-w-0">
-                    <SelectValue 
-                      placeholder={isCustomValue ? `อื่นๆ: ${watchedResidenceType}` : "เลือกประเภทที่อยู่อาศัย"} 
+                    <SelectValue
+                      placeholder={
+                        isCustomValue
+                          ? `อื่นๆ: ${watchedResidenceType}`
+                          : "เลือกประเภทที่อยู่อาศัย"
+                      }
                     />
                   </SelectTrigger>
                 </FormControl>
@@ -223,7 +232,7 @@ export function PersonalInfoTab({ form }: PersonalInfoTabProps) {
             ระบุประเภทที่อยู่อาศัย <span className="text-destructive">*</span>
           </label>
           <Input
-            value={watchedResidenceType === "other" ? "" : (watchedResidenceType || "")}
+            value={watchedResidenceType === "other" ? "" : watchedResidenceType || ""}
             onChange={(e) => {
               const value = e.target.value
               // ถ้าลบจนว่าง set เป็น "other"
@@ -252,7 +261,9 @@ export function PersonalInfoTab({ form }: PersonalInfoTabProps) {
             <FormLabel className="text-foreground flex items-center gap-1.5">
               <MessageSquare className="w-3.5 h-3.5" />
               หมายเหตุประเภทสมาชิก
-              <span className="text-muted-foreground text-xs font-normal ml-1">(ไม่บังคับ)</span>
+              <span className="text-muted-foreground text-xs font-normal ml-1">
+                (ไม่บังคับ)
+              </span>
             </FormLabel>
             <FormControl>
               <Textarea

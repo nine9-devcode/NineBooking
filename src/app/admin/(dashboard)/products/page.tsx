@@ -81,7 +81,8 @@ export default function ProductsPage() {
   const [, setTotal] = useState(0)
 
   const [exclusiveModalOpen, setExclusiveModalOpen] = useState(false)
-  const [selectedProductForExclusive, setSelectedProductForExclusive] = useState<Product | null>(null)
+  const [selectedProductForExclusive, setSelectedProductForExclusive] =
+    useState<Product | null>(null)
   // Modal states
   const [isFormOpen, setIsFormOpen] = useState(false)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
@@ -156,19 +157,19 @@ export default function ProductsPage() {
   }, [search, categoryFilter, statusFilter, page])
 
   const handleCategoryChange = (newCategoryId: string) => {
-    setCategoryFilter(newCategoryId);
-    setPage(1);
-  };
+    setCategoryFilter(newCategoryId)
+    setPage(1)
+  }
 
   const handleSearchChange = (newSearch: string) => {
-    setSearch(newSearch);
-    setPage(1);
-  };
+    setSearch(newSearch)
+    setPage(1)
+  }
 
   const handleStatusChange = (newStatus: string) => {
-    setStatusFilter(newStatus);
-    setPage(1);
-  };
+    setStatusFilter(newStatus)
+    setPage(1)
+  }
 
   const handleAdd = () => {
     setSelectedProduct(null)
@@ -228,14 +229,9 @@ export default function ProductsPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">จัดการสินค้า</h1>
-          <p className="text-muted-foreground mt-1">
-            จัดการข้อมูลสินค้าทั้งหมดในระบบ
-          </p>
+          <p className="text-muted-foreground mt-1">จัดการข้อมูลสินค้าทั้งหมดในระบบ</p>
         </div>
-        <Button
-          onClick={handleAdd}
-          className="bg-primary hover:bg-primary/90"
-        >
+        <Button onClick={handleAdd} className="bg-primary hover:bg-primary/90">
           <Plus className="w-4 h-4 mr-2" />
           เพิ่มสินค้าใหม่
         </Button>
@@ -254,9 +250,7 @@ export default function ProductsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">สินค้าทั้งหมด</p>
-                <p className="text-2xl font-bold text-foreground mt-1">
-                  {stats.total}
-                </p>
+                <p className="text-2xl font-bold text-foreground mt-1">{stats.total}</p>
               </div>
               <div className="w-12 h-12 bg-info/10 rounded-lg flex items-center justify-center">
                 <Package className="w-6 h-6 text-info" />
@@ -276,9 +270,7 @@ export default function ProductsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">เปิดใช้งาน</p>
-                <p className="text-2xl font-bold text-foreground mt-1">
-                  {stats.active}
-                </p>
+                <p className="text-2xl font-bold text-foreground mt-1">{stats.active}</p>
               </div>
               <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
                 <TrendingUp className="w-6 h-6 text-success" />
@@ -298,9 +290,7 @@ export default function ProductsPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-muted-foreground text-sm">ปิดใช้งาน</p>
-                <p className="text-2xl font-bold text-foreground mt-1">
-                  {stats.inactive}
-                </p>
+                <p className="text-2xl font-bold text-foreground mt-1">{stats.inactive}</p>
               </div>
               <div className="w-12 h-12 bg-destructive/10 rounded-lg flex items-center justify-center">
                 <Package className="w-6 h-6 text-destructive" />
@@ -343,11 +333,7 @@ export default function ProductsPage() {
               />
               {totalPages > 1 && (
                 <div className="border-t border-border p-4">
-                  <DataPagination
-                    page={page}
-                    totalPages={totalPages}
-                    onPageChange={setPage}
-                  />
+                  <DataPagination page={page} totalPages={totalPages} onPageChange={setPage} />
                 </div>
               )}
             </>

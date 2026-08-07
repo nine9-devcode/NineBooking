@@ -86,9 +86,7 @@ export function OrderCard({ order, hasNotification = false }: OrderCardProps) {
                   </p>
                   <p className="text-sm text-muted-foreground">
                     จำนวน:{" "}
-                    <span className="font-semibold text-primary">
-                      {item.quantity} ชิ้น
-                    </span>
+                    <span className="font-semibold text-primary">{item.quantity} ชิ้น</span>
                   </p>
                   {item.pairedProducts.length > 0 && (
                     <p className="text-xs text-warning">

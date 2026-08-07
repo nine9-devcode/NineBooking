@@ -57,7 +57,9 @@ export function DeleteCategoryDialog({
 
       if (response.ok) {
         if (data.deletedChildren > 0) {
-          toast.success(`ลบหมวดหมู่ "${category.name}" และหมวดหมู่ย่อย ${data.deletedChildren} รายการสำเร็จ`)
+          toast.success(
+            `ลบหมวดหมู่ "${category.name}" และหมวดหมู่ย่อย ${data.deletedChildren} รายการสำเร็จ`
+          )
         } else {
           toast.success(`ลบหมวดหมู่ "${category.name}" สำเร็จ`)
         }
@@ -94,9 +96,7 @@ export function DeleteCategoryDialog({
               <FolderTree className="w-4 h-4 text-primary" />
               <span className="font-semibold text-foreground">{category.name}</span>
             </div>
-            <div className="text-sm text-muted-foreground">
-              Slug: {category.slug}
-            </div>
+            <div className="text-sm text-muted-foreground">Slug: {category.slug}</div>
           </div>
 
           {/* Warning Messages */}

@@ -41,11 +41,11 @@ export default function MembersPage() {
       customer: 0,
       contractor: 0,
       dealer: 0,
-      other: 0
-    }
+      other: 0,
+    },
   })
   const [loading, setLoading] = useState(true)
-  
+
   // Filter & Pagination State
   const [search, setSearch] = useState("")
   const [role, setRole] = useState("")
@@ -72,41 +72,44 @@ export default function MembersPage() {
   }
 
   // Fetch Users List
-  const fetchUsers = useCallback(async (isRefresh = false) => {
-    try {
-      setLoading(true)
-      const params = new URLSearchParams({
-        search,
-        role,
-        page: page.toString(),
-        limit: limit.toString(),
-      })
-      
-      if (memberType !== "all") {
-        params.set("memberType", memberType)
+  const fetchUsers = useCallback(
+    async (isRefresh = false) => {
+      try {
+        setLoading(true)
+        const params = new URLSearchParams({
+          search,
+          role,
+          page: page.toString(),
+          limit: limit.toString(),
+        })
+
+        if (memberType !== "all") {
+          params.set("memberType", memberType)
+        }
+
+        const response = await fetch(`/api/admin/users?${params}`)
+        const data = await response.json()
+
+        if (!response.ok) throw new Error(data.error || "เกิดข้อผิดพลาด")
+
+        setUsers(data.users)
+        setTotalPages(data.pagination.totalPages)
+
+        if (data.stats) {
+          setStats(data.stats)
+        }
+
+        if (isRefresh) {
+          toast.success("รีเฟรชข้อมูลสำเร็จ")
+        }
+      } catch (error: unknown) {
+        toast.error(getErrorMessage(error))
+      } finally {
+        setLoading(false)
       }
-
-      const response = await fetch(`/api/admin/users?${params}`)
-      const data = await response.json()
-
-      if (!response.ok) throw new Error(data.error || "เกิดข้อผิดพลาด")
-
-      setUsers(data.users)
-      setTotalPages(data.pagination.totalPages)
-      
-      if (data.stats) {
-        setStats(data.stats)
-      }
-
-      if (isRefresh) {
-        toast.success("รีเฟรชข้อมูลสำเร็จ")
-      }
-    } catch (error: unknown) {
-      toast.error(getErrorMessage(error))
-    } finally {
-      setLoading(false)
-    }
-  }, [search, role, memberType, page])
+    },
+    [search, role, memberType, page]
+  )
 
   useEffect(() => {
     fetchUsers()
@@ -142,7 +145,7 @@ export default function MembersPage() {
   const handleSaveUser = async (formData: any) => {
     try {
       setIsSaving(true)
-      
+
       const dataToSend = {
         name: formData.name,
         nickname: formData.nickname || null,
@@ -156,7 +159,7 @@ export default function MembersPage() {
         subDistrict: formData.subDistrict || null,
         postalCode: formData.postalCode || null,
       }
-      
+
       const response = await fetch(`/api/admin/users/${formData.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -202,9 +205,7 @@ export default function MembersPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold text-foreground">
-              จัดการสมาชิก
-            </h1>
+            <h1 className="text-3xl font-bold text-foreground">จัดการสมาชิก</h1>
             <p className="text-sm text-muted-foreground">
               ดูและจัดการข้อมูลสมาชิก บทบาท และตรวจสอบประวัติการจอง
             </p>
@@ -226,7 +227,7 @@ export default function MembersPage() {
               <RefreshCw className="w-4 h-4 mr-2" />
               รีเฟรช
             </Button>
-                        <Button
+            <Button
               size="sm"
               onClick={() => setIsCreateAdminOpen(true)}
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -243,8 +244,14 @@ export default function MembersPage() {
           loading={false}
           activeMemberType={memberType}
           activeRole={role}
-          onMemberTypeChange={(val) => { setMemberType(val); setPage(1) }}
-          onRoleChange={(val) => { setRole(val); setPage(1) }}
+          onMemberTypeChange={(val) => {
+            setMemberType(val)
+            setPage(1)
+          }}
+          onRoleChange={(val) => {
+            setRole(val)
+            setPage(1)
+          }}
         />
 
         {/* Search & Filter */}
@@ -273,14 +280,14 @@ export default function MembersPage() {
                 <RefreshCw className="w-8 h-8 text-primary animate-spin" />
               </div>
             ) : (
-              <UsersTable 
-                data={users} 
+              <UsersTable
+                data={users}
                 isLoading={false}
                 page={page}
                 totalPages={totalPages}
                 onPageChange={(p: number) => setPage(p)}
-                onRefresh={fetchUsers} 
-                onEdit={handleEditClick} 
+                onRefresh={fetchUsers}
+                onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
               />
             )}

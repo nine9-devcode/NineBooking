@@ -38,8 +38,7 @@ export async function PATCH(request: NextRequest) {
     const guard = await requireAdmin()
     if (!guard.ok) return guard.response
 
-    const { siteTitle, siteDescription, ogImage, googleAnalyticsId } =
-      await request.json()
+    const { siteTitle, siteDescription, ogImage, googleAnalyticsId } = await request.json()
 
     if (!siteTitle?.trim()) return apiError("กรุณากรอกชื่อเว็บไซต์")
 

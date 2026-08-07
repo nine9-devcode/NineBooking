@@ -43,10 +43,7 @@ export async function GET(
     })
 
     if (!quotation) {
-      return NextResponse.json(
-        { error: "ไม่พบใบเสนอราคา" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบใบเสนอราคา" }, { status: 404 })
     }
 
     // Auto-expire isLatest
@@ -152,10 +149,7 @@ export async function GET(
     })
   } catch (error) {
     console.error("Error fetching quotation:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
@@ -243,8 +237,9 @@ export async function PATCH(
               totalAmount: new Decimal(totalAmount),
               validDays,
               validUntil,
-              notes: data.notes !== undefined ? (data.notes || null) : existingQuotation.notes,
-              pdfNotes: data.pdfNotes !== undefined ? data.pdfNotes : existingQuotation.pdfNotes,
+              notes: data.notes !== undefined ? data.notes || null : existingQuotation.notes,
+              pdfNotes:
+                data.pdfNotes !== undefined ? data.pdfNotes : existingQuotation.pdfNotes,
               createdBy: guard.user.id,
               createdByName: guard.user.name || "Admin",
               items: {
@@ -254,7 +249,7 @@ export async function PATCH(
                   productImage: item.productImage,
                   isPairedProduct: item.isPairedProduct,
                   pairedWithIndex: item.pairedWithTempId
-                    ? tempIdToIndex[item.pairedWithTempId] ?? null
+                    ? (tempIdToIndex[item.pairedWithTempId] ?? null)
                     : null,
                   quantity: item.quantity,
                   unitPrice: new Decimal(item.unitPrice),
@@ -283,10 +278,7 @@ export async function PATCH(
       data.items.forEach((item, index) => {
         tempIdToIndex[item.tempId] = index
       })
-      const subtotal = data.items.reduce(
-        (sum, item) => sum + item.quantity * item.unitPrice,
-        0
-      )
+      const subtotal = data.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
       const includeVat = data.includeVat ?? existingQuotation.includeVat
       const vatPercent = data.vatPercent ?? Number(existingQuotation.vatPercent)
       const vatAmount = includeVat ? subtotal * (vatPercent / 100) : 0
@@ -301,7 +293,7 @@ export async function PATCH(
           productImage: item.productImage,
           isPairedProduct: item.isPairedProduct,
           pairedWithIndex: item.pairedWithTempId
-            ? tempIdToIndex[item.pairedWithTempId] ?? null
+            ? (tempIdToIndex[item.pairedWithTempId] ?? null)
             : null,
           quantity: item.quantity,
           unitPrice: new Decimal(item.unitPrice),
@@ -331,7 +323,12 @@ export async function PATCH(
       return NextResponse.json({
         success: true,
         isNewVersion: false,
-        quotation: { id: updated.id, quotationNumber: updated.quotationNumber, status: updated.status, version: updated.version },
+        quotation: {
+          id: updated.id,
+          quotationNumber: updated.quotationNumber,
+          status: updated.status,
+          version: updated.version,
+        },
       })
     }
 
@@ -374,10 +371,7 @@ export async function PATCH(
     })
   } catch (error) {
     console.error("Error updating quotation:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการอัปเดต" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการอัปเดต" }, { status: 500 })
   }
 }
 
@@ -415,9 +409,6 @@ export async function DELETE(
     return NextResponse.json({ success: true, message: "ลบใบเสนอราคาเรียบร้อยแล้ว" })
   } catch (error) {
     console.error("Error deleting quotation:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการลบ" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการลบ" }, { status: 500 })
   }
 }

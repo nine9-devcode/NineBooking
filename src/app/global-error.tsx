@@ -32,11 +32,15 @@ export default function GlobalError({
         }}
       >
         <h1 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>ระบบขัดข้อง</h1>
-        <p style={{ maxWidth: 420, fontSize: 14, color: "#a9b3d0", margin: 0, lineHeight: 1.7 }}>
+        <p
+          style={{ maxWidth: 420, fontSize: 14, color: "#a9b3d0", margin: 0, lineHeight: 1.7 }}
+        >
           เกิดข้อผิดพลาดร้ายแรงจนแสดงหน้าเว็บตามปกติไม่ได้ กรุณาลองโหลดใหม่อีกครั้งครับ
         </p>
         {error.digest && (
-          <p style={{ fontSize: 12, color: "#7b87a8", margin: 0 }}>รหัสอ้างอิง: {error.digest}</p>
+          <p style={{ fontSize: 12, color: "#7b87a8", margin: 0 }}>
+            รหัสอ้างอิง: {error.digest}
+          </p>
         )}
 
         <button

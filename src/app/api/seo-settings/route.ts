@@ -42,7 +42,7 @@ export async function GET() {
     return NextResponse.json({ settings })
   } catch (error) {
     console.error("Error fetching SEO settings:", error)
-    
+
     // Return default settings on error
     return NextResponse.json({
       settings: {

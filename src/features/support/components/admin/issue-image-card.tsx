@@ -41,7 +41,9 @@ export function IssueImageCard({ imageUrls }: IssueImageCardProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          <div className={`grid gap-3 ${imageUrls.length === 1 ? 'grid-cols-1' : 'grid-cols-2 sm:grid-cols-3'}`}>
+          <div
+            className={`grid gap-3 ${imageUrls.length === 1 ? "grid-cols-1" : "grid-cols-2 sm:grid-cols-3"}`}
+          >
             {imageUrls.map((url, index) => (
               <div
                 key={index}
@@ -51,7 +53,7 @@ export function IssueImageCard({ imageUrls }: IssueImageCardProps) {
                 <img
                   src={url}
                   alt={`Issue screenshot ${index + 1}`}
-                  className={`w-full object-cover ${imageUrls.length === 1 ? 'h-64' : 'h-40'}`}
+                  className={`w-full object-cover ${imageUrls.length === 1 ? "h-64" : "h-40"}`}
                 />
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <div className="flex items-center gap-2 text-foreground bg-background/80 px-3 py-1.5 rounded-lg text-sm">

@@ -26,7 +26,10 @@ export async function DELETE(request: NextRequest) {
       where: { id: { in: ids } },
     })
 
-    await deleteFiles(issues.flatMap((issue) => issue.imageUrls), "private")
+    await deleteFiles(
+      issues.flatMap((issue) => issue.imageUrls),
+      "private"
+    )
 
     return apiOk({ message: "ลบรายการสำเร็จ", count: result.count })
   } catch (error) {

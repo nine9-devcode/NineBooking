@@ -41,13 +41,13 @@ export async function GET(request: NextRequest) {
       // ดึง ID ของหมวดหมู่ลูกทั้งหมดมาด้วย
       const subCategories = await prisma.category.findMany({
         where: { parentId: categoryId },
-        select: { id: true }
-      });
-      
-      const categoryIds = [categoryId, ...subCategories.map(c => c.id)];
+        select: { id: true },
+      })
+
+      const categoryIds = [categoryId, ...subCategories.map((c) => c.id)]
 
       // เปลี่ยนมาใช้ { in: ... } เพื่อให้นับรวมสินค้าในหมวดลูกทั้งหมด
-      where.categoryId = { in: categoryIds };
+      where.categoryId = { in: categoryIds }
     }
 
     // Exclude specific product (สำหรับ Exclusive Pairing Modal)
@@ -119,10 +119,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching products:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
@@ -133,16 +130,16 @@ export async function POST(request: NextRequest) {
     if (!guard.ok) return guard.response
 
     const body = await request.json()
-    const { 
-      name, 
+    const {
+      name,
       subtitle,
-      slug, 
-      description, 
-      image, 
+      slug,
+      description,
+      image,
       images,
       datasheets,
       categoryId,
-      isActive 
+      isActive,
     } = body
 
     // Validation
@@ -159,10 +156,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingProduct) {
-      return NextResponse.json(
-        { error: "Slug นี้ถูกใช้งานแล้ว" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Slug นี้ถูกใช้งานแล้ว" }, { status: 400 })
     }
 
     // ตรวจสอบว่าหมวดหมู่มีอยู่จริง
@@ -171,10 +165,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!category) {
-      return NextResponse.json(
-        { error: "ไม่พบหมวดหมู่ที่เลือก" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "ไม่พบหมวดหมู่ที่เลือก" }, { status: 400 })
     }
 
     // สร้างสินค้าใหม่
@@ -198,9 +189,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(product, { status: 201 })
   } catch (error) {
     console.error("Error creating product:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการสร้างสินค้า" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการสร้างสินค้า" }, { status: 500 })
   }
 }

@@ -10,10 +10,7 @@ export async function GET(request: NextRequest) {
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -50,9 +47,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching order notifications:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาด" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาด" }, { status: 500 })
   }
 }

@@ -11,11 +11,37 @@
  */
 
 const ALLOWED_TAGS = new Set([
-  "p", "br", "strong", "b", "em", "i", "u", "s", "strike",
-  "h1", "h2", "h3", "h4", "h5", "h6",
-  "ul", "ol", "li", "blockquote", "pre", "code",
-  "a", "span", "div", "hr",
-  "table", "thead", "tbody", "tr", "th", "td",
+  "p",
+  "br",
+  "strong",
+  "b",
+  "em",
+  "i",
+  "u",
+  "s",
+  "strike",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "ul",
+  "ol",
+  "li",
+  "blockquote",
+  "pre",
+  "code",
+  "a",
+  "span",
+  "div",
+  "hr",
+  "table",
+  "thead",
+  "tbody",
+  "tr",
+  "th",
+  "td",
 ])
 
 /** style ปล่อยผ่านเฉพาะ text-align ที่ extension ของ Tiptap ใช้ */
@@ -35,7 +61,8 @@ const SAFE_STYLE = /^text-align:\s*(left|right|center|justify);?$/i
 const SAFE_HREF = /^(https?:|mailto:|tel:|\/)/i
 
 /** ลบทั้งแท็กและเนื้อข้างใน — ของพวกนี้ไม่ควรมีในคำอธิบายสินค้าเลย */
-const STRIP_WITH_CONTENT = /<(script|style|iframe|object|embed|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi
+const STRIP_WITH_CONTENT =
+  /<(script|style|iframe|object|embed|noscript)\b[^>]*>[\s\S]*?<\/\1>/gi
 
 function sanitizeAttributes(tag: string, rawAttrs: string): string {
   const allowed = ALLOWED_ATTRS[tag]
@@ -70,17 +97,22 @@ function sanitizeAttributes(tag: string, rawAttrs: string): string {
 export function sanitizeRichText(html: string | null | undefined): string {
   if (!html) return ""
 
-  return html
-    .replace(STRIP_WITH_CONTENT, "")
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .replace(/<(\/?)([a-zA-Z][a-zA-Z0-9]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g, (_, slash, rawTag, attrs) => {
-      const tag = String(rawTag).toLowerCase()
-      if (!ALLOWED_TAGS.has(tag)) return ""
-      if (slash) return `</${tag}>`
+  return (
+    html
+      .replace(STRIP_WITH_CONTENT, "")
+      .replace(/<!--[\s\S]*?-->/g, "")
+      .replace(
+        /<(\/?)([a-zA-Z][a-zA-Z0-9]*)((?:[^>"']|"[^"]*"|'[^']*')*)>/g,
+        (_, slash, rawTag, attrs) => {
+          const tag = String(rawTag).toLowerCase()
+          if (!ALLOWED_TAGS.has(tag)) return ""
+          if (slash) return `</${tag}>`
 
-      return `<${tag}${sanitizeAttributes(tag, String(attrs))}>`
-    })
-    // แท็กที่เหลือ (เช่น <img onerror=...> ที่ไม่อยู่ใน allowlist) ถูกลบไปแล้ว
-    // ปัดเศษ < ที่ลอยอยู่เดี่ยวๆ ทิ้งด้วย
-    .replace(/<(?![a-zA-Z/])/g, "&lt;")
+          return `<${tag}${sanitizeAttributes(tag, String(attrs))}>`
+        }
+      )
+      // แท็กที่เหลือ (เช่น <img onerror=...> ที่ไม่อยู่ใน allowlist) ถูกลบไปแล้ว
+      // ปัดเศษ < ที่ลอยอยู่เดี่ยวๆ ทิ้งด้วย
+      .replace(/<(?![a-zA-Z/])/g, "&lt;")
+  )
 }

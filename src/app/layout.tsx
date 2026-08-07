@@ -61,7 +61,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
     manifest: "/manifest.webmanifest",
 
-
     category: "technology",
 
     other: {
@@ -80,11 +79,7 @@ export const viewport: Viewport = {
   themeColor: siteConfig.themeColor,
 }
 
-export default async function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const settings = await getSeoSettings()
   const gaId = settings?.googleAnalyticsId
 
@@ -92,9 +87,7 @@ export default async function RootLayout({
     // เว็บนี้เป็นธีมเข้มอย่างเดียว คลาส dark คงไว้เพราะ component ของ shadcn/ui
     // มี utility แบบ dark:bg-input/30 เขียนอยู่ในตัวเอง (ดูคำอธิบายใน globals.css)
     <html lang="th" className="dark">
-      <body
-        className={`${notoSansThai.variable} ${prompt.variable} font-sans antialiased`}
-      >
+      <body className={`${notoSansThai.variable} ${prompt.variable} font-sans antialiased`}>
         <SessionProvider>
           <CartProvider>
             {children}

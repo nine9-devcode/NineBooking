@@ -33,9 +33,7 @@ export function OrderStatusCard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         {/* สถานะปัจจุบัน */}
         <div className="flex items-center gap-3">
-          <div
-            className={`p-3 rounded-full ${statusConfig.darkColor || statusConfig.color}`}
-          >
+          <div className={`p-3 rounded-full ${statusConfig.darkColor || statusConfig.color}`}>
             <StatusIcon className="w-6 h-6" />
           </div>
           <div>

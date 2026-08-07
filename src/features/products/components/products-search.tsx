@@ -1,16 +1,19 @@
 "use client"
 
-import { Search, X, ArrowUpDown, Layers, Calendar, SortAsc, SortDesc, TrendingUp } from "lucide-react"
+import {
+  Search,
+  X,
+  ArrowUpDown,
+  Layers,
+  Calendar,
+  SortAsc,
+  SortDesc,
+  TrendingUp,
+} from "lucide-react"
 import { useEffect, useState, useRef } from "react"
 import { cn } from "@/lib/utils"
 
-export type SortOption =
-  | "category"
-  | "newest"
-  | "oldest"
-  | "name-asc"
-  | "name-desc"
-  | "popular"
+export type SortOption = "category" | "newest" | "oldest" | "name-asc" | "name-desc" | "popular"
 
 interface SortOptionItem {
   value: SortOption
@@ -22,33 +25,33 @@ const sortOptions: SortOptionItem[] = [
   {
     value: "category",
     label: "เรียงตามหมวด",
-    icon: <Layers className="w-4 h-4" />
+    icon: <Layers className="w-4 h-4" />,
   },
   {
     value: "newest",
     label: "ใหม่ล่าสุด",
-    icon: <Calendar className="w-4 h-4" />
+    icon: <Calendar className="w-4 h-4" />,
   },
   {
     value: "oldest",
     label: "เก่าสุด",
-    icon: <Calendar className="w-4 h-4" />
+    icon: <Calendar className="w-4 h-4" />,
   },
   {
     value: "name-asc",
     label: "ชื่อ A-Z",
-    icon: <SortAsc className="w-4 h-4" />
+    icon: <SortAsc className="w-4 h-4" />,
   },
   {
     value: "name-desc",
     label: "ชื่อ Z-A",
-    icon: <SortDesc className="w-4 h-4" />
+    icon: <SortDesc className="w-4 h-4" />,
   },
   {
     value: "popular",
     label: "ยอดนิยม",
-    icon: <TrendingUp className="w-4 h-4" />
-  }
+    icon: <TrendingUp className="w-4 h-4" />,
+  },
 ]
 
 interface ProductsSearchProps {
@@ -68,18 +71,18 @@ export function ProductsSearch({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const selectedOption = sortOptions.find(opt => opt.value === sortValue) || sortOptions[0]
+  const selectedOption = sortOptions.find((opt) => opt.value === sortValue) || sortOptions[0]
 
   // Debounce search - รอ 300ms หลังพิมพ์เสร็จ
   useEffect(() => {
-      const timer = setTimeout(() => {
-        if (inputValue !== searchValue) {
-          onSearchChange(inputValue)
-        }
-      }, 300)
+    const timer = setTimeout(() => {
+      if (inputValue !== searchValue) {
+        onSearchChange(inputValue)
+      }
+    }, 300)
 
-      return () => clearTimeout(timer)
-    }, [inputValue, onSearchChange, searchValue])
+    return () => clearTimeout(timer)
+  }, [inputValue, onSearchChange, searchValue])
 
   // Sync with external value
   useEffect(() => {
@@ -153,7 +156,11 @@ export function ProductsSearch({
 
         {/* Dropdown Menu */}
         {isDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-20 overflow-hidden" role="listbox" aria-label="ตัวเลือกการเรียงลำดับ">
+          <div
+            className="absolute right-0 mt-2 w-48 bg-card border border-border rounded-lg shadow-lg z-20 overflow-hidden"
+            role="listbox"
+            aria-label="ตัวเลือกการเรียงลำดับ"
+          >
             {sortOptions.map((option) => (
               <button
                 key={option.value}
@@ -170,9 +177,11 @@ export function ProductsSearch({
                     : "text-foreground hover:bg-muted"
                 )}
               >
-                <span className={cn(
-                  sortValue === option.value ? "text-foreground" : "text-muted-foreground"
-                )}>
+                <span
+                  className={cn(
+                    sortValue === option.value ? "text-foreground" : "text-muted-foreground"
+                  )}
+                >
                   {option.icon}
                 </span>
                 <span>{option.label}</span>

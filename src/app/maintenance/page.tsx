@@ -94,9 +94,7 @@ export default function MaintenancePage() {
 
           {/* Contact */}
           <div className="text-center mb-6">
-            <p className="text-sm text-muted-foreground mb-2">
-              ติดต่อสอบถาม:
-            </p>
+            <p className="text-sm text-muted-foreground mb-2">ติดต่อสอบถาม:</p>
             <a
               href="tel:081-694-2896"
               className="text-primary hover:text-primary font-medium transition-colors"
@@ -110,7 +108,7 @@ export default function MaintenancePage() {
             <Button
               variant="outline"
               className="w-full border-border hover:bg-secondary hover:border-border text-foreground"
-              onClick={() => signOut({ callbackUrl: '/login' })} 
+              onClick={() => signOut({ callbackUrl: "/login" })}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               ออกจากระบบ

@@ -3,12 +3,12 @@
 import { useState, useEffect } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
 import { Search, X, Filter, Users } from "lucide-react"
 
@@ -17,7 +17,7 @@ const MEMBER_TYPE_LABELS = {
   customer: "Customer (ทั่วไป)",
   contractor: "Contractor (ผู้รับเหมา)",
   dealer: "Dealer (ตัวแทนจำหน่าย)",
- 
+
   other: "อื่นๆ",
 }
 
@@ -29,14 +29,19 @@ interface UsersSearchProps {
   currentMemberType?: string
 }
 
-export function UsersSearch({ onSearch, onRoleChange, onMemberTypeChange, currentRole, currentMemberType }: UsersSearchProps) {
+export function UsersSearch({
+  onSearch,
+  onRoleChange,
+  onMemberTypeChange,
+  currentRole,
+  currentMemberType,
+}: UsersSearchProps) {
   const [searchValue, setSearchValue] = useState("")
   const [roleValue, setRoleValue] = useState("all")
   const [memberTypeValue, setMemberTypeValue] = useState("all")
 
   useEffect(() => {
-    if (currentRole !== undefined)
-      setRoleValue(currentRole === "" ? "all" : currentRole)
+    if (currentRole !== undefined) setRoleValue(currentRole === "" ? "all" : currentRole)
   }, [currentRole])
 
   useEffect(() => {
@@ -100,9 +105,15 @@ export function UsersSearch({ onSearch, onRoleChange, onMemberTypeChange, curren
               <SelectValue placeholder="บทบาท" />
             </SelectTrigger>
             <SelectContent className="bg-background border-border">
-              <SelectItem value="all" className="text-foreground">บทบาททั้งหมด</SelectItem>
-              <SelectItem value="user" className="text-foreground">User (ทั่วไป)</SelectItem>
-              <SelectItem value="admin" className="text-foreground">Admin (ผู้ดูแล)</SelectItem>
+              <SelectItem value="all" className="text-foreground">
+                บทบาททั้งหมด
+              </SelectItem>
+              <SelectItem value="user" className="text-foreground">
+                User (ทั่วไป)
+              </SelectItem>
+              <SelectItem value="admin" className="text-foreground">
+                Admin (ผู้ดูแล)
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -112,7 +123,9 @@ export function UsersSearch({ onSearch, onRoleChange, onMemberTypeChange, curren
               <SelectValue placeholder="ประเภทสมาชิก" />
             </SelectTrigger>
             <SelectContent className="bg-background border-border">
-              <SelectItem value="all" className="text-foreground">ประเภททั้งหมด</SelectItem>
+              <SelectItem value="all" className="text-foreground">
+                ประเภททั้งหมด
+              </SelectItem>
               {Object.entries(MEMBER_TYPE_LABELS).map(([value, label]) => (
                 <SelectItem key={value} value={value} className="text-foreground">
                   {label}

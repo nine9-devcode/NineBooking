@@ -64,7 +64,6 @@ export async function GET(request: NextRequest) {
       parentWhere.isActive = false
     }
 
-
     // ดึง PARENT ตาม pagination
     const [parents, totalParents] = await Promise.all([
       prisma.category.findMany({
@@ -150,10 +149,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching categories:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
@@ -168,10 +164,7 @@ export async function POST(request: NextRequest) {
 
     // Validation
     if (!name || !slug) {
-      return NextResponse.json(
-        { error: "กรุณากรอกชื่อหมวดหมู่และ slug" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "กรุณากรอกชื่อหมวดหมู่และ slug" }, { status: 400 })
     }
 
     // ตรวจสอบว่า slug ซ้ำหรือไม่
@@ -180,10 +173,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingCategory) {
-      return NextResponse.json(
-        { error: "Slug นี้ถูกใช้งานแล้ว" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "Slug นี้ถูกใช้งานแล้ว" }, { status: 400 })
     }
 
     // ตรวจสอบ parentId (ถ้ามี)
@@ -193,18 +183,14 @@ export async function POST(request: NextRequest) {
       })
 
       if (!parentCategory) {
-        return NextResponse.json(
-          { error: "ไม่พบหมวดหมู่หลัก" },
-          { status: 404 }
-        )
+        return NextResponse.json({ error: "ไม่พบหมวดหมู่หลัก" }, { status: 404 })
       }
 
       // จำกัด 2 ระดับ - ไม่อนุญาตให้สร้าง sub-sub-category
       if (parentCategory.parentId) {
         return NextResponse.json(
           {
-            error:
-              "ไม่สามารถสร้างหมวดหมู่ย่อยภายใต้หมวดหมู่ย่อยได้ (จำกัด 2 ระดับ)",
+            error: "ไม่สามารถสร้างหมวดหมู่ย่อยภายใต้หมวดหมู่ย่อยได้ (จำกัด 2 ระดับ)",
           },
           { status: 400 }
         )
@@ -257,9 +243,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(category, { status: 201 })
   } catch (error) {
     console.error("Error creating category:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการสร้างหมวดหมู่" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการสร้างหมวดหมู่" }, { status: 500 })
   }
 }

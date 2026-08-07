@@ -37,13 +37,14 @@ export function DeleteQuotationDialog({
             ยืนยันการลบใบเสนอราคา?
           </AlertDialogTitle>
           <AlertDialogDescription className="text-muted-foreground">
-            คุณกำลังจะลบใบเสนอราคา <span className="text-foreground font-semibold">{quotationNumber}</span>
+            คุณกำลังจะลบใบเสนอราคา{" "}
+            <span className="text-foreground font-semibold">{quotationNumber}</span>
             <br />
             การลบจะไม่สามารถกู้คืนได้ คุณต้องการดำเนินการต่อหรือไม่?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel 
+          <AlertDialogCancel
             disabled={isDeleting}
             className="bg-secondary text-foreground border-border hover:bg-secondary"
           >

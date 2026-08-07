@@ -11,11 +11,13 @@ interface OrderEmptyStateProps {
   onClearSearch?: () => void
 }
 
-export function OrderEmptyState({ statusFilter, searchQuery, onClearSearch }: OrderEmptyStateProps) {
+export function OrderEmptyState({
+  statusFilter,
+  searchQuery,
+  onClearSearch,
+}: OrderEmptyStateProps) {
   const statusLabel =
-    statusFilter !== "all"
-      ? STATUS_CONFIG[statusFilter as OrderStatusKey]?.label
-      : null
+    statusFilter !== "all" ? STATUS_CONFIG[statusFilter as OrderStatusKey]?.label : null
 
   // Search empty state
   if (searchQuery) {
@@ -41,14 +43,10 @@ export function OrderEmptyState({ statusFilter, searchQuery, onClearSearch }: Or
     <div className="text-center py-20">
       <Package className="w-16 h-16 text-foreground mx-auto mb-4" />
       <h2 className="text-xl font-semibold text-foreground mb-2">
-        {statusFilter === "all"
-          ? "ยังไม่มีรายการจอง"
-          : `ไม่มีรายการ "${statusLabel}"`}
+        {statusFilter === "all" ? "ยังไม่มีรายการจอง" : `ไม่มีรายการ "${statusLabel}"`}
       </h2>
       <p className="text-muted-foreground mb-6">
-        {statusFilter === "all"
-          ? "เริ่มเลือกสินค้าและทำการจองได้เลย"
-          : "ลองเลือกดูสถานะอื่น"}
+        {statusFilter === "all" ? "เริ่มเลือกสินค้าและทำการจองได้เลย" : "ลองเลือกดูสถานะอื่น"}
       </p>
       {statusFilter === "all" && (
         <Link href="/">

@@ -45,9 +45,7 @@ export function GroupedItemsList({
                 </p>
                 {/* จำนวนสินค้าหลัก */}
                 <p className="text-xs text-muted-foreground">
-                  <span className="font-medium text-primary">
-                    {group.mainQuantity || 1}
-                  </span>{" "}
+                  <span className="font-medium text-primary">{group.mainQuantity || 1}</span>{" "}
                   ชิ้น
                   {group.pairedItems.length > 0 && (
                     <span className="text-warning ml-2">
@@ -62,10 +60,7 @@ export function GroupedItemsList({
             {group.pairedItems.length > 0 && (
               <div className="mt-2 pl-4 border-l-2 border-warning/40 space-y-1">
                 {group.pairedItems.map((pair) => (
-                  <div
-                    key={pair.itemId}
-                    className="flex items-center justify-between text-xs"
-                  >
+                  <div key={pair.itemId} className="flex items-center justify-between text-xs">
                     <span className="flex items-center gap-1 text-warning truncate">
                       <LinkIcon className="w-3 h-3 flex-shrink-0" />
                       <span className="truncate">{pair.pairedProduct.name}</span>
@@ -108,9 +103,7 @@ export function GroupedItemsList({
             <div className="flex-1 min-w-0">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <h3 className="font-medium text-foreground">
-                    {group.product.name}
-                  </h3>
+                  <h3 className="font-medium text-foreground">{group.product.name}</h3>
                   {/* จำนวนสินค้าหลัก */}
                   <div className="mt-1 space-y-0.5">
                     <p className="text-sm">
@@ -144,9 +137,7 @@ export function GroupedItemsList({
                 <div className="mt-3 p-3 bg-warning/10 rounded-lg border border-warning/40">
                   <div className="flex items-center gap-2 mb-2">
                     <LinkIcon className="w-4 h-4 text-warning" />
-                    <span className="text-sm font-medium text-warning">
-                      สินค้าที่ใช้คู่กัน
-                    </span>
+                    <span className="text-sm font-medium text-warning">สินค้าที่ใช้คู่กัน</span>
                   </div>
                   <div className="space-y-2">
                     {group.pairedItems.map((pair) => (

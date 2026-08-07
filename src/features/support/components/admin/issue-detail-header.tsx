@@ -122,9 +122,7 @@ export function IssueDetailHeader({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground">
-              ยืนยันการลบ
-            </AlertDialogTitle>
+            <AlertDialogTitle className="text-foreground">ยืนยันการลบ</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
               คุณแน่ใจหรือไม่ว่าต้องการลบรายการแจ้งปัญหา{" "}
               <span className="text-foreground font-medium">{issueNumber}</span>?

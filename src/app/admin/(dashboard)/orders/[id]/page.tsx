@@ -29,7 +29,7 @@ import {
   formatDate,
 } from "@/features/orders/components/admin"
 import { ExportPdfButton } from "@/features/dashboard/components/export-buttons"
-import { QuotationModal, OrderItemForQuotation  } from "@/features/quotations/components"
+import { QuotationModal, OrderItemForQuotation } from "@/features/quotations/components"
 
 export default function AdminOrderDetailPage() {
   const params = useParams()
@@ -194,9 +194,7 @@ export default function AdminOrderDetailPage() {
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-2xl font-bold text-foreground">
-                {order.orderNumber}
-              </h1>
+              <h1 className="text-2xl font-bold text-foreground">{order.orderNumber}</h1>
               <button
                 onClick={handleCopy}
                 className="p-1 hover:bg-secondary rounded transition-colors"
@@ -222,8 +220,7 @@ export default function AdminOrderDetailPage() {
             url={`/api/admin/orders/${orderId}/pdf`}
             filename={`order-${order.orderNumber}.pdf`}
           />
-          
-          
+
           <Button
             variant="outline"
             className="bg-transparent text-foreground border-border hover:bg-card transition-colors"
@@ -279,10 +276,7 @@ export default function AdminOrderDetailPage() {
           <OrderCustomerInfo customer={order.customer} user={order.user} />
           <OrderShippingInfo shipping={order.shipping} />
           <OrderCustomerNote note={order.customerNote} />
-          <OrderTimeline
-            createdAt={order.createdAt}
-            updatedAt={order.updatedAt}
-          />
+          <OrderTimeline createdAt={order.createdAt} updatedAt={order.updatedAt} />
         </div>
       </div>
 
@@ -311,27 +305,25 @@ export default function AdminOrderDetailPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-
-        {order && (
-          <QuotationModal
-            orderId={order.id}
-            orderNumber={order.orderNumber}
-            orderItems={order.items as OrderItemForQuotation[]}
-            customer={{
-              name: order.customer.name,
-              nickname: order.customer.nickname || null,
-              email: order.customer.email,
-              phone: order.customer.phone,
-            }}
-            isOpen={showQuotationModal}
-            onClose={() => setShowQuotationModal(false)}
-            onSuccess={(quotationId) => {
-              toast.success("สร้างใบเสนอราคาเรียบร้อย")
-              // จะ redirect ไปหน้า detail อัตโนมัติจาก modal
-            }}
-          />
-        )}
-      
+      {order && (
+        <QuotationModal
+          orderId={order.id}
+          orderNumber={order.orderNumber}
+          orderItems={order.items as OrderItemForQuotation[]}
+          customer={{
+            name: order.customer.name,
+            nickname: order.customer.nickname || null,
+            email: order.customer.email,
+            phone: order.customer.phone,
+          }}
+          isOpen={showQuotationModal}
+          onClose={() => setShowQuotationModal(false)}
+          onSuccess={(quotationId) => {
+            toast.success("สร้างใบเสนอราคาเรียบร้อย")
+            // จะ redirect ไปหน้า detail อัตโนมัติจาก modal
+          }}
+        />
+      )}
     </div>
   )
 }

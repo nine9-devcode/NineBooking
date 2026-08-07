@@ -33,9 +33,7 @@ export function OrderTimeline({ createdAt, updatedAt }: OrderTimelineProps) {
           </div>
 
           {/* Connector line */}
-          {hasBeenUpdated && (
-            <div className="ml-[13px] h-4 border-l-2 border-border" />
-          )}
+          {hasBeenUpdated && <div className="ml-[13px] h-4 border-l-2 border-border" />}
 
           {/* อัพเดทล่าสุด */}
           {hasBeenUpdated && (

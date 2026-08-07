@@ -39,7 +39,7 @@ export default function ContactIssuesPage() {
     closed: 0,
   })
   const [loading, setLoading] = useState(true)
-  
+
   // Filter & Pagination State
   const [search, setSearch] = useState("")
   const [status, setStatus] = useState("")
@@ -56,44 +56,47 @@ export default function ContactIssuesPage() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
 
   // Fetch Issues List
-  const fetchIssues = useCallback(async (isRefresh = false) => {
-    try {
-      setLoading(true)
-      const params = new URLSearchParams({
-        search,
-        status,
-        page: page.toString(),
-        limit: limit.toString(),
-      })
+  const fetchIssues = useCallback(
+    async (isRefresh = false) => {
+      try {
+        setLoading(true)
+        const params = new URLSearchParams({
+          search,
+          status,
+          page: page.toString(),
+          limit: limit.toString(),
+        })
 
-      // Add category filter if present
-      if (category) params.set("category", category)
-      // Add date filters if present
-      if (dateFrom) params.set("dateFrom", dateFrom)
-      if (dateTo) params.set("dateTo", dateTo)
+        // Add category filter if present
+        if (category) params.set("category", category)
+        // Add date filters if present
+        if (dateFrom) params.set("dateFrom", dateFrom)
+        if (dateTo) params.set("dateTo", dateTo)
 
-      const response = await fetch(`/api/admin/contact-issues?${params}`)
-      const data = await response.json()
+        const response = await fetch(`/api/admin/contact-issues?${params}`)
+        const data = await response.json()
 
-      if (!response.ok) throw new Error(data.error || "เกิดข้อผิดพลาด")
+        if (!response.ok) throw new Error(data.error || "เกิดข้อผิดพลาด")
 
-      setIssues(data.issues)
-      setTotalPages(data.pagination.totalPages)
-      
-      // Update stats
-      if (data.stats) {
-        setStats(data.stats)
+        setIssues(data.issues)
+        setTotalPages(data.pagination.totalPages)
+
+        // Update stats
+        if (data.stats) {
+          setStats(data.stats)
+        }
+
+        if (isRefresh) {
+          toast.success("รีเฟรชข้อมูลสำเร็จ")
+        }
+      } catch (error: unknown) {
+        toast.error(getErrorMessage(error))
+      } finally {
+        setLoading(false)
       }
-
-      if (isRefresh) {
-        toast.success("รีเฟรชข้อมูลสำเร็จ")
-      }
-    } catch (error: unknown) {
-      toast.error(getErrorMessage(error))
-    } finally {
-      setLoading(false)
-    }
-  }, [search, status, category, dateFrom, dateTo, page])
+    },
+    [search, status, category, dateFrom, dateTo, page]
+  )
 
   useEffect(() => {
     fetchIssues()
@@ -152,9 +155,7 @@ export default function ContactIssuesPage() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-3xl font-bold text-foreground">
-              จัดการแจ้งปัญหา
-            </h1>
+            <h1 className="text-3xl font-bold text-foreground">จัดการแจ้งปัญหา</h1>
             <p className="text-sm text-muted-foreground">
               ดูและจัดการรายการแจ้งปัญหาจากลูกค้า ตอบกลับและอัปเดตสถานะ
             </p>
@@ -167,7 +168,7 @@ export default function ContactIssuesPage() {
             disabled={loading}
             className="border-border text-foreground hover:bg-card hover:text-foreground w-fit"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
             รีเฟรช
           </Button>
         </div>
@@ -177,7 +178,10 @@ export default function ContactIssuesPage() {
           stats={stats}
           loading={false}
           activeStatus={status}
-          onStatusChange={(val) => { setStatus(val); setPage(1) }}
+          onStatusChange={(val) => {
+            setStatus(val)
+            setPage(1)
+          }}
         />
 
         {/* Search & Filter */}
@@ -221,7 +225,7 @@ export default function ContactIssuesPage() {
                   เลือกแล้ว {selectedIds.length} รายการ
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -274,9 +278,7 @@ export default function ContactIssuesPage() {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent className="bg-background border-border">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-foreground">
-              ยืนยันการลบรายการ
-            </AlertDialogTitle>
+            <AlertDialogTitle className="text-foreground">ยืนยันการลบรายการ</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
               คุณแน่ใจหรือไม่ว่าต้องการลบ {selectedIds.length} รายการที่เลือก?
               <br />
@@ -284,7 +286,7 @@ export default function ContactIssuesPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel 
+            <AlertDialogCancel
               className="bg-card text-foreground hover:bg-secondary border-border"
               disabled={isDeleting}
             >

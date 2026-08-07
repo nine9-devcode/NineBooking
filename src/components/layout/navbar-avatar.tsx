@@ -20,8 +20,8 @@ export function NavbarAvatar({ name, image }: NavbarAvatarProps) {
       <div
         className="w-8 h-8 bg-primary rounded-full flex items-center justify-center border-2 border-primary"
         style={{
-          textRendering: 'geometricPrecision',
-          WebkitFontSmoothing: 'antialiased',
+          textRendering: "geometricPrecision",
+          WebkitFontSmoothing: "antialiased",
         }}
       >
         <span className="text-foreground font-semibold text-sm">{initial}</span>

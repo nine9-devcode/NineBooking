@@ -271,7 +271,9 @@ export function CreateAdminModal({ isOpen, onClose, onSuccess }: CreateAdminModa
             <Input
               type="tel"
               value={form.phone}
-              onChange={(e) => handleChange("phone", e.target.value.replace(/\D/g, "").slice(0, 10))}
+              onChange={(e) =>
+                handleChange("phone", e.target.value.replace(/\D/g, "").slice(0, 10))
+              }
               placeholder="เบอร์โทรศัพท์ 10 หลัก"
               disabled={isLoading}
               className="bg-card border-border text-foreground placeholder:text-muted-foreground focus:border-primary"

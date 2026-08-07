@@ -5,10 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { RefreshCw, Package, Clock, CheckCircle, XCircle } from "lucide-react"
 import { toast } from "sonner"
-import {
-  OrdersFilters,
-  OrdersTable,
-} from "@/features/orders/components/admin"
+import { OrdersFilters, OrdersTable } from "@/features/orders/components/admin"
 import { ExportButtons } from "@/features/dashboard/components/export-buttons"
 import { DataPagination } from "@/components/ui/data-pagination"
 
@@ -85,57 +82,60 @@ export default function AdminOrdersPage() {
   }
 
   // Fetch orders
-  const fetchOrders = useCallback(async (isRefresh = false) => {
-    setLoading(true)
-    try {
-      const params = new URLSearchParams({
-        page: pagination.page.toString(),
-        limit: pagination.limit.toString(),
-      })
+  const fetchOrders = useCallback(
+    async (isRefresh = false) => {
+      setLoading(true)
+      try {
+        const params = new URLSearchParams({
+          page: pagination.page.toString(),
+          limit: pagination.limit.toString(),
+        })
 
-      if (search) {
-        params.set("search", search)
-      }
-
-      if (statusFilter !== "all") {
-        params.set("status", statusFilter)
-      }
-
-      if (dateFrom) {
-        params.set("dateFrom", dateFrom)
-      }
-
-      if (dateTo) {
-        params.set("dateTo", dateTo)
-      }
-
-      const res = await fetch(`/api/admin/orders?${params}`)
-      const data = await res.json()
-
-      if (res.ok) {
-        setOrders(data.orders || [])
-        setStats(data.stats || DEFAULT_STATS)
-        setPagination((prev) => ({
-          ...prev,
-          total: data.pagination?.total || 0,
-          totalPages: data.pagination?.totalPages || 0,
-        }))
-        
-        if (isRefresh) {
-          toast.success("รีเฟรชข้อมูลสำเร็จ")
+        if (search) {
+          params.set("search", search)
         }
-      } else {
-        toast.error(data.error || "เกิดข้อผิดพลาดในการดึงข้อมูล")
+
+        if (statusFilter !== "all") {
+          params.set("status", statusFilter)
+        }
+
+        if (dateFrom) {
+          params.set("dateFrom", dateFrom)
+        }
+
+        if (dateTo) {
+          params.set("dateTo", dateTo)
+        }
+
+        const res = await fetch(`/api/admin/orders?${params}`)
+        const data = await res.json()
+
+        if (res.ok) {
+          setOrders(data.orders || [])
+          setStats(data.stats || DEFAULT_STATS)
+          setPagination((prev) => ({
+            ...prev,
+            total: data.pagination?.total || 0,
+            totalPages: data.pagination?.totalPages || 0,
+          }))
+
+          if (isRefresh) {
+            toast.success("รีเฟรชข้อมูลสำเร็จ")
+          }
+        } else {
+          toast.error(data.error || "เกิดข้อผิดพลาดในการดึงข้อมูล")
+        }
+      } catch (err) {
+        console.error("Error fetching orders:", err)
+        toast.error("เกิดข้อผิดพลาดในการดึงข้อมูล")
+        setOrders([])
+        setStats(DEFAULT_STATS)
+      } finally {
+        setLoading(false)
       }
-    } catch (err) {
-      console.error("Error fetching orders:", err)
-      toast.error("เกิดข้อผิดพลาดในการดึงข้อมูล")
-      setOrders([])
-      setStats(DEFAULT_STATS)
-    } finally {
-      setLoading(false)
-    }
-  }, [pagination.page, pagination.limit, search, statusFilter, dateFrom, dateTo])
+    },
+    [pagination.page, pagination.limit, search, statusFilter, dateFrom, dateTo]
+  )
 
   // Initial fetch and on filter change
   useEffect(() => {
@@ -197,9 +197,7 @@ export default function AdminOrdersPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">จัดการคำสั่งจอง</h1>
-          <p className="text-muted-foreground mt-2">
-            ดูและจัดการคำสั่งจองทั้งหมด
-          </p>
+          <p className="text-muted-foreground mt-2">ดูและจัดการคำสั่งจองทั้งหมด</p>
         </div>
         <div className="flex items-center gap-2">
           <ExportButtons
@@ -207,9 +205,9 @@ export default function AdminOrdersPage() {
             filterParams={buildFilterParams()}
             filePrefix="orders"
           />
-          <Button 
-            variant="outline" 
-            onClick={handleRefresh} 
+          <Button
+            variant="outline"
+            onClick={handleRefresh}
             disabled={loading}
             className="border-border text-foreground hover:bg-card hover:text-foreground"
           >
@@ -222,11 +220,56 @@ export default function AdminOrdersPage() {
       {/* Stats Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
-          { label: "ทั้งหมด", value: stats.total, icon: Package, filter: "all", hover: "hover:border-info/50", active: "ring-info border-info/40", iconBg: "bg-info/10", iconColor: "text-info" },
-          { label: "รอดำเนินการ", value: stats.PENDING, icon: Clock, filter: "PENDING", hover: "hover:border-primary/50", active: "ring-primary border-primary/40", iconBg: "bg-primary/10", iconColor: "text-primary" },
-          { label: "ยืนยันแล้ว", value: stats.CONFIRMED, icon: CheckCircle, filter: "CONFIRMED", hover: "hover:border-info/50", active: "ring-info border-info/40", iconBg: "bg-info/10", iconColor: "text-info" },
-          { label: "เสร็จสิ้น", value: stats.COMPLETED, icon: CheckCircle, filter: "COMPLETED", hover: "hover:border-success/50", active: "ring-success border-success/40", iconBg: "bg-success/10", iconColor: "text-success" },
-          { label: "ยกเลิก", value: stats.CANCELLED, icon: XCircle, filter: "CANCELLED", hover: "hover:border-destructive/50", active: "ring-destructive border-destructive/40", iconBg: "bg-destructive/10", iconColor: "text-destructive" },
+          {
+            label: "ทั้งหมด",
+            value: stats.total,
+            icon: Package,
+            filter: "all",
+            hover: "hover:border-info/50",
+            active: "ring-info border-info/40",
+            iconBg: "bg-info/10",
+            iconColor: "text-info",
+          },
+          {
+            label: "รอดำเนินการ",
+            value: stats.PENDING,
+            icon: Clock,
+            filter: "PENDING",
+            hover: "hover:border-primary/50",
+            active: "ring-primary border-primary/40",
+            iconBg: "bg-primary/10",
+            iconColor: "text-primary",
+          },
+          {
+            label: "ยืนยันแล้ว",
+            value: stats.CONFIRMED,
+            icon: CheckCircle,
+            filter: "CONFIRMED",
+            hover: "hover:border-info/50",
+            active: "ring-info border-info/40",
+            iconBg: "bg-info/10",
+            iconColor: "text-info",
+          },
+          {
+            label: "เสร็จสิ้น",
+            value: stats.COMPLETED,
+            icon: CheckCircle,
+            filter: "COMPLETED",
+            hover: "hover:border-success/50",
+            active: "ring-success border-success/40",
+            iconBg: "bg-success/10",
+            iconColor: "text-success",
+          },
+          {
+            label: "ยกเลิก",
+            value: stats.CANCELLED,
+            icon: XCircle,
+            filter: "CANCELLED",
+            hover: "hover:border-destructive/50",
+            active: "ring-destructive border-destructive/40",
+            iconBg: "bg-destructive/10",
+            iconColor: "text-destructive",
+          },
         ].map(({ label, value, icon: Icon, filter, hover, active, iconBg, iconColor }) => {
           const isActive = statusFilter === filter
           return (
@@ -271,11 +314,7 @@ export default function AdminOrdersPage() {
               <RefreshCw className="w-8 h-8 text-primary animate-spin" />
             </div>
           ) : (
-            <OrdersTable
-              orders={orders}
-              loading={loading}
-              emptyMessage={emptyMessage}
-            />
+            <OrdersTable orders={orders} loading={loading} emptyMessage={emptyMessage} />
           )}
         </CardContent>
       </Card>

@@ -15,9 +15,16 @@ interface QuotationCustomerInfoProps {
 }
 
 // Helper: เลือกสี Badge
-function getMemberTypeBadgeVariant(memberType: string | null | undefined): "default" | "secondary" | "destructive" | "outline" {
-  const variant = MEMBER_TYPE_COLORS[memberType || 'other']
-  if (variant === "default" || variant === "secondary" || variant === "destructive" || variant === "outline") {
+function getMemberTypeBadgeVariant(
+  memberType: string | null | undefined
+): "default" | "secondary" | "destructive" | "outline" {
+  const variant = MEMBER_TYPE_COLORS[memberType || "other"]
+  if (
+    variant === "default" ||
+    variant === "secondary" ||
+    variant === "destructive" ||
+    variant === "outline"
+  ) {
     return variant
   }
   return "secondary"
@@ -64,7 +71,7 @@ export function QuotationCustomerInfo({ customer, user }: QuotationCustomerInfoP
                   )}
                 </p>
                 {/* Badge ประเภทสมาชิก */}
-                <Badge 
+                <Badge
                   variant={getMemberTypeBadgeVariant(user.memberType)}
                   className="capitalize px-2 py-0.5 text-xs font-normal"
                 >
@@ -85,9 +92,7 @@ export function QuotationCustomerInfo({ customer, user }: QuotationCustomerInfoP
                 <div className="flex items-start gap-2.5">
                   <MessageSquare className="w-4 h-4 text-info mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-semibold text-info mb-1">
-                      หมายเหตุสมาชิก:
-                    </p>
+                    <p className="text-xs font-semibold text-info mb-1">หมายเหตุสมาชิก:</p>
                     <p className="text-sm text-foreground leading-relaxed break-words">
                       {user.memberTypeNote}
                     </p>
@@ -114,10 +119,7 @@ export function QuotationCustomerInfo({ customer, user }: QuotationCustomerInfoP
           {/* อีเมล */}
           <div className="flex items-center gap-3">
             <Mail className="w-5 h-5 text-muted-foreground" />
-            <a
-              href={`mailto:${customer.email}`}
-              className="text-primary hover:underline"
-            >
+            <a href={`mailto:${customer.email}`} className="text-primary hover:underline">
               {customer.email}
             </a>
           </div>
@@ -125,10 +127,7 @@ export function QuotationCustomerInfo({ customer, user }: QuotationCustomerInfoP
           {/* เบอร์โทร */}
           <div className="flex items-center gap-3">
             <Phone className="w-5 h-5 text-muted-foreground" />
-            <a
-              href={`tel:${customer.phone}`}
-              className="text-primary hover:underline"
-            >
+            <a href={`tel:${customer.phone}`} className="text-primary hover:underline">
               {customer.phone}
             </a>
           </div>

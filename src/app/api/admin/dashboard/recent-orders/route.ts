@@ -1,21 +1,21 @@
 // ไฟล์: app/api/admin/dashboard/recent-orders/route.ts
 // GET /api/admin/dashboard/recent-orders?limit=5
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
-import { prisma } from '@/lib/db';
+import { prisma } from "@/lib/db"
 
 export async function GET(request: NextRequest) {
   try {
     const guard = await requireAdmin()
     if (!guard.ok) return guard.response
 
-    const { searchParams } = new URL(request.url);
-    const limit = Math.min(parseInt(searchParams.get('limit') || '5'), 10); // Max 10
+    const { searchParams } = new URL(request.url)
+    const limit = Math.min(parseInt(searchParams.get("limit") || "5"), 10) // Max 10
 
     const recentOrders = await prisma.order.findMany({
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
       take: limit,
       include: {
@@ -33,11 +33,11 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-    });
+    })
 
     const formatted = recentOrders.map((order) => {
       // นับจำนวนสินค้าทั้งหมด
-      const totalItems = order.orderItems.reduce((sum, item) => sum + item.quantity, 0);
+      const totalItems = order.orderItems.reduce((sum, item) => sum + item.quantity, 0)
 
       return {
         id: order.id,
@@ -51,15 +51,12 @@ export async function GET(request: NextRequest) {
           email: order.user?.email || order.customerEmail,
           image: order.user?.image,
         },
-      };
-    });
+      }
+    })
 
-    return NextResponse.json(formatted);
+    return NextResponse.json(formatted)
   } catch (error) {
-    console.error('Error fetching recent orders:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch recent orders' },
-      { status: 500 }
-    );
+    console.error("Error fetching recent orders:", error)
+    return NextResponse.json({ error: "Failed to fetch recent orders" }, { status: 500 })
   }
 }

@@ -27,7 +27,11 @@ export function ProductGrid({ products, loading }: ProductGridProps) {
   // Loading State - Skeleton
   if (loading) {
     return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4" role="status" aria-label="กำลังโหลดสินค้า">
+      <div
+        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+        role="status"
+        aria-label="กำลังโหลดสินค้า"
+      >
         {Array.from({ length: 8 }).map((_, i) => (
           <SkeletonCard key={i} />
         ))}
@@ -42,9 +46,7 @@ export function ProductGrid({ products, loading }: ProductGridProps) {
         <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
           <Package className="w-10 h-10 text-primary" />
         </div>
-        <h3 className="text-xl font-semibold text-foreground mb-2">
-          ไม่พบสินค้า
-        </h3>
+        <h3 className="text-xl font-semibold text-foreground mb-2">ไม่พบสินค้า</h3>
         <p className="text-muted-foreground text-center max-w-md">
           ไม่พบสินค้าที่ตรงกับการค้นหาของคุณ ลองเปลี่ยนคำค้นหาหรือเลือกหมวดหมู่อื่น
         </p>

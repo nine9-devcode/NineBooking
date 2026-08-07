@@ -84,7 +84,6 @@ export async function GET(
           nickname: order.customerNickname,
           email: order.customerEmail,
           phone: order.customerPhone,
-
         },
 
         // ที่อยู่จัดส่ง
@@ -98,17 +97,19 @@ export async function GET(
         },
 
         // ข้อมูล User (จาก relation)
-        user: order.user ? {
-          id: order.user.id,
-          name: order.user.name,
-          nickname: order.user.nickname,
-          email: order.user.email,
-          image: order.user.image,
-          residenceType: order.user.residenceType,
-          memberSince: order.user.createdAt,
-          memberType: order.user.memberType,
-          memberTypeNote: order.user.memberTypeNote,
-        }: null,
+        user: order.user
+          ? {
+              id: order.user.id,
+              name: order.user.name,
+              nickname: order.user.nickname,
+              email: order.user.email,
+              image: order.user.image,
+              residenceType: order.user.residenceType,
+              memberSince: order.user.createdAt,
+              memberType: order.user.memberType,
+              memberTypeNote: order.user.memberTypeNote,
+            }
+          : null,
 
         // การยกเลิก
         cancelledBy: order.cancelledBy ?? null,
@@ -171,10 +172,7 @@ export async function GET(
     })
   } catch (error) {
     console.error("Error fetching order:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
@@ -257,9 +255,6 @@ export async function PATCH(
     })
   } catch (error) {
     console.error("Error updating order:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการอัพเดทข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการอัพเดทข้อมูล" }, { status: 500 })
   }
 }

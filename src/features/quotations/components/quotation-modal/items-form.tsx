@@ -21,7 +21,7 @@
 //   }[] = []
 
 //   const mainItems = items.filter(i => !i.isPairedProduct)
-  
+
 //   mainItems.forEach(mainItem => {
 //     const pairedItems = items.filter(
 //       i => i.isPairedProduct && i.pairedWithTempId === mainItem.tempId
@@ -52,7 +52,7 @@
 //               <div className="col-span-1 text-muted-foreground font-medium">
 //                 {index + 1}
 //               </div>
-              
+
 //               <div className="col-span-5 flex items-center gap-3">
 //                 <div className="relative w-10 h-10 bg-secondary rounded overflow-hidden flex-shrink-0">
 //                   {group.main.productImage ? (
@@ -94,8 +94,8 @@
 //                   step="0.01"
 //                   value={group.main.unitPrice || ""}
 //                   onChange={(e) => onItemChange(
-//                     group.main.tempId, 
-//                     "unitPrice", 
+//                     group.main.tempId,
+//                     "unitPrice",
 //                     parseFloat(e.target.value) || 0
 //                   )}
 //                   placeholder="0.00"
@@ -112,7 +112,7 @@
 
 //             {/* Paired Products */}
 //             {group.paired.map((paired) => (
-//               <div 
+//               <div
 //                 key={paired.tempId}
 //                 className="grid grid-cols-12 gap-2 items-center px-4 py-3 ml-6 bg-warning/10 rounded-lg border border-warning/20"
 //               >
@@ -159,8 +159,8 @@
 //                     step="0.01"
 //                     value={paired.unitPrice || ""}
 //                     onChange={(e) => onItemChange(
-//                       paired.tempId, 
-//                       "unitPrice", 
+//                       paired.tempId,
+//                       "unitPrice",
 //                       parseFloat(e.target.value) || 0
 //                     )}
 //                     placeholder="0.00"

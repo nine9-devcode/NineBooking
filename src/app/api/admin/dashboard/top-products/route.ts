@@ -1,9 +1,9 @@
 // ไฟล์: app/api/admin/dashboard/top-products/route.ts
 // GET /api/admin/dashboard/top-products
 
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
-import { prisma } from '@/lib/db';
+import { prisma } from "@/lib/db"
 
 export async function GET() {
   try {
@@ -44,28 +44,31 @@ export async function GET() {
           },
         },
       },
-    });
+    })
 
     // สร้าง map สำหรับนับ
     // key: productId
     // value: { orderIds: Set<orderId>, totalQuantity: number, productInfo }
-    const productStats: Record<string, {
-      product: {
-        id: string;
-        name: string;
-        slug: string;
-        image: string | null;
-        categoryName: string;
-      };
-      orderIds: Set<string>;
-      totalQuantity: number;
-    }> = {};
+    const productStats: Record<
+      string,
+      {
+        product: {
+          id: string
+          name: string
+          slug: string
+          image: string | null
+          categoryName: string
+        }
+        orderIds: Set<string>
+        totalQuantity: number
+      }
+    > = {}
 
     orderItems.forEach((item) => {
       // สินค้าที่ถูกลบไปแล้วไม่นับ — อันดับนี้ต้องลิงก์ไปหน้าสินค้าได้
       if (!item.productId || !item.product) return
 
-      const mainProductId = item.productId;
+      const mainProductId = item.productId
 
       if (!productStats[mainProductId]) {
         productStats[mainProductId] = {
@@ -78,17 +81,17 @@ export async function GET() {
           },
           orderIds: new Set(),
           totalQuantity: 0,
-        };
+        }
       }
 
       // เพิ่ม orderId
-      productStats[mainProductId].orderIds.add(item.orderId);
+      productStats[mainProductId].orderIds.add(item.orderId)
       // เพิ่มจำนวนชิ้น
-      productStats[mainProductId].totalQuantity += item.quantity;
+      productStats[mainProductId].totalQuantity += item.quantity
 
       // 2. นับ Paired Product (ถ้ามี)
       if (item.pairedProductId && item.pairedProduct) {
-        const pairedProductId = item.pairedProductId;
+        const pairedProductId = item.pairedProductId
 
         if (!productStats[pairedProductId]) {
           productStats[pairedProductId] = {
@@ -101,15 +104,15 @@ export async function GET() {
             },
             orderIds: new Set(),
             totalQuantity: 0,
-          };
+          }
         }
 
         // เพิ่ม orderId (Paired ก็นับ Order เดียวกัน)
-        productStats[pairedProductId].orderIds.add(item.orderId);
+        productStats[pairedProductId].orderIds.add(item.orderId)
         // เพิ่มจำนวนชิ้น (Paired มี quantity = 1 ต่อ item)
-        productStats[pairedProductId].totalQuantity += 1;
+        productStats[pairedProductId].totalQuantity += 1
       }
-    });
+    })
 
     // แปลงเป็น array และเรียงลำดับตามจำนวน Order
     const topByOrders = Object.values(productStats)
@@ -124,16 +127,16 @@ export async function GET() {
       }))
       .filter((p) => p.orderCount > 0)
       .sort((a, b) => b.orderCount - a.orderCount)
-      .slice(0, 5);
+      .slice(0, 5)
 
     // Top 5 สินค้าที่มียอดเข้าชมมากที่สุด
     const topByViews = await prisma.product.findMany({
-      where: { 
+      where: {
         isActive: true,
         viewCount: { gt: 0 },
       },
       orderBy: {
-        viewCount: 'desc',
+        viewCount: "desc",
       },
       take: 5,
       include: {
@@ -143,7 +146,7 @@ export async function GET() {
           },
         },
       },
-    });
+    })
 
     const topViewsFormatted = topByViews.map((product) => ({
       id: product.id,
@@ -152,17 +155,14 @@ export async function GET() {
       image: product.image,
       categoryName: product.category.name,
       viewCount: product.viewCount,
-    }));
+    }))
 
     return NextResponse.json({
       topByOrders,
       topByViews: topViewsFormatted,
-    });
+    })
   } catch (error) {
-    console.error('Error fetching top products:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch top products' },
-      { status: 500 }
-    );
+    console.error("Error fetching top products:", error)
+    return NextResponse.json({ error: "Failed to fetch top products" }, { status: 500 })
   }
 }

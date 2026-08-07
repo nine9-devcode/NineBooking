@@ -5,15 +5,7 @@ import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
 import { companyDefaults, PDF_LOGO_RELATIVE_PATH } from "@/config/company"
 import { renderToBuffer } from "@react-pdf/renderer"
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  Image,
-  StyleSheet,
-  Font,
-} from "@react-pdf/renderer"
+import { Document, Page, Text, View, Image, StyleSheet, Font } from "@react-pdf/renderer"
 import path from "path"
 import fs from "fs"
 import { DEFAULT_PDF_NOTES } from "@/features/quotations/components/constants"
@@ -32,7 +24,7 @@ Font.register({
   ],
 })
 
-Font.registerHyphenationCallback(word => [word])
+Font.registerHyphenationCallback((word) => [word])
 
 // Styles
 const styles = StyleSheet.create({
@@ -373,24 +365,19 @@ const QuotationPDF = ({
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.logoSection}>
-            {logoBuffer ? (
-              <Image src={logoBuffer} style={styles.logo} />
-            ) : (
-              <Text>Logo</Text>
-            )}
+            {logoBuffer ? <Image src={logoBuffer} style={styles.logo} /> : <Text>Logo</Text>}
           </View>
 
           <View style={styles.companyInfoSection}>
-            <Text style={styles.companyName}>
-              {companySettings.companyNameTh + " "}
-            </Text>
-            <Text style={styles.companyNameEng}>
-              {companySettings.companyNameEn + " "}
-            </Text>
+            <Text style={styles.companyName}>{companySettings.companyNameTh + " "}</Text>
+            <Text style={styles.companyNameEng}>{companySettings.companyNameEn + " "}</Text>
             <Text style={styles.companyAddress}>
-              {companySettings.address + " "}{"\n"}
-              {"เลขประจำตัวผู้เสียภาษี " + companySettings.taxId + " "}{"\n"}
-              {"โทร " + companySettings.phone + " "}{"\n"}
+              {companySettings.address + " "}
+              {"\n"}
+              {"เลขประจำตัวผู้เสียภาษี " + companySettings.taxId + " "}
+              {"\n"}
+              {"โทร " + companySettings.phone + " "}
+              {"\n"}
               {companySettings.website + " "}
             </Text>
           </View>
@@ -403,9 +390,7 @@ const QuotationPDF = ({
             </View>
             <View style={styles.quoteInfoRow}>
               <Text style={styles.quoteLabel}>วันที่</Text>
-              <Text style={styles.quoteValue}>
-                {formatShortDate(quotation.createdAt)}
-              </Text>
+              <Text style={styles.quoteValue}>{formatShortDate(quotation.createdAt)}</Text>
             </View>
             <View style={styles.quoteInfoRow}>
               <Text style={styles.quoteLabel}>ผู้ขาย</Text>
@@ -426,24 +411,18 @@ const QuotationPDF = ({
             <Text style={styles.customerLabel}>ชื่อ:</Text>
             <Text style={styles.customerValue}>
               {quotation.order.customerName}
-              {quotation.order.customerNickname
-                ? ` (${quotation.order.customerNickname})`
-                : ""}
+              {quotation.order.customerNickname ? ` (${quotation.order.customerNickname})` : ""}
             </Text>
           </View>
 
           <View style={styles.customerInfoRow}>
             <Text style={styles.customerLabel}>เบอร์โทร:</Text>
-            <Text style={styles.customerValue}>
-              {quotation.order.customerPhone || "-"}
-            </Text>
+            <Text style={styles.customerValue}>{quotation.order.customerPhone || "-"}</Text>
           </View>
 
           <View style={styles.customerInfoRow}>
             <Text style={styles.customerLabel}>อีเมล:</Text>
-            <Text style={styles.customerValue}>
-              {quotation.order.customerEmail || "-"}
-            </Text>
+            <Text style={styles.customerValue}>{quotation.order.customerEmail || "-"}</Text>
           </View>
 
           {quotation.order.shippingAddress && (
@@ -453,12 +432,9 @@ const QuotationPDF = ({
                 {quotation.order.shippingAddress}
                 {quotation.order.shippingSubDistrict &&
                   ` ต.${quotation.order.shippingSubDistrict}`}
-                {quotation.order.shippingDistrict &&
-                  ` อ.${quotation.order.shippingDistrict}`}
-                {quotation.order.shippingProvince &&
-                  ` จ.${quotation.order.shippingProvince}`}
-                {quotation.order.shippingPostalCode &&
-                  ` ${quotation.order.shippingPostalCode}`}
+                {quotation.order.shippingDistrict && ` อ.${quotation.order.shippingDistrict}`}
+                {quotation.order.shippingProvince && ` จ.${quotation.order.shippingProvince}`}
+                {quotation.order.shippingPostalCode && ` ${quotation.order.shippingPostalCode}`}
               </Text>
             </View>
           )}
@@ -468,15 +444,11 @@ const QuotationPDF = ({
         <View style={styles.table}>
           <View style={styles.tableHeader}>
             <Text style={[styles.tableHeaderCell, { width: 30 }]}>#</Text>
-            <Text
-              style={[styles.tableHeaderCell, { flex: 1, textAlign: "left" }]}
-            >
+            <Text style={[styles.tableHeaderCell, { flex: 1, textAlign: "left" }]}>
               รายละเอียด
             </Text>
             <Text style={[styles.tableHeaderCell, { width: 60 }]}>จำนวน </Text>
-            <Text style={[styles.tableHeaderCell, { width: 80 }]}>
-              ราคาต่อหน่วย
-            </Text>
+            <Text style={[styles.tableHeaderCell, { width: 80 }]}>ราคาต่อหน่วย</Text>
             <Text style={[styles.tableHeaderCell, { width: 80 }]}>ยอดรวม</Text>
           </View>
 
@@ -506,13 +478,9 @@ const QuotationPDF = ({
                 group.pairedItems.map((paired: any) => (
                   <View key={paired.id} style={styles.pairedRow}>
                     <Text style={[styles.tableCell, { width: 30 }]}></Text>
-                    <View
-                      style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
-                    >
+                    <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
                       <Text style={styles.treeIcon}>└─</Text>
-                      <Text style={[styles.tableCell, { flex: 1 }]}>
-                        {paired.productName}
-                      </Text>
+                      <Text style={[styles.tableCell, { flex: 1 }]}>{paired.productName}</Text>
                       <Text style={styles.pairedBadge}>สินค้าที่ใช้คู่กัน</Text>
                     </View>
                     <Text
@@ -568,25 +536,30 @@ const QuotationPDF = ({
 
         {/* Notes — dynamic (null=template, ""=none, text=custom) */}
         {(() => {
-          const notesText = quotation.pdfNotes !== null && quotation.pdfNotes !== undefined
-            ? quotation.pdfNotes
-            : DEFAULT_PDF_NOTES
+          const notesText =
+            quotation.pdfNotes !== null && quotation.pdfNotes !== undefined
+              ? quotation.pdfNotes
+              : DEFAULT_PDF_NOTES
           if (!notesText) return null
           return (
             <View style={styles.notesSection}>
               <Text style={styles.notesTitle}>หมายเหตุ</Text>
-              <Text style={styles.notesText}>{notesText.split('\n').map((l: string) => l + ' ').join('\n')}</Text>
+              <Text style={styles.notesText}>
+                {notesText
+                  .split("\n")
+                  .map((l: string) => l + " ")
+                  .join("\n")}
+              </Text>
             </View>
           )
         })()}
 
         {/* Additional */}
         <View style={styles.additionalInfo}>
+          <Text style={styles.notesBullet}>* ใบเสนอราคามีอายุ {quotation.validDays} วัน</Text>
           <Text style={styles.notesBullet}>
-            * ใบเสนอราคามีอายุ {quotation.validDays} วัน
+            หากเกินกำหนด กรุณาขอใบเสนอราคาใหม่จากผู้ขายอีกครั้ง{" "}
           </Text>
-          <Text style={styles.notesBullet}>
-            หากเกินกำหนด กรุณาขอใบเสนอราคาใหม่จากผู้ขายอีกครั้ง </Text>
         </View>
 
         {/* Signature */}
@@ -672,9 +645,6 @@ export async function GET(
     })
   } catch (error) {
     console.error("Error generating quotation PDF:", error)
-    return NextResponse.json(
-      { error: "Failed to generate quotation PDF" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Failed to generate quotation PDF" }, { status: 500 })
   }
 }

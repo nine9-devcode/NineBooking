@@ -8,7 +8,12 @@ import bcrypt from "bcryptjs"
 const updateUserSchema = z.object({
   name: z.string().min(3).max(40).optional(),
   nickname: z.string().min(1).max(20).nullable().optional(),
-  phone: z.string().length(10).regex(/^[0-9]+$/).nullable().optional(),
+  phone: z
+    .string()
+    .length(10)
+    .regex(/^[0-9]+$/)
+    .nullable()
+    .optional(),
   memberType: z.string().nullable().optional(),
   memberTypeNote: z.string().nullable().optional(),
   residenceType: z.string().nullable().optional(),
@@ -21,10 +26,7 @@ const updateUserSchema = z.object({
 })
 
 // GET - ดึงข้อมูลเต็มของสมาชิก 1 คน (ใช้ตอนกดแก้ไข)
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const guard = await requireAdmin()
     if (!guard.ok) return guard.response
@@ -66,18 +68,12 @@ export async function GET(
     })
   } catch (error) {
     console.error("Error fetching user:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
 // PATCH - แก้ไขข้อมูลสมาชิก (ข้อมูลส่วนตัว, ที่อยู่, รหัสผ่าน)
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const guard = await requireAdmin()
     if (!guard.ok) return guard.response
@@ -118,7 +114,9 @@ export async function PATCH(
         ...(data.nickname !== undefined && { nickname: data.nickname }),
         ...(data.phone !== undefined && { phone: data.phone }),
         ...(data.memberType !== undefined && { memberType: data.memberType }),
-        ...(data.memberTypeNote !== undefined && { memberTypeNote: data.memberTypeNote || null }),
+        ...(data.memberTypeNote !== undefined && {
+          memberTypeNote: data.memberTypeNote || null,
+        }),
         ...(data.residenceType !== undefined && { residenceType: data.residenceType }),
         ...(data.address !== undefined && { address: data.address || null }),
         ...(data.province !== undefined && { province: data.province || null }),
@@ -152,10 +150,7 @@ export async function PATCH(
     })
   } catch (error) {
     console.error("Error updating user:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการอัปเดตข้อมูล" }, { status: 500 })
   }
 }
 
@@ -185,9 +180,6 @@ export async function DELETE(
     })
   } catch (error) {
     console.error("Error deleting user:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการลบข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการลบข้อมูล" }, { status: 500 })
   }
 }

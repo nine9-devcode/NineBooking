@@ -11,7 +11,13 @@ interface ProfileCardProps {
   hideEdit?: boolean
 }
 
-export function ProfileCard({ title, icon: Icon, onEdit, children, hideEdit = false }: ProfileCardProps) {
+export function ProfileCard({
+  title,
+  icon: Icon,
+  onEdit,
+  children,
+  hideEdit = false,
+}: ProfileCardProps) {
   return (
     <Card className="hover:shadow-md transition-shadow">
       <CardHeader className="flex flex-row items-center justify-between pb-3">
@@ -22,20 +28,13 @@ export function ProfileCard({ title, icon: Icon, onEdit, children, hideEdit = fa
           <CardTitle className="text-lg font-heading">{title}</CardTitle>
         </div>
         {!hideEdit && onEdit && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onEdit}
-            className="hover:bg-primary/10"
-          >
+          <Button variant="ghost" size="sm" onClick={onEdit} className="hover:bg-primary/10">
             <Edit2 className="w-4 h-4 mr-2" />
             แก้ไข
           </Button>
         )}
       </CardHeader>
-      <CardContent>
-        {children}
-      </CardContent>
+      <CardContent>{children}</CardContent>
     </Card>
   )
 }

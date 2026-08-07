@@ -59,7 +59,8 @@ export function IssueResponseCard({
               </p>
               {respondedAt && (
                 <p className="text-xs text-muted-foreground mt-3">
-                  ตอบเมื่อ: {format(new Date(respondedAt), "d MMM yyyy HH:mm น.", { locale: th })}
+                  ตอบเมื่อ:{" "}
+                  {format(new Date(respondedAt), "d MMM yyyy HH:mm น.", { locale: th })}
                 </p>
               )}
             </div>

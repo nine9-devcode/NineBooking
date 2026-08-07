@@ -1,4 +1,3 @@
-
 // ไฟล์: components/orders/cancel-order-dialog.tsx
 
 "use client"
@@ -37,8 +36,7 @@ export function CancelOrderDialog({
           <AlertDialogTitle>ยืนยันการยกเลิกคำสั่งจอง</AlertDialogTitle>
           <AlertDialogDescription>
             คุณต้องการยกเลิกคำสั่งจอง{" "}
-            <span className="font-semibold text-foreground">{orderNumber}</span>{" "}
-            ใช่หรือไม่?
+            <span className="font-semibold text-foreground">{orderNumber}</span> ใช่หรือไม่?
             <br />
             <span className="text-destructive">การยกเลิกไม่สามารถย้อนกลับได้</span>
           </AlertDialogDescription>

@@ -17,11 +17,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   Eye,
   Trash2,
@@ -47,9 +43,16 @@ import { getErrorMessage } from "@/lib/utils"
 import type { IssueCategory, IssueStatus } from "@prisma/client"
 import { ISSUE_CATEGORY, ISSUE_STATUS } from "@/components/ui/status-badge"
 
-function getMemberTypeBadgeVariant(memberType: string | null | undefined): "default" | "secondary" | "destructive" | "outline" {
+function getMemberTypeBadgeVariant(
+  memberType: string | null | undefined
+): "default" | "secondary" | "destructive" | "outline" {
   const variant = MEMBER_TYPE_COLORS[memberType || "other"]
-  if (variant === "default" || variant === "secondary" || variant === "destructive" || variant === "outline") {
+  if (
+    variant === "default" ||
+    variant === "secondary" ||
+    variant === "destructive" ||
+    variant === "outline"
+  ) {
     return variant
   }
   return "secondary"
@@ -165,199 +168,214 @@ export default function ContactIssuesTable({
           </div>
         )}
         <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-card border-border hover:bg-card">
-              {onSelectIds && (
-                <TableHead className="w-12">
-                  <Checkbox
-                    checked={selectedIds.length === data.length && data.length > 0}
-                    onCheckedChange={handleSelectAll}
-                    className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                  />
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-card border-border hover:bg-card">
+                {onSelectIds && (
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={selectedIds.length === data.length && data.length > 0}
+                      onCheckedChange={handleSelectAll}
+                      className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                  </TableHead>
+                )}
+                <TableHead className="text-foreground font-semibold">เลขที่แจ้ง</TableHead>
+                <TableHead className="hidden sm:table-cell text-foreground font-semibold">
+                  สมาชิก
                 </TableHead>
-              )}
-              <TableHead className="text-foreground font-semibold">เลขที่แจ้ง</TableHead>
-              <TableHead className="hidden sm:table-cell text-foreground font-semibold">สมาชิก</TableHead>
-              <TableHead className="hidden md:table-cell text-foreground font-semibold">ประเภท</TableHead>
-              <TableHead className="hidden sm:table-cell text-foreground font-semibold">หัวข้อ</TableHead>
-              <TableHead className="hidden md:table-cell text-foreground font-semibold">วันที่แจ้ง</TableHead>
-              <TableHead className="text-foreground font-semibold">สถานะ</TableHead>
-              <TableHead className="text-foreground font-semibold text-right">จัดการ</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((issue) => {
-              const statusInfo = ISSUE_STATUS[issue.status as IssueStatus] || {
-                label: issue.status,
-                icon: AlertCircle,
-                className: "bg-card text-muted-foreground border-border"
-              }
-              const StatusIcon = statusInfo.icon
-              
-              return (
-                <TableRow
-                  key={issue.id}
-                  className={`border-border hover:bg-card/50 transition-colors ${
-                    selectedIds.includes(issue.id)
-                      ? "bg-primary/5"
-                      : issue.isNew
-                      ? "bg-warning/5 border-l-2 border-l-warning"
-                      : ""
-                  }`}
-                >
-                  {onSelectIds && (
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedIds.includes(issue.id)}
-                        onCheckedChange={(checked) => handleSelectSingle(issue.id, checked as boolean)}
-                        className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                      />
-                    </TableCell>
-                  )}
-                  
-                  <TableCell className="font-mono text-primary">
-                    <div className="flex items-center gap-1.5">
-                      {issue.issueNumber}
-                      {issue.isNew && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-warning text-warning-foreground">
-                          ใหม่
-                        </span>
-                      )}
-                    </div>
-                  </TableCell>
-                  
-                  <TableCell className="hidden sm:table-cell">
-                    <div className="flex items-start gap-3">
-                      {/* Avatar */}
-                      {issue.user?.image ? (
-                        <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary flex-shrink-0 mt-1">
-                          <Image
-                            src={issue.user.image}
-                            alt={issue.user.name}
-                            fill
-                            className="object-cover"
-                            sizes="40px"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-primary border-2 border-primary flex items-center justify-center flex-shrink-0 mt-1">
-                          <span className="text-foreground font-semibold text-sm">
-                            {issue.user?.name?.charAt(0).toUpperCase() || "?"}
+                <TableHead className="hidden md:table-cell text-foreground font-semibold">
+                  ประเภท
+                </TableHead>
+                <TableHead className="hidden sm:table-cell text-foreground font-semibold">
+                  หัวข้อ
+                </TableHead>
+                <TableHead className="hidden md:table-cell text-foreground font-semibold">
+                  วันที่แจ้ง
+                </TableHead>
+                <TableHead className="text-foreground font-semibold">สถานะ</TableHead>
+                <TableHead className="text-foreground font-semibold text-right">
+                  จัดการ
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((issue) => {
+                const statusInfo = ISSUE_STATUS[issue.status as IssueStatus] || {
+                  label: issue.status,
+                  icon: AlertCircle,
+                  className: "bg-card text-muted-foreground border-border",
+                }
+                const StatusIcon = statusInfo.icon
+
+                return (
+                  <TableRow
+                    key={issue.id}
+                    className={`border-border hover:bg-card/50 transition-colors ${
+                      selectedIds.includes(issue.id)
+                        ? "bg-primary/5"
+                        : issue.isNew
+                          ? "bg-warning/5 border-l-2 border-l-warning"
+                          : ""
+                    }`}
+                  >
+                    {onSelectIds && (
+                      <TableCell>
+                        <Checkbox
+                          checked={selectedIds.includes(issue.id)}
+                          onCheckedChange={(checked) =>
+                            handleSelectSingle(issue.id, checked as boolean)
+                          }
+                          className="border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        />
+                      </TableCell>
+                    )}
+
+                    <TableCell className="font-mono text-primary">
+                      <div className="flex items-center gap-1.5">
+                        {issue.issueNumber}
+                        {issue.isNew && (
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-warning text-warning-foreground">
+                            ใหม่
                           </span>
-                        </div>
-                      )}
-
-                      {/* Info */}
-                      <div className="min-w-0 flex-1">
-                        {/* Name + Nickname */}
-                        <p className="font-medium text-foreground truncate text-sm">
-                          {issue.user?.name || "ไม่ระบุชื่อ"}
-                          {issue.user?.nickname && (
-                            <span className="text-muted-foreground font-normal ml-1">
-                              ({issue.user.nickname})
-                            </span>
-                          )}
-                        </p>
-
-                        {/* Member Type Badge / Deleted Badge */}
-                        <div className="flex items-center gap-1.5 mt-1">
-                          {!issue.user ? (
-                            <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal border-destructive/40 text-destructive bg-destructive/10">
-                              บัญชีถูกลบแล้ว
-                            </Badge>
-                          ) : (
-                            <>
-                              <Badge
-                                variant={getMemberTypeBadgeVariant(issue.user.memberType)}
-                                className="h-5 px-1.5 text-[10px] capitalize font-normal border-opacity-50"
-                              >
-                                {getMemberTypeLabel(issue.user.memberType ?? null)}
-                              </Badge>
-                              {issue.user.memberTypeNote && (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="cursor-help">
-                                      <MessageSquare className="w-3.5 h-3.5 text-info/70 hover:text-info transition-colors" />
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent className="bg-card border-border text-foreground max-w-[250px] break-words z-50">
-                                    <p className="text-xs font-semibold mb-1 text-muted-foreground">หมายเหตุสมาชิก:</p>
-                                    {issue.user.memberTypeNote}
-                                  </TooltipContent>
-                                </Tooltip>
-                              )}
-                            </>
-                          )}
-                        </div>
-
-                        {/* Phone */}
-                        <p className="text-xs text-muted-foreground truncate mt-0.5 font-mono">
-                          {issue.user?.phone || "-"}
-                        </p>
+                        )}
                       </div>
-                    </div>
-                  </TableCell>
+                    </TableCell>
 
-                  <TableCell className="hidden md:table-cell">
-                    {issue.category && ISSUE_CATEGORY[issue.category as IssueCategory] ? (
+                    <TableCell className="hidden sm:table-cell">
+                      <div className="flex items-start gap-3">
+                        {/* Avatar */}
+                        {issue.user?.image ? (
+                          <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-primary flex-shrink-0 mt-1">
+                            <Image
+                              src={issue.user.image}
+                              alt={issue.user.name}
+                              fill
+                              className="object-cover"
+                              sizes="40px"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-primary border-2 border-primary flex items-center justify-center flex-shrink-0 mt-1">
+                            <span className="text-foreground font-semibold text-sm">
+                              {issue.user?.name?.charAt(0).toUpperCase() || "?"}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Info */}
+                        <div className="min-w-0 flex-1">
+                          {/* Name + Nickname */}
+                          <p className="font-medium text-foreground truncate text-sm">
+                            {issue.user?.name || "ไม่ระบุชื่อ"}
+                            {issue.user?.nickname && (
+                              <span className="text-muted-foreground font-normal ml-1">
+                                ({issue.user.nickname})
+                              </span>
+                            )}
+                          </p>
+
+                          {/* Member Type Badge / Deleted Badge */}
+                          <div className="flex items-center gap-1.5 mt-1">
+                            {!issue.user ? (
+                              <Badge
+                                variant="outline"
+                                className="h-5 px-1.5 text-[10px] font-normal border-destructive/40 text-destructive bg-destructive/10"
+                              >
+                                บัญชีถูกลบแล้ว
+                              </Badge>
+                            ) : (
+                              <>
+                                <Badge
+                                  variant={getMemberTypeBadgeVariant(issue.user.memberType)}
+                                  className="h-5 px-1.5 text-[10px] capitalize font-normal border-opacity-50"
+                                >
+                                  {getMemberTypeLabel(issue.user.memberType ?? null)}
+                                </Badge>
+                                {issue.user.memberTypeNote && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="cursor-help">
+                                        <MessageSquare className="w-3.5 h-3.5 text-info/70 hover:text-info transition-colors" />
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent className="bg-card border-border text-foreground max-w-[250px] break-words z-50">
+                                      <p className="text-xs font-semibold mb-1 text-muted-foreground">
+                                        หมายเหตุสมาชิก:
+                                      </p>
+                                      {issue.user.memberTypeNote}
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                              </>
+                            )}
+                          </div>
+
+                          {/* Phone */}
+                          <p className="text-xs text-muted-foreground truncate mt-0.5 font-mono">
+                            {issue.user?.phone || "-"}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell className="hidden md:table-cell">
+                      {issue.category && ISSUE_CATEGORY[issue.category as IssueCategory] ? (
+                        <Badge
+                          variant="outline"
+                          className={`${ISSUE_CATEGORY[issue.category as IssueCategory].className} text-xs`}
+                        >
+                          {ISSUE_CATEGORY[issue.category as IssueCategory].label}
+                        </Badge>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">-</span>
+                      )}
+                    </TableCell>
+
+                    <TableCell className="hidden sm:table-cell">
+                      <p className="text-foreground line-clamp-2 max-w-md">{issue.subject}</p>
+                    </TableCell>
+
+                    <TableCell className="hidden md:table-cell text-muted-foreground">
+                      {format(new Date(issue.createdAt), "d MMM yyyy HH:mm", { locale: th })}
+                    </TableCell>
+
+                    <TableCell>
                       <Badge
                         variant="outline"
-                        className={`${ISSUE_CATEGORY[issue.category as IssueCategory].className} text-xs`}
+                        className={`${statusInfo.className} flex items-center gap-1 w-fit`}
                       >
-                        {ISSUE_CATEGORY[issue.category as IssueCategory].label}
+                        <StatusIcon className="w-3 h-3" />
+                        {statusInfo.label}
                       </Badge>
-                    ) : (
-                      <span className="text-muted-foreground text-xs">-</span>
-                    )}
-                  </TableCell>
+                    </TableCell>
 
-                  <TableCell className="hidden sm:table-cell">
-                    <p className="text-foreground line-clamp-2 max-w-md">
-                      {issue.subject}
-                    </p>
-                  </TableCell>
-
-                  <TableCell className="hidden md:table-cell text-muted-foreground">
-                    {format(new Date(issue.createdAt), "d MMM yyyy HH:mm", { locale: th })}
-                  </TableCell>
-                  
-                  <TableCell>
-                    <Badge 
-                      variant="outline" 
-                      className={`${statusInfo.className} flex items-center gap-1 w-fit`}
-                    >
-                      <StatusIcon className="w-3 h-3" />
-                      {statusInfo.label}
-                    </Badge>
-                  </TableCell>
-                  
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleView(issue.id)}
-                        className="text-info hover:text-info hover:bg-info"
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        ดู
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setDeleteId(issue.id)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )
-            })}
-          </TableBody>
-        </Table>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleView(issue.id)}
+                          className="text-info hover:text-info hover:bg-info"
+                        >
+                          <Eye className="w-4 h-4 mr-1" />
+                          ดู
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setDeleteId(issue.id)}
+                          className="text-destructive hover:text-destructive hover:bg-destructive"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })}
+            </TableBody>
+          </Table>
         </div>
       </div>
 
@@ -398,12 +416,11 @@ export default function ContactIssuesTable({
           <AlertDialogHeader>
             <AlertDialogTitle className="text-foreground">ยืนยันการลบ</AlertDialogTitle>
             <AlertDialogDescription className="text-muted-foreground">
-              คุณแน่ใจหรือไม่ว่าต้องการลบรายการแจ้งปัญหานี้? 
-              การกระทำนี้ไม่สามารถยกเลิกได้
+              คุณแน่ใจหรือไม่ว่าต้องการลบรายการแจ้งปัญหานี้? การกระทำนี้ไม่สามารถยกเลิกได้
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel 
+            <AlertDialogCancel
               className="bg-card text-foreground hover:bg-secondary border-border"
               disabled={isDeleting}
             >

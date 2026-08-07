@@ -15,10 +15,7 @@ export async function GET(request: NextRequest) {
     if (categoryId) {
       const pairings = await prisma.categoryPairing.findMany({
         where: {
-          OR: [
-            { categoryAId: categoryId },
-            { categoryBId: categoryId },
-          ],
+          OR: [{ categoryAId: categoryId }, { categoryBId: categoryId }],
         },
         include: {
           categoryA: {
@@ -42,9 +39,7 @@ export async function GET(request: NextRequest) {
       // แปลงให้เป็น paired categories (ไม่รวมตัวเอง)
       const pairedCategories = pairings.map((pairing) => {
         const pairedCategory =
-          pairing.categoryAId === categoryId
-            ? pairing.categoryB
-            : pairing.categoryA
+          pairing.categoryAId === categoryId ? pairing.categoryB : pairing.categoryA
         return {
           pairingId: pairing.id,
           category: pairedCategory,
@@ -79,10 +74,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ pairings: allPairings })
   } catch (error) {
     console.error("Error fetching category pairings:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
@@ -97,18 +89,12 @@ export async function POST(request: NextRequest) {
 
     // Validation
     if (!categoryAId || !categoryBId) {
-      return NextResponse.json(
-        { error: "กรุณาเลือกหมวดหมู่ทั้งสองฝั่ง" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "กรุณาเลือกหมวดหมู่ทั้งสองฝั่ง" }, { status: 400 })
     }
 
     // ไม่อนุญาตให้จับคู่ตัวเอง
     if (categoryAId === categoryBId) {
-      return NextResponse.json(
-        { error: "ไม่สามารถจับคู่หมวดหมู่เดียวกันได้" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "ไม่สามารถจับคู่หมวดหมู่เดียวกันได้" }, { status: 400 })
     }
 
     // ตรวจสอบว่า categories มีอยู่จริง
@@ -118,10 +104,7 @@ export async function POST(request: NextRequest) {
     ])
 
     if (!categoryA || !categoryB) {
-      return NextResponse.json(
-        { error: "ไม่พบหมวดหมู่ที่เลือก" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบหมวดหมู่ที่เลือก" }, { status: 404 })
     }
 
     // ตรวจสอบว่ามี pairing อยู่แล้วหรือไม่ (Two-way check)
@@ -135,10 +118,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existingPairing) {
-      return NextResponse.json(
-        { error: "หมวดหมู่นี้ถูกจับคู่กันแล้ว" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "หมวดหมู่นี้ถูกจับคู่กันแล้ว" }, { status: 400 })
     }
 
     // สร้าง pairing ใหม่
@@ -168,9 +148,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(pairing, { status: 201 })
   } catch (error) {
     console.error("Error creating category pairing:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการสร้างการจับคู่" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการสร้างการจับคู่" }, { status: 500 })
   }
 }

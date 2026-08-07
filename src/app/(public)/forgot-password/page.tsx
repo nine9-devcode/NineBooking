@@ -53,8 +53,8 @@ export default function ForgotPasswordPage() {
 
           <p className="rounded-md border border-info/40 bg-info/10 p-3 text-left text-xs leading-relaxed text-info">
             <strong>หมายเหตุสำหรับโหมดพัฒนา:</strong> โปรเจกนี้ไม่ได้ต่อกับผู้ให้บริการอีเมลจริง
-            อีเมลจะถูกบันทึกเป็นไฟล์ <code>.html</code> ไว้ในโฟลเดอร์{" "}
-            <code>.dev-outbox/</code> ที่ราก repo — เปิดไฟล์ล่าสุดเพื่อกดลิงก์ตั้งรหัสผ่านใหม่ได้เลย
+            อีเมลจะถูกบันทึกเป็นไฟล์ <code>.html</code> ไว้ในโฟลเดอร์ <code>.dev-outbox/</code>{" "}
+            ที่ราก repo — เปิดไฟล์ล่าสุดเพื่อกดลิงก์ตั้งรหัสผ่านใหม่ได้เลย
           </p>
 
           <Button asChild variant="outline" className="w-full">

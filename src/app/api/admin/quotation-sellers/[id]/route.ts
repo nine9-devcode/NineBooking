@@ -64,7 +64,10 @@ export async function DELETE(
     if (seller.isActive && total > 1) {
       const first = await prisma.quotationSeller.findFirst({ orderBy: { createdAt: "asc" } })
       if (first) {
-        await prisma.quotationSeller.update({ where: { id: first.id }, data: { isActive: true } })
+        await prisma.quotationSeller.update({
+          where: { id: first.id },
+          data: { isActive: true },
+        })
       }
     }
 

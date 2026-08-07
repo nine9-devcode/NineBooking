@@ -18,7 +18,7 @@ export function CartBadge() {
         aria-label={totalItems > 0 ? `ตะกร้าสินค้า (${totalItems} รายการ)` : "ตะกร้าสินค้า"}
       >
         <ShoppingCart className="h-5 w-5" />
-        
+
         {/* Badge แสดงจำนวน */}
         {!isLoading && totalItems > 0 && (
           <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">

@@ -10,10 +10,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await auth()
     if (!session) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
@@ -22,7 +19,6 @@ export async function GET(request: NextRequest) {
     const categorySlug = searchParams.get("categorySlug") || ""
     const sort = searchParams.get("sort") || "category"
     const { page, limit, skip } = parsePagination(searchParams, { defaultLimit: 12 })
-
 
     // ใช้ type ของ Prisma แทน any — ตรงนี้คือจุดที่ input จากผู้ใช้เข้าไปถึง query
     const where: Prisma.ProductWhereInput = {
@@ -49,12 +45,9 @@ export async function GET(request: NextRequest) {
       })
 
       if (category) {
-        const categoryIds = [
-          category.id,
-          ...category.children.map((c) => c.id),
-        ]
+        const categoryIds = [category.id, ...category.children.map((c) => c.id)]
         where.categoryId = { in: categoryIds }
-        
+
         categoryInfo = {
           id: category.id,
           name: category.name,
@@ -70,12 +63,9 @@ export async function GET(request: NextRequest) {
       })
 
       if (category) {
-        const categoryIds = [
-          categoryId,
-          ...category.children.map((c) => c.id),
-        ]
+        const categoryIds = [categoryId, ...category.children.map((c) => c.id)]
         where.categoryId = { in: categoryIds }
-        
+
         categoryInfo = {
           id: category.id,
           name: category.name,
@@ -133,8 +123,8 @@ export async function GET(request: NextRequest) {
               parent: {
                 select: {
                   sortOrder: true,
-                }
-              }
+                },
+              },
             },
           },
         },
@@ -159,9 +149,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching products:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูลสินค้า" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูลสินค้า" }, { status: 500 })
   }
 }

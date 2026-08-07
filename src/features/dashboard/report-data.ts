@@ -1,15 +1,21 @@
 // lib/report-data.ts
 // Shared data layer for summary report - used by JSON, PDF, and Excel routes
 
-import { prisma } from '@/lib/db';
-import type { ReportData, CategoryStat, ContactIssueStats, MemberGrowthStats, MonthlyStats } from '@/features/dashboard/summary-report.types';
+import { prisma } from "@/lib/db"
+import type {
+  ReportData,
+  CategoryStat,
+  ContactIssueStats,
+  MemberGrowthStats,
+  MonthlyStats,
+} from "@/features/dashboard/summary-report.types"
 
 export interface SummaryReportParams {
-  currentStart: Date;
-  currentEnd: Date;
-  compareStart: Date;
-  compareEnd: Date;
-  comparisonLabel: string;
+  currentStart: Date
+  currentEnd: Date
+  compareStart: Date
+  compareEnd: Date
+  comparisonLabel: string
 }
 
 /**
@@ -19,76 +25,81 @@ export interface SummaryReportParams {
 export function parseDateParams(
   startDateParam: string | null,
   endDateParam: string | null,
-  compareMode: string = 'previous_day'
+  compareMode: string = "previous_day"
 ): SummaryReportParams {
-  let currentStart: Date;
-  let currentEnd: Date;
+  let currentStart: Date
+  let currentEnd: Date
 
   if (startDateParam && endDateParam) {
-    const startTimestamp = Date.parse(startDateParam);
-    const endTimestamp = Date.parse(endDateParam);
+    const startTimestamp = Date.parse(startDateParam)
+    const endTimestamp = Date.parse(endDateParam)
 
     if (isNaN(startTimestamp) || isNaN(endTimestamp)) {
-      throw new Error('Invalid date format');
+      throw new Error("Invalid date format")
     }
 
-    currentStart = new Date(startDateParam);
-    currentStart.setHours(0, 0, 0, 0);
-    currentEnd = new Date(endDateParam);
-    currentEnd.setHours(23, 59, 59, 999);
+    currentStart = new Date(startDateParam)
+    currentStart.setHours(0, 0, 0, 0)
+    currentEnd = new Date(endDateParam)
+    currentEnd.setHours(23, 59, 59, 999)
 
-    const daysDiff = Math.ceil((currentEnd.getTime() - currentStart.getTime()) / (1000 * 60 * 60 * 24));
+    const daysDiff = Math.ceil(
+      (currentEnd.getTime() - currentStart.getTime()) / (1000 * 60 * 60 * 24)
+    )
     if (daysDiff > 1825 || daysDiff < 0) {
-      throw new Error('Invalid date range (max 1825 days)');
+      throw new Error("Invalid date range (max 1825 days)")
     }
   } else {
-    currentStart = new Date();
-    currentStart.setHours(0, 0, 0, 0);
-    currentEnd = new Date();
-    currentEnd.setHours(23, 59, 59, 999);
+    currentStart = new Date()
+    currentStart.setHours(0, 0, 0, 0)
+    currentEnd = new Date()
+    currentEnd.setHours(23, 59, 59, 999)
   }
 
-  const daysDiff = Math.ceil((currentEnd.getTime() - currentStart.getTime()) / (1000 * 60 * 60 * 24));
+  const daysDiff = Math.ceil(
+    (currentEnd.getTime() - currentStart.getTime()) / (1000 * 60 * 60 * 24)
+  )
 
-  let compareStart: Date;
-  let compareEnd: Date;
-  let comparisonLabel: string;
+  let compareStart: Date
+  let compareEnd: Date
+  let comparisonLabel: string
 
   switch (compareMode) {
-    case 'previous_week':
-      compareStart = new Date(currentStart);
-      compareStart.setDate(compareStart.getDate() - 7);
-      compareEnd = new Date(currentEnd);
-      compareEnd.setDate(compareEnd.getDate() - 7);
-      comparisonLabel = 'เทียบกับสัปดาห์ก่อน';
-      break;
+    case "previous_week":
+      compareStart = new Date(currentStart)
+      compareStart.setDate(compareStart.getDate() - 7)
+      compareEnd = new Date(currentEnd)
+      compareEnd.setDate(compareEnd.getDate() - 7)
+      comparisonLabel = "เทียบกับสัปดาห์ก่อน"
+      break
 
-    case 'previous_month':
-      compareStart = new Date(currentStart);
-      compareStart.setMonth(compareStart.getMonth() - 1);
-      compareEnd = new Date(currentEnd);
-      compareEnd.setMonth(compareEnd.getMonth() - 1);
-      comparisonLabel = 'เทียบกับเดือนก่อน';
-      break;
+    case "previous_month":
+      compareStart = new Date(currentStart)
+      compareStart.setMonth(compareStart.getMonth() - 1)
+      compareEnd = new Date(currentEnd)
+      compareEnd.setMonth(compareEnd.getMonth() - 1)
+      comparisonLabel = "เทียบกับเดือนก่อน"
+      break
 
-    case 'previous_day':
+    case "previous_day":
     default:
-      compareStart = new Date(currentStart);
-      compareStart.setDate(compareStart.getDate() - daysDiff);
-      compareEnd = new Date(currentEnd);
-      compareEnd.setDate(compareEnd.getDate() - daysDiff);
-      comparisonLabel = daysDiff === 1 ? 'เทียบกับเมื่อวาน' : `เทียบกับช่วง ${daysDiff} วันก่อนหน้า`;
-      break;
+      compareStart = new Date(currentStart)
+      compareStart.setDate(compareStart.getDate() - daysDiff)
+      compareEnd = new Date(currentEnd)
+      compareEnd.setDate(compareEnd.getDate() - daysDiff)
+      comparisonLabel =
+        daysDiff === 1 ? "เทียบกับเมื่อวาน" : `เทียบกับช่วง ${daysDiff} วันก่อนหน้า`
+      break
   }
 
-  return { currentStart, currentEnd, compareStart, compareEnd, comparisonLabel };
+  return { currentStart, currentEnd, compareStart, compareEnd, comparisonLabel }
 }
 
 /**
  * Calculate all summary report data. Used by JSON route, PDF route, and Excel route.
  */
 export async function calculateSummaryReport(params: SummaryReportParams): Promise<ReportData> {
-  const { currentStart, currentEnd, compareStart, compareEnd, comparisonLabel } = params;
+  const { currentStart, currentEnd, compareStart, compareEnd, comparisonLabel } = params
 
   // =============================================
   // 1. Basic stats (parallel)
@@ -108,21 +119,21 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
     currentPeriodViews,
     comparePeriodViews,
   ] = await Promise.all([
-    prisma.user.count({ where: { role: 'user' } }),
+    prisma.user.count({ where: { role: "user" } }),
     prisma.product.count({ where: { isActive: true } }),
     prisma.category.count({ where: { isActive: true } }),
     prisma.order.count(),
     prisma.order.count({
-      where: { status: 'PENDING', createdAt: { gte: currentStart, lte: currentEnd } },
+      where: { status: "PENDING", createdAt: { gte: currentStart, lte: currentEnd } },
     }),
     prisma.order.count({
-      where: { status: 'CONFIRMED', createdAt: { gte: currentStart, lte: currentEnd } },
+      where: { status: "CONFIRMED", createdAt: { gte: currentStart, lte: currentEnd } },
     }),
     prisma.order.count({
-      where: { status: 'COMPLETED', createdAt: { gte: currentStart, lte: currentEnd } },
+      where: { status: "COMPLETED", createdAt: { gte: currentStart, lte: currentEnd } },
     }),
     prisma.order.count({
-      where: { status: 'CANCELLED', createdAt: { gte: currentStart, lte: currentEnd } },
+      where: { status: "CANCELLED", createdAt: { gte: currentStart, lte: currentEnd } },
     }),
     prisma.order.count({
       where: { createdAt: { gte: currentStart, lte: currentEnd } },
@@ -130,26 +141,34 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
     prisma.order.count({
       where: { createdAt: { gte: compareStart, lte: compareEnd } },
     }),
-    prisma.product.aggregate({
-      _sum: { viewCount: true },
-      where: { isActive: true },
-    }).then(res => res._sum.viewCount || 0),
+    prisma.product
+      .aggregate({
+        _sum: { viewCount: true },
+        where: { isActive: true },
+      })
+      .then((res) => res._sum.viewCount || 0),
     prisma.productView.count({
       where: { viewedAt: { gte: currentStart, lte: currentEnd } },
     }),
     prisma.productView.count({
       where: { viewedAt: { gte: compareStart, lte: compareEnd } },
     }),
-  ]);
+  ])
 
   // Trends
-  const orderTrend = comparePeriodOrders > 0
-    ? Math.round(((currentPeriodOrders - comparePeriodOrders) / comparePeriodOrders) * 100)
-    : currentPeriodOrders > 0 ? 100 : 0;
+  const orderTrend =
+    comparePeriodOrders > 0
+      ? Math.round(((currentPeriodOrders - comparePeriodOrders) / comparePeriodOrders) * 100)
+      : currentPeriodOrders > 0
+        ? 100
+        : 0
 
-  const viewTrend = comparePeriodViews > 0
-    ? Math.round(((currentPeriodViews - comparePeriodViews) / comparePeriodViews) * 100)
-    : currentPeriodViews > 0 ? 100 : 0;
+  const viewTrend =
+    comparePeriodViews > 0
+      ? Math.round(((currentPeriodViews - comparePeriodViews) / comparePeriodViews) * 100)
+      : currentPeriodViews > 0
+        ? 100
+        : 0
 
   // =============================================
   // 2. Category stats (with date filter)
@@ -178,30 +197,30 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
         },
       },
     }),
-  ]);
+  ])
 
-  const orderCountByCategory: Record<string, Set<string>> = {};
+  const orderCountByCategory: Record<string, Set<string>> = {}
   ordersForCategories.forEach((order) => {
-    const categoriesInOrder = new Set<string>();
+    const categoriesInOrder = new Set<string>()
     order.orderItems.forEach((item) => {
-      if (item.product?.categoryId) categoriesInOrder.add(item.product.categoryId);
-      if (item.pairedProduct?.categoryId) categoriesInOrder.add(item.pairedProduct.categoryId);
-    });
+      if (item.product?.categoryId) categoriesInOrder.add(item.product.categoryId)
+      if (item.pairedProduct?.categoryId) categoriesInOrder.add(item.pairedProduct.categoryId)
+    })
     categoriesInOrder.forEach((categoryId) => {
-      if (!orderCountByCategory[categoryId]) orderCountByCategory[categoryId] = new Set();
-      orderCountByCategory[categoryId].add(order.id);
-    });
-  });
+      if (!orderCountByCategory[categoryId]) orderCountByCategory[categoryId] = new Set()
+      orderCountByCategory[categoryId].add(order.id)
+    })
+  })
 
   const categoryData = categories.map((category) => ({
     categoryId: category.id,
     categoryName: category.name,
     orderCount: orderCountByCategory[category.id]?.size || 0,
     viewCount: category.products.reduce((sum, p) => sum + p.viewCount, 0),
-  }));
+  }))
 
-  const categoryTotalOrders = ordersForCategories.length;
-  const categoryTotalViews = categoryData.reduce((sum, cat) => sum + cat.viewCount, 0);
+  const categoryTotalOrders = ordersForCategories.length
+  const categoryTotalViews = categoryData.reduce((sum, cat) => sum + cat.viewCount, 0)
 
   const categoryStats: CategoryStat[] = [...categoryData]
     .filter((cat) => cat.orderCount > 0 || cat.viewCount > 0)
@@ -209,57 +228,60 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
     .slice(0, 5)
     .map((cat) => ({
       ...cat,
-      orderPercentage: categoryTotalOrders > 0
-        ? parseFloat(((cat.orderCount / categoryTotalOrders) * 100).toFixed(1))
-        : 0,
-      viewPercentage: categoryTotalViews > 0
-        ? parseFloat(((cat.viewCount / categoryTotalViews) * 100).toFixed(1))
-        : 0,
-    }));
+      orderPercentage:
+        categoryTotalOrders > 0
+          ? parseFloat(((cat.orderCount / categoryTotalOrders) * 100).toFixed(1))
+          : 0,
+      viewPercentage:
+        categoryTotalViews > 0
+          ? parseFloat(((cat.viewCount / categoryTotalViews) * 100).toFixed(1))
+          : 0,
+    }))
 
   // =============================================
   // 3. Top Products (fix N+1 query)
   // =============================================
   const productOrderCounts = await prisma.orderItem.groupBy({
-    by: ['productId'],
+    by: ["productId"],
     _count: { productId: true },
-    orderBy: { _count: { productId: 'desc' } },
+    orderBy: { _count: { productId: "desc" } },
     take: 5,
-  });
+  })
 
   const topProductsByViews = await prisma.product.findMany({
     where: { isActive: true },
-    orderBy: { viewCount: 'desc' },
+    orderBy: { viewCount: "desc" },
     take: 5,
     select: { name: true, viewCount: true },
-  });
+  })
 
   // Single findMany instead of N findUnique calls
   // สินค้าที่ถูกลบไปแล้วจะไม่มี id ให้ค้น — คัดออกก่อน
   const topOrderProductIds = productOrderCounts
-    .map(p => p.productId)
-    .filter((id): id is string => id !== null);
-  const topOrderProducts = topOrderProductIds.length > 0
-    ? await prisma.product.findMany({
-        where: { id: { in: topOrderProductIds } },
-        select: { id: true, name: true },
-      })
-    : [];
+    .map((p) => p.productId)
+    .filter((id): id is string => id !== null)
+  const topOrderProducts =
+    topOrderProductIds.length > 0
+      ? await prisma.product.findMany({
+          where: { id: { in: topOrderProductIds } },
+          select: { id: true, name: true },
+        })
+      : []
 
-  const productNameMap = new Map(topOrderProducts.map(p => [p.id, p.name]));
+  const productNameMap = new Map(topOrderProducts.map((p) => [p.id, p.name]))
   const topProductsByOrders = productOrderCounts.map((item) => ({
-    name: (item.productId && productNameMap.get(item.productId)) || 'สินค้าที่ถูกลบแล้ว',
+    name: (item.productId && productNameMap.get(item.productId)) || "สินค้าที่ถูกลบแล้ว",
     orderCount: item._count.productId,
-  }));
+  }))
 
   // =============================================
   // 4. Monthly Stats (optimized: 3 queries instead of 24)
   // =============================================
-  const now = new Date();
-  const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1);
+  const now = new Date()
+  const twelveMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 11, 1)
 
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
+  const todayStart = new Date()
+  todayStart.setHours(0, 0, 0, 0)
 
   const [allOrdersForMonthly, viewSummaries, todayLiveViews] = await Promise.all([
     prisma.order.findMany({
@@ -267,54 +289,70 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
       select: { createdAt: true },
     }),
     prisma.productViewSummary.groupBy({
-      by: ['date'],
+      by: ["date"],
       where: { date: { gte: twelveMonthsAgo } },
       _sum: { viewCount: true },
     }),
     prisma.productView.count({
       where: { viewedAt: { gte: todayStart } },
     }),
-  ]);
+  ])
 
   // Bucket into 12 months
-  const monthlyOrders = Array(12).fill(0);
-  const monthlyViews = Array(12).fill(0);
+  const monthlyOrders = Array(12).fill(0)
+  const monthlyViews = Array(12).fill(0)
 
   allOrdersForMonthly.forEach((order) => {
-    const orderDate = order.createdAt;
+    const orderDate = order.createdAt
     for (let i = 0; i < 12; i++) {
-      const monthStart = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() - 11 + i + 1, 0, 23, 59, 59, 999);
+      const monthStart = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1)
+      const monthEnd = new Date(
+        now.getFullYear(),
+        now.getMonth() - 11 + i + 1,
+        0,
+        23,
+        59,
+        59,
+        999
+      )
       if (orderDate >= monthStart && orderDate <= monthEnd) {
-        monthlyOrders[i]++;
-        break;
+        monthlyOrders[i]++
+        break
       }
     }
-  });
+  })
 
   viewSummaries.forEach((record) => {
-    const recordDate = new Date(record.date);
+    const recordDate = new Date(record.date)
     for (let i = 0; i < 12; i++) {
-      const monthStart = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1);
-      const monthEnd = new Date(now.getFullYear(), now.getMonth() - 11 + i + 1, 0, 23, 59, 59, 999);
+      const monthStart = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1)
+      const monthEnd = new Date(
+        now.getFullYear(),
+        now.getMonth() - 11 + i + 1,
+        0,
+        23,
+        59,
+        59,
+        999
+      )
       if (recordDate >= monthStart && recordDate <= monthEnd) {
-        monthlyViews[i] += (record._sum.viewCount || 0);
-        break;
+        monthlyViews[i] += record._sum.viewCount || 0
+        break
       }
     }
-  });
+  })
 
   // Add today's live views to current month
-  monthlyViews[11] += todayLiveViews;
+  monthlyViews[11] += todayLiveViews
 
-  const monthlyStats: MonthlyStats[] = [];
+  const monthlyStats: MonthlyStats[] = []
   for (let i = 0; i < 12; i++) {
-    const monthDate = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1);
+    const monthDate = new Date(now.getFullYear(), now.getMonth() - 11 + i, 1)
     monthlyStats.push({
-      month: monthDate.toLocaleDateString('th-TH', { month: 'short', year: 'numeric' }),
+      month: monthDate.toLocaleDateString("th-TH", { month: "short", year: "numeric" }),
       orders: monthlyOrders[i],
       views: monthlyViews[i],
-    });
+    })
   }
 
   // =============================================
@@ -332,18 +370,18 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
     prisma.contactIssue.count({
       where: { createdAt: { gte: currentStart, lte: currentEnd } },
     }),
-    prisma.contactIssue.count({ where: { status: 'PENDING' } }),
-    prisma.contactIssue.count({ where: { status: 'IN_PROGRESS' } }),
+    prisma.contactIssue.count({ where: { status: "PENDING" } }),
+    prisma.contactIssue.count({ where: { status: "IN_PROGRESS" } }),
     prisma.contactIssue.count({
-      where: { status: 'CLOSED', createdAt: { gte: currentStart, lte: currentEnd } },
+      where: { status: "CLOSED", createdAt: { gte: currentStart, lte: currentEnd } },
     }),
     prisma.contactIssue.groupBy({
-      by: ['category'],
+      by: ["category"],
       where: { createdAt: { gte: currentStart, lte: currentEnd } },
       _count: { id: true },
-      orderBy: { _count: { id: 'desc' } },
+      orderBy: { _count: { id: "desc" } },
     }),
-  ]);
+  ])
 
   const contactIssueStats: ContactIssueStats = {
     totalIssues,
@@ -355,42 +393,43 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
       category: item.category,
       count: item._count.id,
     })),
-  };
+  }
 
   // =============================================
   // 6. Member Growth Stats
   // =============================================
-  const [
-    newMembersInPeriod,
-    newMembersComparePeriod,
-    membersByType,
-  ] = await Promise.all([
+  const [newMembersInPeriod, newMembersComparePeriod, membersByType] = await Promise.all([
     prisma.user.count({
-      where: { role: 'user', createdAt: { gte: currentStart, lte: currentEnd } },
+      where: { role: "user", createdAt: { gte: currentStart, lte: currentEnd } },
     }),
     prisma.user.count({
-      where: { role: 'user', createdAt: { gte: compareStart, lte: compareEnd } },
+      where: { role: "user", createdAt: { gte: compareStart, lte: compareEnd } },
     }),
     prisma.user.groupBy({
-      by: ['memberType'],
-      where: { role: 'user' },
+      by: ["memberType"],
+      where: { role: "user" },
       _count: { id: true },
     }),
-  ]);
+  ])
 
-  const memberGrowthTrend = newMembersComparePeriod > 0
-    ? Math.round(((newMembersInPeriod - newMembersComparePeriod) / newMembersComparePeriod) * 100)
-    : newMembersInPeriod > 0 ? 100 : 0;
+  const memberGrowthTrend =
+    newMembersComparePeriod > 0
+      ? Math.round(
+          ((newMembersInPeriod - newMembersComparePeriod) / newMembersComparePeriod) * 100
+        )
+      : newMembersInPeriod > 0
+        ? 100
+        : 0
 
   const memberGrowthStats: MemberGrowthStats = {
     newMembersInPeriod,
     newMembersComparePeriod,
     memberGrowthTrend,
     membersByType: membersByType.map((item) => ({
-      memberType: item.memberType || 'ไม่ระบุ',
+      memberType: item.memberType || "ไม่ระบุ",
       count: item._count.id,
     })),
-  };
+  }
 
   // =============================================
   // Return complete report data
@@ -425,5 +464,5 @@ export async function calculateSummaryReport(params: SummaryReportParams): Promi
     contactIssueStats,
     memberGrowthStats,
     generatedAt: new Date().toISOString(),
-  };
+  }
 }

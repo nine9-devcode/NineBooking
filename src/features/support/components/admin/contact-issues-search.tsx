@@ -4,12 +4,12 @@
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
 import { Search, Calendar, X } from "lucide-react"
 
@@ -72,10 +72,18 @@ export default function ContactIssuesSearch({
               <SelectValue placeholder="สถานะทั้งหมด" />
             </SelectTrigger>
             <SelectContent className="bg-background border-border">
-              <SelectItem value="all" className="text-foreground">สถานะทั้งหมด</SelectItem>
-              <SelectItem value="PENDING" className="text-foreground">รอดำเนินการ</SelectItem>
-              <SelectItem value="IN_PROGRESS" className="text-foreground">กำลังดำเนินการ</SelectItem>
-              <SelectItem value="CLOSED" className="text-foreground">เสร็จสิ้น</SelectItem>
+              <SelectItem value="all" className="text-foreground">
+                สถานะทั้งหมด
+              </SelectItem>
+              <SelectItem value="PENDING" className="text-foreground">
+                รอดำเนินการ
+              </SelectItem>
+              <SelectItem value="IN_PROGRESS" className="text-foreground">
+                กำลังดำเนินการ
+              </SelectItem>
+              <SelectItem value="CLOSED" className="text-foreground">
+                เสร็จสิ้น
+              </SelectItem>
             </SelectContent>
           </Select>
 
@@ -86,12 +94,24 @@ export default function ContactIssuesSearch({
                 <SelectValue placeholder="ประเภททั้งหมด" />
               </SelectTrigger>
               <SelectContent className="bg-background border-border">
-                <SelectItem value="all" className="text-foreground">ประเภททั้งหมด</SelectItem>
-                <SelectItem value="BOOKING" className="text-foreground">การจอง</SelectItem>
-                <SelectItem value="PAYMENT" className="text-foreground">การชำระเงิน</SelectItem>
-                <SelectItem value="USAGE_ISSUE" className="text-foreground">ปัญหาการใช้งาน</SelectItem>
-                <SelectItem value="ACCOUNT" className="text-foreground">บัญชีผู้ใช้</SelectItem>
-                <SelectItem value="OTHER" className="text-foreground">อื่นๆ</SelectItem>
+                <SelectItem value="all" className="text-foreground">
+                  ประเภททั้งหมด
+                </SelectItem>
+                <SelectItem value="BOOKING" className="text-foreground">
+                  การจอง
+                </SelectItem>
+                <SelectItem value="PAYMENT" className="text-foreground">
+                  การชำระเงิน
+                </SelectItem>
+                <SelectItem value="USAGE_ISSUE" className="text-foreground">
+                  ปัญหาการใช้งาน
+                </SelectItem>
+                <SelectItem value="ACCOUNT" className="text-foreground">
+                  บัญชีผู้ใช้
+                </SelectItem>
+                <SelectItem value="OTHER" className="text-foreground">
+                  อื่นๆ
+                </SelectItem>
               </SelectContent>
             </Select>
           )}
@@ -103,7 +123,7 @@ export default function ContactIssuesSearch({
             <Calendar className="w-4 h-4" />
             <span className="text-sm font-medium whitespace-nowrap">ช่วงวันที่:</span>
           </div>
-          
+
           <div className="flex flex-1 flex-wrap items-center gap-2">
             <Input
               type="date"
@@ -120,7 +140,7 @@ export default function ContactIssuesSearch({
               className="w-full sm:w-40 bg-card border-border text-foreground [color-scheme:dark]"
               placeholder="ถึงวันที่"
             />
-            
+
             {hasDateFilter && (
               <Button
                 variant="ghost"

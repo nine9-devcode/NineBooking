@@ -4,7 +4,8 @@ import { sanitizeRichText } from "./sanitize"
 
 describe("sanitizeRichText", () => {
   it("เก็บการจัดรูปแบบปกติของ rich text editor ไว้", () => {
-    const html = "<p>สินค้า <strong>รุ่นใหม่</strong> พร้อม<em>ส่ง</em></p><ul><li>ข้อ 1</li></ul>"
+    const html =
+      "<p>สินค้า <strong>รุ่นใหม่</strong> พร้อม<em>ส่ง</em></p><ul><li>ข้อ 1</li></ul>"
 
     expect(sanitizeRichText(html)).toBe(html)
   })

@@ -48,7 +48,12 @@ interface EditAddressModalProps {
   onSuccess: () => void
 }
 
-export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: EditAddressModalProps) {
+export function EditAddressModal({
+  open,
+  onOpenChange,
+  profile,
+  onSuccess,
+}: EditAddressModalProps) {
   const { data: session, update } = useSession()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -78,7 +83,9 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
   useEffect(() => {
     if (open && profile) {
       // 1. Set text fields
-      const isPredefined = profile.residenceType ? isPredefinedResidenceType(profile.residenceType) : true
+      const isPredefined = profile.residenceType
+        ? isPredefinedResidenceType(profile.residenceType)
+        : true
 
       const initialState = {
         address: profile.address || "",
@@ -86,8 +93,8 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
         district: profile.district || "",
         subDistrict: profile.subDistrict || "",
         postalCode: profile.postalCode || "",
-        residenceType: isPredefined ? (profile.residenceType || "") : "other",
-        residenceTypeOther: isPredefined ? "" : (profile.residenceType || ""),
+        residenceType: isPredefined ? profile.residenceType || "" : "other",
+        residenceTypeOther: isPredefined ? "" : profile.residenceType || "",
         provinceCode: "",
         districtCode: "",
         subDistrictCode: "",
@@ -95,7 +102,7 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
 
       // 2. Try to reverse-lookup codes based on names
       if (profile.province) {
-        const p = provinces.find(p => p.nameTh === profile.province)
+        const p = provinces.find((p) => p.nameTh === profile.province)
         if (p) {
           initialState.provinceCode = p.code.toString()
           // Load districts
@@ -103,7 +110,7 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
           setFilteredDistricts(dists)
 
           if (profile.district) {
-            const d = dists.find(d => d.nameTh === profile.district)
+            const d = dists.find((d) => d.nameTh === profile.district)
             if (d) {
               initialState.districtCode = d.code.toString()
               // Load subdistricts
@@ -111,7 +118,7 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
               setFilteredSubDistricts(subs)
 
               if (profile.subDistrict) {
-                const s = subs.find(s => s.nameTh === profile.subDistrict)
+                const s = subs.find((s) => s.nameTh === profile.subDistrict)
                 if (s) {
                   initialState.subDistrictCode = s.code.toString()
                 }
@@ -133,9 +140,9 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
   // Handle Province Change
   const handleProvinceChange = (value: string) => {
     const code = parseInt(value)
-    const province = provinces.find(p => p.code === code)
-    
-    setFormData(prev => ({
+    const province = provinces.find((p) => p.code === code)
+
+    setFormData((prev) => ({
       ...prev,
       provinceCode: value,
       province: province?.nameTh || "",
@@ -154,9 +161,9 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
   // Handle District Change
   const handleDistrictChange = (value: string) => {
     const code = parseInt(value)
-    const district = filteredDistricts.find(d => d.code === code)
+    const district = filteredDistricts.find((d) => d.code === code)
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       districtCode: value,
       district: district?.nameTh || "",
@@ -172,10 +179,10 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
   // Handle SubDistrict Change
   const handleSubDistrictChange = (value: string) => {
     const code = parseInt(value)
-    const subDistrict = filteredSubDistricts.find(sd => sd.code === code)
+    const subDistrict = filteredSubDistricts.find((sd) => sd.code === code)
     const postalCode = getPostalCodeBySubDistrictCode(code)
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       subDistrictCode: value,
       subDistrict: subDistrict?.nameTh || "",
@@ -185,7 +192,7 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
 
   // Handle Residence Type Change
   const handleResidenceTypeChange = (value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       residenceType: value,
       residenceTypeOther: value === "other" ? prev.residenceTypeOther : "",
@@ -200,9 +207,10 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
       // Resolve residenceType
       let finalResidenceType: string | null = null
       if (formData.residenceType) {
-        finalResidenceType = formData.residenceType === "other"
-          ? formData.residenceTypeOther.trim()
-          : formData.residenceType
+        finalResidenceType =
+          formData.residenceType === "other"
+            ? formData.residenceTypeOther.trim()
+            : formData.residenceType
       }
 
       // 1. บันทึกลง Database
@@ -233,7 +241,7 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
           subDistrict: formData.subDistrict,
           postalCode: formData.postalCode,
           residenceType: finalResidenceType,
-        }
+        },
       })
 
       // Refresh หน้าเว็บ
@@ -375,11 +383,7 @@ export function EditAddressModal({ open, onOpenChange, profile, onSuccess }: Edi
 
             <div className="space-y-2">
               <Label>รหัสไปรษณีย์</Label>
-              <Input
-                value={formData.postalCode}
-                disabled
-                className="bg-muted"
-              />
+              <Input value={formData.postalCode} disabled className="bg-muted" />
             </div>
           </div>
 

@@ -125,8 +125,8 @@ export function EditPasswordModal({ open, onOpenChange }: EditPasswordModalProps
   // Handle Change with Validation
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    setFormErrors(prev => ({ ...prev, [name]: validateField(name, value) }))
+    setFormData((prev) => ({ ...prev, [name]: value }))
+    setFormErrors((prev) => ({ ...prev, [name]: validateField(name, value) }))
     setError("")
   }
 
@@ -188,9 +188,7 @@ export function EditPasswordModal({ open, onOpenChange }: EditPasswordModalProps
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading">เปลี่ยนรหัสผ่าน</DialogTitle>
-          <DialogDescription>
-            กรอกรหัสผ่านปัจจุบันและรหัสผ่านใหม่
-          </DialogDescription>
+          <DialogDescription>กรอกรหัสผ่านปัจจุบันและรหัสผ่านใหม่</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit}>
@@ -273,16 +271,12 @@ export function EditPasswordModal({ open, onOpenChange }: EditPasswordModalProps
                       <div
                         key={level}
                         className={`h-1.5 flex-1 rounded-full transition-colors ${
-                          level <= strength.score
-                            ? strength.color
-                            : "bg-secondary"
+                          level <= strength.score ? strength.color : "bg-secondary"
                         }`}
                       />
                     ))}
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    ความแข็งแรง: {strength.label}
-                  </p>
+                  <p className="text-xs text-muted-foreground">ความแข็งแรง: {strength.label}</p>
                 </div>
               )}
             </div>

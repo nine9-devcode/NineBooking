@@ -34,10 +34,7 @@ export async function PATCH(
     })
 
     if (!existingQuotation) {
-      return NextResponse.json(
-        { error: "ไม่พบใบเสนอราคา" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบใบเสนอราคา" }, { status: 404 })
     }
 
     // Update status
@@ -57,9 +54,6 @@ export async function PATCH(
     })
   } catch (error) {
     console.error("Error updating quotation status:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการอัปเดตสถานะ" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการอัปเดตสถานะ" }, { status: 500 })
   }
 }

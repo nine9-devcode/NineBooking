@@ -1,11 +1,6 @@
 import type { Metadata } from "next"
 
-import {
-  LegalList,
-  LegalNote,
-  LegalPage,
-  LegalSection,
-} from "@/components/legal/legal-page"
+import { LegalList, LegalNote, LegalPage, LegalSection } from "@/components/legal/legal-page"
 import { siteConfig } from "@/config/site"
 
 export const metadata: Metadata = {
@@ -62,7 +57,8 @@ export default function PrivacyPolicyPage() {
         </p>
         <p>
           ผู้ติดตั้งสามารถเลือกเปิด Google Analytics ได้เองจากหน้าตั้งค่าผู้ดูแลระบบ
-          ซึ่งจะทำให้มีการส่งข้อมูลการเข้าชมไปยัง Google — ถ้าไม่ได้กรอกรหัสไว้ ระบบจะไม่โหลดสคริปต์ใดๆ
+          ซึ่งจะทำให้มีการส่งข้อมูลการเข้าชมไปยัง Google — ถ้าไม่ได้กรอกรหัสไว้
+          ระบบจะไม่โหลดสคริปต์ใดๆ
         </p>
       </LegalSection>
 
@@ -81,16 +77,15 @@ export default function PrivacyPolicyPage() {
       <LegalSection heading="5. สิทธิของเจ้าของข้อมูล">
         <p>
           ท่านสามารถแก้ไขข้อมูลส่วนตัวได้เองจากหน้าโปรไฟล์
-          และขอให้ผู้ดูแลระบบลบบัญชีพร้อมข้อมูลที่เกี่ยวข้องได้
-          เมื่อบัญชีถูกลบ ข้อมูลการจองจะยังคงอยู่ในระบบในรูปแบบที่ไม่ผูกกับบัญชีอีกต่อไป
+          และขอให้ผู้ดูแลระบบลบบัญชีพร้อมข้อมูลที่เกี่ยวข้องได้ เมื่อบัญชีถูกลบ
+          ข้อมูลการจองจะยังคงอยู่ในระบบในรูปแบบที่ไม่ผูกกับบัญชีอีกต่อไป
           เพื่อความถูกต้องของรายงานย้อนหลัง
         </p>
       </LegalSection>
 
       <LegalSection heading="6. ติดต่อ">
         <p>
-          โปรเจกนี้เผยแพร่เป็นซอร์สโค้ดสาธารณะ หากมีคำถามหรือพบปัญหา
-          สามารถเปิด issue ได้ที่{" "}
+          โปรเจกนี้เผยแพร่เป็นซอร์สโค้ดสาธารณะ หากมีคำถามหรือพบปัญหา สามารถเปิด issue ได้ที่{" "}
           <a
             href={siteConfig.repository}
             target="_blank"

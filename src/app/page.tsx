@@ -109,47 +109,62 @@ function HomePageContent() {
   }, [status, pageFromUrl, sortFromUrl, searchFromUrl, categorySlugFromUrl])
 
   // Helper: สร้าง URL ใหม่
-  const buildUrl = useCallback((params: {
-    category?: string | null
-    page?: number
-    sort?: SortOption
-    search?: string
-  }) => {
-    const urlParams = new URLSearchParams()
-    const category = params.category !== undefined ? params.category : categorySlugFromUrl
-    const page = params.page !== undefined ? params.page : pageFromUrl
-    const sort = params.sort !== undefined ? params.sort : sortFromUrl
-    const search = params.search !== undefined ? params.search : searchFromUrl
+  const buildUrl = useCallback(
+    (params: {
+      category?: string | null
+      page?: number
+      sort?: SortOption
+      search?: string
+    }) => {
+      const urlParams = new URLSearchParams()
+      const category = params.category !== undefined ? params.category : categorySlugFromUrl
+      const page = params.page !== undefined ? params.page : pageFromUrl
+      const sort = params.sort !== undefined ? params.sort : sortFromUrl
+      const search = params.search !== undefined ? params.search : searchFromUrl
 
-    if (category) urlParams.set("category", category)
-    if (page > 1) urlParams.set("page", page.toString())
-    if (sort && sort !== "category") urlParams.set("sort", sort)
-    if (search) urlParams.set("q", search)
+      if (category) urlParams.set("category", category)
+      if (page > 1) urlParams.set("page", page.toString())
+      if (sort && sort !== "category") urlParams.set("sort", sort)
+      if (search) urlParams.set("q", search)
 
-    const queryString = urlParams.toString()
-    return queryString ? `/?${queryString}` : "/"
-  }, [categorySlugFromUrl, pageFromUrl, sortFromUrl, searchFromUrl])
+      const queryString = urlParams.toString()
+      return queryString ? `/?${queryString}` : "/"
+    },
+    [categorySlugFromUrl, pageFromUrl, sortFromUrl, searchFromUrl]
+  )
 
   // เลือกหมวดหมู่ (จาก Sidebar)
-  const handleSelectCategory = useCallback((categoryId: string | null, name?: string, slug?: string) => {
-    router.push(buildUrl({ category: slug || null, page: 1 }))
-  }, [router, buildUrl])
+  const handleSelectCategory = useCallback(
+    (categoryId: string | null, name?: string, slug?: string) => {
+      router.push(buildUrl({ category: slug || null, page: 1 }))
+    },
+    [router, buildUrl]
+  )
 
   // เปลี่ยนหน้า
-  const handlePageChange = useCallback((page: number) => {
-    router.push(buildUrl({ page }), { scroll: false })
-    window.scrollTo({ top: 0, behavior: "smooth" })
-  }, [router, buildUrl])
+  const handlePageChange = useCallback(
+    (page: number) => {
+      router.push(buildUrl({ page }), { scroll: false })
+      window.scrollTo({ top: 0, behavior: "smooth" })
+    },
+    [router, buildUrl]
+  )
 
   // ค้นหา
-  const handleSearchChange = useCallback((value: string) => {
-    router.push(buildUrl({ search: value, page: 1 }), { scroll: false })
-  }, [router, buildUrl])
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      router.push(buildUrl({ search: value, page: 1 }), { scroll: false })
+    },
+    [router, buildUrl]
+  )
 
   // เปลี่ยนการเรียงลำดับ
-  const handleSortChange = useCallback((value: SortOption) => {
-    router.push(buildUrl({ sort: value, page: 1 }), { scroll: false })
-  }, [router, buildUrl])
+  const handleSortChange = useCallback(
+    (value: SortOption) => {
+      router.push(buildUrl({ sort: value, page: 1 }), { scroll: false })
+    },
+    [router, buildUrl]
+  )
 
   // ลองโหลดใหม่
   const handleRetry = useCallback(() => {
@@ -162,7 +177,11 @@ function HomePageContent() {
   // กำลังโหลด session
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center" role="status" aria-label="กำลังโหลด">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        role="status"
+        aria-label="กำลังโหลด"
+      >
         <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
     )
@@ -175,10 +194,7 @@ function HomePageContent() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar
-        selectedCategoryId={selectedCategoryId}
-        onSelectCategory={handleSelectCategory}
-      />
+      <Navbar selectedCategoryId={selectedCategoryId} onSelectCategory={handleSelectCategory} />
 
       <div className="lg:ml-64 pt-16 flex-1">
         <main className="bg-muted p-4 sm:p-6">
@@ -193,7 +209,8 @@ function HomePageContent() {
                       {categoryName}
                     </h1>
                     <p className="text-muted-foreground mt-1">
-                      พบ <span className="font-semibold text-primary">{pagination.total}</span> รายการ
+                      พบ <span className="font-semibold text-primary">{pagination.total}</span>{" "}
+                      รายการ
                     </p>
                   </div>
                 </div>
@@ -225,7 +242,9 @@ function HomePageContent() {
                 </button>
               </div>
             ) : (
-              <div className={isFetching && !initialLoading ? "opacity-60 transition-opacity" : ""}>
+              <div
+                className={isFetching && !initialLoading ? "opacity-60 transition-opacity" : ""}
+              >
                 <ProductGrid products={products} loading={initialLoading} />
               </div>
             )}
@@ -250,11 +269,17 @@ function HomePageContent() {
 
 export default function HomePage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" role="status" aria-label="กำลังโหลด">
-        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div
+          className="min-h-screen flex items-center justify-center"
+          role="status"
+          aria-label="กำลังโหลด"
+        >
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+        </div>
+      }
+    >
       <HomePageContent />
     </Suspense>
   )

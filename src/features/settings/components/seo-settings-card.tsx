@@ -9,15 +9,15 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
-import { 
-  Loader2, 
-  Save, 
-  Search, 
-  Image as ImageIcon, 
-  Trash2, 
+import {
+  Loader2,
+  Save,
+  Search,
+  Image as ImageIcon,
+  Trash2,
   ExternalLink,
   BarChart3,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/utils"
@@ -41,7 +41,7 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Form state
@@ -61,7 +61,7 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
     try {
       setIsLoading(true)
       const response = await fetch("/api/admin/seo-settings")
-      
+
       if (!response.ok) {
         throw new Error("ไม่สามารถดึงข้อมูลการตั้งค่าได้")
       }
@@ -84,14 +84,14 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
   }
 
   const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }))
     setHasChanges(true)
   }
 
   const handleSave = async () => {
     try {
       setIsSaving(true)
-      
+
       const response = await fetch("/api/admin/seo-settings", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -164,9 +164,9 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
       }
 
       const data = await response.json()
-      
+
       // อัพเดท form
-      setFormData(prev => ({ ...prev, ogImage: data.url }))
+      setFormData((prev) => ({ ...prev, ogImage: data.url }))
       setHasChanges(true)
       toast.success("อัปโหลดรูปภาพเรียบร้อยแล้ว")
     } catch (error: unknown) {
@@ -198,7 +198,7 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
       }
 
       // อัพเดท form
-      setFormData(prev => ({ ...prev, ogImage: "" }))
+      setFormData((prev) => ({ ...prev, ogImage: "" }))
       setHasChanges(true)
       toast.success("ลบรูปภาพเรียบร้อยแล้ว")
     } catch (error: unknown) {
@@ -268,10 +268,8 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
 
         {/* OG Image */}
         <div className="space-y-2">
-          <Label className="text-foreground">
-            รูปภาพ Open Graph
-          </Label>
-          
+          <Label className="text-foreground">รูปภาพ Open Graph</Label>
+
           {formData.ogImage ? (
             // แสดงรูปที่อัปโหลดแล้ว
             <div className="relative group">
@@ -282,7 +280,7 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
                   className="w-full h-full object-cover"
                 />
               </div>
-              
+
               {/* Overlay buttons */}
               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                 <Button
@@ -328,13 +326,15 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
                   </div>
                   <div className="text-center">
                     <p className="text-foreground font-medium">คลิกเพื่ออัปโหลดรูปภาพ</p>
-                    <p className="text-muted-foreground text-sm">PNG, JPG ขนาดแนะนำ 1200x630 px</p>
+                    <p className="text-muted-foreground text-sm">
+                      PNG, JPG ขนาดแนะนำ 1200x630 px
+                    </p>
                   </div>
                 </>
               )}
             </div>
           )}
-          
+
           <input
             ref={fileInputRef}
             type="file"
@@ -342,7 +342,7 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
             onChange={handleImageUpload}
             className="hidden"
           />
-          
+
           <p className="text-xs text-muted-foreground">
             รูปภาพที่แสดงเมื่อแชร์ลิงก์ไปยังโซเชียลมีเดีย
           </p>
@@ -350,7 +350,10 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
 
         {/* Google Analytics ID */}
         <div className="space-y-2">
-          <Label htmlFor="googleAnalyticsId" className="text-foreground flex items-center gap-2">
+          <Label
+            htmlFor="googleAnalyticsId"
+            className="text-foreground flex items-center gap-2"
+          >
             <BarChart3 className="w-4 h-4 text-muted-foreground" />
             Google Analytics ID
           </Label>
@@ -362,7 +365,8 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
             className="bg-card border-border text-foreground font-mono"
           />
           <p className="text-xs text-muted-foreground">
-            ใส่ Measurement ID จาก Google Analytics 4 (เริ่มต้นด้วย G-) หรือ Universal Analytics (UA-)
+            ใส่ Measurement ID จาก Google Analytics 4 (เริ่มต้นด้วย G-) หรือ Universal Analytics
+            (UA-)
           </p>
         </div>
 
@@ -402,16 +406,12 @@ export function SeoSettingsCard({ onSettingsChange }: SeoSettingsCardProps) {
 
         {/* Preview Info */}
         <div className="p-4 rounded-lg bg-info/10 border border-info/20">
-          <p className="text-sm text-info font-medium mb-2">
-            💡 ตัวอย่างการแสดงผลบน Google
-          </p>
+          <p className="text-sm text-info font-medium mb-2">💡 ตัวอย่างการแสดงผลบน Google</p>
           <div className="bg-card rounded p-3 text-left">
             <p className="text-info text-sm hover:underline cursor-pointer truncate">
-              {formData.siteTitle || "NineBooking"} 
+              {formData.siteTitle || "NineBooking"}
             </p>
-            <p className="text-success text-xs truncate">
-              http://localhost:3000
-            </p>
+            <p className="text-success text-xs truncate">http://localhost:3000</p>
             <p className="text-muted-foreground text-xs line-clamp-2">
               {formData.siteDescription || "ระบบจองสินค้าออนไลน์ พร้อมระบบหลังบ้านครบวงจร..."}
             </p>

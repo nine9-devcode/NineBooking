@@ -25,12 +25,7 @@ import { UploadProgressBar } from "./upload-progress-bar"
 
 // Schema & Types
 import { productSchema, defaultFormValues } from "./schema"
-import type { 
-  ProductFormData, 
-  ProductFormModalProps, 
-  ImageValue, 
-  GalleryItem 
-} from "./types"
+import type { ProductFormData, ProductFormModalProps, ImageValue, GalleryItem } from "./types"
 import type { DatasheetItem } from "@/features/products/datasheet.types"
 
 // Utils
@@ -38,7 +33,10 @@ import { useUploadProgress } from "./use-upload-progress"
 // Note: เมื่อย้ายไปใช้งานจริง ให้เปลี่ยน path ตามโครงสร้างโปรเจกต์
 import { uploadImage } from "@/features/products/components/admin/shared/image-upload"
 import { uploadGallery } from "@/features/products/components/admin/shared/gallery-upload"
-import { datasheetsToJson, jsonToDatasheets } from "@/features/products/components/admin/shared/datasheet-input"
+import {
+  datasheetsToJson,
+  jsonToDatasheets,
+} from "@/features/products/components/admin/shared/datasheet-input"
 
 // Helper: Upload datasheet file
 async function uploadDatasheet(file: File): Promise<any> {
@@ -112,7 +110,7 @@ export function ProductFormModal({
   useEffect(() => {
     if (open) {
       setActiveTab("basic") // Reset to first tab
-      
+
       if (product) {
         // Edit mode
         reset({
@@ -181,11 +179,11 @@ export function ProductFormModal({
   // Calculate total upload steps
   const calculateTotalSteps = () => {
     let steps = 1 // Save to DB always
-    
+
     if (mainImage?.file) steps++
-    if (galleryImages.some(item => item.isNew)) steps++
-    if (datasheets.some(item => item.type === "file" && item.file && !item.value)) steps++
-    
+    if (galleryImages.some((item) => item.isNew)) steps++
+    if (datasheets.some((item) => item.type === "file" && item.file && !item.value)) steps++
+
     return steps
   }
 
@@ -238,24 +236,22 @@ export function ProductFormModal({
             return item.url!
           })
         } else {
-          galleryUrls = galleryImages
-            .filter((item) => item.url)
-            .map((item) => item.url!)
+          galleryUrls = galleryImages.filter((item) => item.url).map((item) => item.url!)
         }
       }
 
       // Step 3: Upload datasheets (if any new files)
       const finalDatasheets = [...datasheets]
       const pendingUploads = finalDatasheets.filter(
-        item => item.type === "file" && item.file && !item.value
+        (item) => item.type === "file" && item.file && !item.value
       )
 
       if (pendingUploads.length > 0) {
         nextStep("DATASHEETS")
-        
+
         for (let i = 0; i < finalDatasheets.length; i++) {
           const item = finalDatasheets[i]
-          
+
           if (item.type === "file" && item.file && !item.value) {
             try {
               const result = await uploadDatasheet(item.file)
@@ -281,9 +277,7 @@ export function ProductFormModal({
       // Step 4: Save to database
       nextStep("SAVING")
 
-      const url = isEdit
-        ? `/api/admin/products/${product!.id}`
-        : "/api/admin/products"
+      const url = isEdit ? `/api/admin/products/${product!.id}` : "/api/admin/products"
 
       const submitData = {
         name: data.name,
@@ -309,7 +303,7 @@ export function ProductFormModal({
         completeUpload()
         toast.success(isEdit ? "แก้ไขสินค้าสำเร็จ" : "เพิ่มสินค้าสำเร็จ")
         onSuccess()
-        
+
         // Delay close to show success animation
         setTimeout(() => {
           handleClose()
@@ -357,67 +351,64 @@ export function ProductFormModal({
         </DialogHeader>
 
         {/* Tabs Content */}
-          <Tabs 
-          value={activeTab} 
-          onValueChange={setActiveTab} 
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
           className="flex-1 min-h-0 flex flex-col overflow-hidden"
-          >
-            {/* Tab List */}
-            <TabsList className="grid w-full grid-cols-4 bg-card border border-border p-1 h-auto rounded-lg flex-shrink-0">
-              <TabsTrigger
-                value="basic"
-                disabled={loading}
-                className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2.5 rounded-md relative"
-              >
-                <Info className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">ข้อมูลพื้นฐาน</span>
-                {getTabError("basic") && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
-                )}
-              </TabsTrigger>
+        >
+          {/* Tab List */}
+          <TabsList className="grid w-full grid-cols-4 bg-card border border-border p-1 h-auto rounded-lg flex-shrink-0">
+            <TabsTrigger
+              value="basic"
+              disabled={loading}
+              className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2.5 rounded-md relative"
+            >
+              <Info className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">ข้อมูลพื้นฐาน</span>
+              {getTabError("basic") && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
+              )}
+            </TabsTrigger>
 
-              <TabsTrigger
-                value="images"
-                disabled={loading}
-                className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2.5 rounded-md relative"
-              >
-                <ImageIcon className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">รูปภาพ</span>
-                {getTabError("images") && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
-                )}
-              </TabsTrigger>
+            <TabsTrigger
+              value="images"
+              disabled={loading}
+              className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2.5 rounded-md relative"
+            >
+              <ImageIcon className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">รูปภาพ</span>
+              {getTabError("images") && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
+              )}
+            </TabsTrigger>
 
-              <TabsTrigger
-                value="description"
-                disabled={loading}
-                className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2.5 rounded-md relative"
-              >
-                <FileText className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">รายละเอียด</span>
-                {getTabError("description") && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
-                )}
-              </TabsTrigger>
+            <TabsTrigger
+              value="description"
+              disabled={loading}
+              className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2.5 rounded-md relative"
+            >
+              <FileText className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">รายละเอียด</span>
+              {getTabError("description") && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
+              )}
+            </TabsTrigger>
 
-              <TabsTrigger
-                value="datasheets"
-                disabled={loading}
-                className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2.5 rounded-md"
-              >
-                <Link2 className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">เอกสาร</span>
-              </TabsTrigger>
-            </TabsList>
+            <TabsTrigger
+              value="datasheets"
+              disabled={loading}
+              className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:font-semibold text-foreground hover:text-primary-foreground transition-all py-2.5 rounded-md"
+            >
+              <Link2 className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">เอกสาร</span>
+            </TabsTrigger>
+          </TabsList>
 
-            {/* Tab Contents - Scrollable Area */}
-            <div className="flex-1 min-h-0 overflow-y-auto mt-4 pr-2 scrollbar-thin">
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                id="product-form"
-              >
-                <TabsContent value="basic" className="mt-0 data-[state=inactive]:hidden">
-                  <BasicInfoTab
+          {/* Tab Contents - Scrollable Area */}
+          <div className="flex-1 min-h-0 overflow-y-auto mt-4 pr-2 scrollbar-thin">
+            <form onSubmit={handleSubmit(onSubmit)} id="product-form">
+              <TabsContent value="basic" className="mt-0 data-[state=inactive]:hidden">
+                <BasicInfoTab
                   register={register}
                   control={control}
                   errors={errors}
@@ -437,11 +428,7 @@ export function ProductFormModal({
               </TabsContent>
 
               <TabsContent value="description" className="mt-0 data-[state=inactive]:hidden">
-                <DescriptionTab
-                  control={control}
-                  errors={errors}
-                  loading={loading}
-                />
+                <DescriptionTab control={control} errors={errors} loading={loading} />
               </TabsContent>
 
               <TabsContent value="datasheets" className="mt-0 data-[state=inactive]:hidden">
@@ -451,9 +438,9 @@ export function ProductFormModal({
                   loading={loading}
                 />
               </TabsContent>
-              </form>
-            </div>
-          </Tabs>
+            </form>
+          </div>
+        </Tabs>
 
         {/* Upload Progress */}
         {progress.isUploading && (

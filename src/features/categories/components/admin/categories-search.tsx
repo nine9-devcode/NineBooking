@@ -60,17 +60,20 @@ export function CategoriesSearch({
       </div>
 
       {/* Status Filter */}
-      <Select
-        value={defaultStatus}
-        onValueChange={onStatusChange}
-      >
+      <Select value={defaultStatus} onValueChange={onStatusChange}>
         <SelectTrigger className="w-full sm:w-[180px] bg-card border-border text-foreground">
           <SelectValue placeholder="ทุกสถานะ" />
         </SelectTrigger>
         <SelectContent className="bg-background border-border">
-          <SelectItem value="all" className="text-foreground">ทุกสถานะ</SelectItem>
-          <SelectItem value="active" className="text-foreground">เปิดใช้งาน</SelectItem>
-          <SelectItem value="inactive" className="text-foreground">ปิดใช้งาน</SelectItem>
+          <SelectItem value="all" className="text-foreground">
+            ทุกสถานะ
+          </SelectItem>
+          <SelectItem value="active" className="text-foreground">
+            เปิดใช้งาน
+          </SelectItem>
+          <SelectItem value="inactive" className="text-foreground">
+            ปิดใช้งาน
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>

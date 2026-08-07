@@ -69,7 +69,9 @@ export function QuotationsFilters({
               <SelectValue placeholder="สถานะทั้งหมด" />
             </SelectTrigger>
             <SelectContent className="bg-background border-border">
-              <SelectItem value="all" className="text-foreground">สถานะทั้งหมด</SelectItem>
+              <SelectItem value="all" className="text-foreground">
+                สถานะทั้งหมด
+              </SelectItem>
               {QUOTATION_STATUS_OPTIONS.map((option) => (
                 <SelectItem key={option.value} value={option.value} className="text-foreground">
                   {option.label}
@@ -87,9 +89,15 @@ export function QuotationsFilters({
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="bg-background border-border">
-              <SelectItem value="10" className="text-foreground">10 รายการ</SelectItem>
-              <SelectItem value="25" className="text-foreground">25 รายการ</SelectItem>
-              <SelectItem value="50" className="text-foreground">50 รายการ</SelectItem>
+              <SelectItem value="10" className="text-foreground">
+                10 รายการ
+              </SelectItem>
+              <SelectItem value="25" className="text-foreground">
+                25 รายการ
+              </SelectItem>
+              <SelectItem value="50" className="text-foreground">
+                50 รายการ
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -100,7 +108,7 @@ export function QuotationsFilters({
             <Calendar className="w-4 h-4" />
             <span className="text-sm font-medium whitespace-nowrap">ช่วงวันที่:</span>
           </div>
-          
+
           <div className="flex flex-1 flex-wrap items-center gap-2">
             <Input
               type="date"
@@ -117,7 +125,7 @@ export function QuotationsFilters({
               className="w-full sm:w-40 bg-card border-border text-foreground [color-scheme:dark]"
               placeholder="ถึงวันที่"
             />
-            
+
             {hasDateFilter && (
               <Button
                 variant="ghost"

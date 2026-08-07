@@ -6,12 +6,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -25,7 +20,16 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { toast } from "sonner"
-import { Loader2, FileText, Save, Package, Link2, Calculator, Calendar, StickyNote } from "lucide-react"
+import {
+  Loader2,
+  FileText,
+  Save,
+  Package,
+  Link2,
+  Calculator,
+  Calendar,
+  StickyNote,
+} from "lucide-react"
 import { QuotationItemFormData, OrderItemForQuotation } from "../types"
 import { formatCurrency, VALID_DAYS_OPTIONS, DEFAULT_PDF_NOTES } from "../constants"
 import { cn } from "@/lib/utils"
@@ -64,12 +68,11 @@ export function QuotationModal({
   const [validDays, setValidDays] = useState(15)
   const [notes, setNotes] = useState("")
   // Mode and text are tracked separately to prevent auto-switch when textarea is cleared
-  const [pdfNotesMode, setPdfNotesMode] = useState<'template' | 'custom' | 'none'>('template')
+  const [pdfNotesMode, setPdfNotesMode] = useState<"template" | "custom" | "none">("template")
   const [pdfCustomText, setPdfCustomText] = useState(DEFAULT_PDF_NOTES)
   // Derived value for POST body
-  const pdfNotes = pdfNotesMode === 'template' ? null
-    : pdfNotesMode === 'none' ? ''
-    : pdfCustomText
+  const pdfNotes =
+    pdfNotesMode === "template" ? null : pdfNotesMode === "none" ? "" : pdfCustomText
 
   // Initialize items from order
   useEffect(() => {
@@ -78,7 +81,7 @@ export function QuotationModal({
 
       orderItems.forEach((group) => {
         const mainTempId = `main-${group.groupId}`
-        
+
         // Main product
         if (group.mainQuantity > 0) {
           initialItems.push({
@@ -120,14 +123,14 @@ export function QuotationModal({
       setVatPercent(7)
       setValidDays(15)
       setNotes("")
-      setPdfNotesMode('template')
+      setPdfNotesMode("template")
       setPdfCustomText(DEFAULT_PDF_NOTES)
     }
   }, [isOpen])
 
   // Calculate totals
   const totals = useMemo(() => {
-    const subtotal = items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
+    const subtotal = items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
     const vatAmount = includeVat ? subtotal * (vatPercent / 100) : 0
     const totalAmount = subtotal + vatAmount
     return { subtotal, vatAmount, totalAmount }
@@ -135,19 +138,19 @@ export function QuotationModal({
 
   // Handle item change
   const handleItemChange = (tempId: string, value: number) => {
-    setItems(prev => prev.map(item =>
-      item.tempId === tempId ? { ...item, unitPrice: value } : item
-    ))
+    setItems((prev) =>
+      prev.map((item) => (item.tempId === tempId ? { ...item, unitPrice: value } : item))
+    )
   }
 
   // Group items for display
   const groupedItems = useMemo(() => {
     const groups: { main: QuotationItemFormData; paired: QuotationItemFormData[] }[] = []
-    const mainItems = items.filter(i => !i.isPairedProduct)
+    const mainItems = items.filter((i) => !i.isPairedProduct)
 
-    mainItems.forEach(mainItem => {
+    mainItems.forEach((mainItem) => {
       const pairedItems = items.filter(
-        i => i.isPairedProduct && i.pairedWithTempId === mainItem.tempId
+        (i) => i.isPairedProduct && i.pairedWithTempId === mainItem.tempId
       )
       groups.push({ main: mainItem, paired: pairedItems })
     })
@@ -210,9 +213,13 @@ export function QuotationModal({
             <h3 className="text-sm font-medium text-muted-foreground mb-2">ข้อมูลลูกค้า</h3>
             <p className="text-foreground">
               {customer.name}
-              {customer.nickname && <span className="text-muted-foreground"> ({customer.nickname})</span>}
+              {customer.nickname && (
+                <span className="text-muted-foreground"> ({customer.nickname})</span>
+              )}
             </p>
-            <p className="text-muted-foreground text-sm">{customer.phone} • {customer.email}</p>
+            <p className="text-muted-foreground text-sm">
+              {customer.phone} • {customer.email}
+            </p>
           </div>
 
           {/* Items */}
@@ -270,9 +277,7 @@ export function QuotationModal({
                     </div>
 
                     <div className="col-span-2 text-center">
-                      <span className="text-foreground font-medium">
-                        {group.main.quantity}
-                      </span>
+                      <span className="text-foreground font-medium">{group.main.quantity}</span>
                     </div>
 
                     <div className="col-span-2">
@@ -281,10 +286,9 @@ export function QuotationModal({
                         min="0"
                         step="0.01"
                         value={group.main.unitPrice || ""}
-                        onChange={(e) => handleItemChange(
-                          group.main.tempId,
-                          parseFloat(e.target.value) || 0
-                        )}
+                        onChange={(e) =>
+                          handleItemChange(group.main.tempId, parseFloat(e.target.value) || 0)
+                        }
                         placeholder="0.00"
                         className="bg-secondary border-border text-foreground text-right h-9"
                       />
@@ -324,9 +328,7 @@ export function QuotationModal({
                           )}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-warning text-sm truncate">
-                            {paired.productName}
-                          </p>
+                          <p className="text-warning text-sm truncate">{paired.productName}</p>
                           <span className="text-xs px-1.5 py-0.5 bg-warning/10 text-warning rounded">
                             สินค้าคู่
                           </span>
@@ -334,9 +336,7 @@ export function QuotationModal({
                       </div>
 
                       <div className="col-span-2 text-center">
-                        <span className="text-warning font-medium">
-                          {paired.quantity}
-                        </span>
+                        <span className="text-warning font-medium">{paired.quantity}</span>
                       </div>
 
                       <div className="col-span-2">
@@ -345,10 +345,9 @@ export function QuotationModal({
                           min="0"
                           step="0.01"
                           value={paired.unitPrice || ""}
-                          onChange={(e) => handleItemChange(
-                            paired.tempId,
-                            parseFloat(e.target.value) || 0
-                          )}
+                          onChange={(e) =>
+                            handleItemChange(paired.tempId, parseFloat(e.target.value) || 0)
+                          }
                           placeholder="0.00"
                           className="bg-secondary border-warning/30 text-warning text-right h-9"
                         />
@@ -376,11 +375,7 @@ export function QuotationModal({
             {/* VAT Toggle */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Switch
-                  id="include-vat"
-                  checked={includeVat}
-                  onCheckedChange={setIncludeVat}
-                />
+                <Switch id="include-vat" checked={includeVat} onCheckedChange={setIncludeVat} />
                 <Label htmlFor="include-vat" className="text-foreground cursor-pointer">
                   รวมภาษีมูลค่าเพิ่ม (VAT)
                 </Label>
@@ -474,13 +469,13 @@ export function QuotationModal({
                   หมายเหตุใน PDF
                 </Label>
                 <div className="flex gap-1 mb-3 p-1 bg-secondary/50 rounded-lg w-fit">
-                  {(['template', 'custom', 'none'] as const).map((m) => (
+                  {(["template", "custom", "none"] as const).map((m) => (
                     <button
                       key={m}
                       type="button"
                       onClick={() => {
                         setPdfNotesMode(m)
-                        if (m === 'custom' && pdfNotesMode !== 'custom') {
+                        if (m === "custom" && pdfNotesMode !== "custom") {
                           // keep existing customText when switching to custom
                         }
                       }}
@@ -491,19 +486,21 @@ export function QuotationModal({
                           : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                       )}
                     >
-                      {m === 'template' ? 'มาตรฐาน' : m === 'custom' ? 'กำหนดเอง' : 'ไม่มี'}
+                      {m === "template" ? "มาตรฐาน" : m === "custom" ? "กำหนดเอง" : "ไม่มี"}
                     </button>
                   ))}
                 </div>
-                {pdfNotesMode === 'template' && (
+                {pdfNotesMode === "template" && (
                   <div className="bg-secondary/30 border border-border rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground mb-1">ข้อความที่จะแสดงใน PDF:</p>
+                    <p className="text-xs text-muted-foreground mb-1">
+                      ข้อความที่จะแสดงใน PDF:
+                    </p>
                     <p className="text-xs text-foreground whitespace-pre-line leading-relaxed">
                       {DEFAULT_PDF_NOTES}
                     </p>
                   </div>
                 )}
-                {pdfNotesMode === 'custom' && (
+                {pdfNotesMode === "custom" && (
                   <Textarea
                     value={pdfCustomText}
                     onChange={(e) => setPdfCustomText(e.target.value)}
@@ -511,9 +508,11 @@ export function QuotationModal({
                     className="bg-secondary border-border text-foreground resize-none h-24"
                   />
                 )}
-                {pdfNotesMode === 'none' && (
+                {pdfNotesMode === "none" && (
                   <div className="bg-secondary/30 border border-dashed border-border rounded-lg p-3">
-                    <p className="text-xs text-muted-foreground text-center">ไม่มีหมายเหตุแสดงใน PDF</p>
+                    <p className="text-xs text-muted-foreground text-center">
+                      ไม่มีหมายเหตุแสดงใน PDF
+                    </p>
                   </div>
                 )}
               </div>
@@ -523,8 +522,8 @@ export function QuotationModal({
           {/* Info Box */}
           <div className="bg-info/10 rounded-lg p-4 border border-info/20">
             <p className="text-sm text-info">
-              💡 หลังจากสร้างใบเสนอราคาแล้ว คุณจะถูกนำไปยังหน้ารายละเอียด
-              ซึ่งสามารถดูตัวอย่าง PDF, แก้ไขข้อมูล และเปลี่ยนสถานะได้
+              💡 หลังจากสร้างใบเสนอราคาแล้ว คุณจะถูกนำไปยังหน้ารายละเอียด ซึ่งสามารถดูตัวอย่าง
+              PDF, แก้ไขข้อมูล และเปลี่ยนสถานะได้
             </p>
           </div>
         </div>
@@ -532,7 +531,10 @@ export function QuotationModal({
         {/* Footer */}
         <div className="flex items-center justify-between pt-4 border-t border-border">
           <div className="text-sm text-muted-foreground">
-            ยอดรวม: <span className="text-foreground font-semibold">{formatCurrency(totals.totalAmount)} บาท</span>
+            ยอดรวม:{" "}
+            <span className="text-foreground font-semibold">
+              {formatCurrency(totals.totalAmount)} บาท
+            </span>
           </div>
 
           <div className="flex items-center gap-2">

@@ -2,7 +2,7 @@
 "use client"
 
 import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation" 
+import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -33,7 +33,12 @@ interface EditBasicInfoModalProps {
   onSuccess: () => void
 }
 
-export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: EditBasicInfoModalProps) {
+export function EditBasicInfoModal({
+  open,
+  onOpenChange,
+  profile,
+  onSuccess,
+}: EditBasicInfoModalProps) {
   const { data: session, update } = useSession()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -101,12 +106,12 @@ export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: E
     if (name === "name" && value.length > 40) return
     if (name === "nickname" && value.length > 20) return
 
-    setFormData(prev => ({ ...prev, [name]: value }))
-    
+    setFormData((prev) => ({ ...prev, [name]: value }))
+
     if (name in formErrors) {
-      setFormErrors(prev => ({ ...prev, [name]: validateField(name, value) }))
+      setFormErrors((prev) => ({ ...prev, [name]: validateField(name, value) }))
     }
-    
+
     setError("")
   }
 
@@ -151,7 +156,7 @@ export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: E
           ...session?.user,
           name: formData.name,
           nickname: formData.nickname,
-        }
+        },
       })
 
       router.refresh()
@@ -217,7 +222,7 @@ export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: E
         user: {
           ...session?.user,
           phone: newPhone,
-        }
+        },
       })
 
       router.refresh()
@@ -230,7 +235,6 @@ export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: E
     }
   }
 
-
   return (
     <>
       {/* Main Edit Modal */}
@@ -238,9 +242,7 @@ export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: E
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="font-heading">แก้ไขข้อมูลส่วนตัว</DialogTitle>
-            <DialogDescription>
-              อัพเดทชื่อและชื่อเล่น
-            </DialogDescription>
+            <DialogDescription>อัพเดทชื่อและชื่อเล่น</DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit}>
@@ -335,9 +337,7 @@ export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: E
                     เปลี่ยนเบอร์
                   </Button>
                 </div>
-
               </div>
-
             </div>
 
             <DialogFooter>
@@ -373,9 +373,7 @@ export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: E
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl">เปลี่ยนเบอร์โทรศัพท์</DialogTitle>
-            <DialogDescription>
-              กรอกเบอร์โทรศัพท์ใหม่ที่ต้องการเปลี่ยน
-            </DialogDescription>
+            <DialogDescription>กรอกเบอร์โทรศัพท์ใหม่ที่ต้องการเปลี่ยน</DialogDescription>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -430,7 +428,6 @@ export function EditBasicInfoModal({ open, onOpenChange, profile, onSuccess }: E
           </div>
         </DialogContent>
       </Dialog>
-
     </>
   )
 }

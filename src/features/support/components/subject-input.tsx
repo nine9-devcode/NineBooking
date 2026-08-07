@@ -1,4 +1,4 @@
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle } from "lucide-react"
 
 interface SubjectInputProps {
   value: string
@@ -21,7 +21,7 @@ export function SubjectInput({ value, onChange, error, disabled }: SubjectInputP
         onChange={(e) => onChange(e.target.value)}
         placeholder="เช่น ระบบจองไม่ทำงาน, ไม่สามารถเข้าสู่ระบบได้"
         className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary transition-colors ${
-          error ? 'border-destructive/40' : 'border-border'
+          error ? "border-destructive/40" : "border-border"
         }`}
         disabled={disabled}
       />

@@ -296,9 +296,7 @@ export async function deleteFiles(
   publicIdsOrUrls: string[],
   visibility: Visibility = "public"
 ): Promise<void> {
-  await Promise.all(
-    publicIdsOrUrls.filter(Boolean).map((id) => deleteFile(id, visibility))
-  )
+  await Promise.all(publicIdsOrUrls.filter(Boolean).map((id) => deleteFile(id, visibility)))
 }
 
 /** Content-Type ที่ยอมให้ /api/files ส่งกลับ — ปิดท้ายอีกชั้นไม่ให้ serve HTML */

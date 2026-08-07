@@ -1,11 +1,6 @@
 "use client"
 
-import {
-  ShoppingBag,
-  Clock,
-  CheckCircle2,
-  XCircle,
-} from "lucide-react"
+import { ShoppingBag, Clock, CheckCircle2, XCircle } from "lucide-react"
 
 interface Stats {
   total: number
@@ -74,10 +69,7 @@ export function OrdersStats({ stats, loading }: OrdersStatsProps) {
       {statsConfig.map((stat) => {
         const Icon = stat.icon
         return (
-          <div
-            key={stat.key}
-            className="bg-card/50 rounded-xl border border-border p-4"
-          >
+          <div key={stat.key} className="bg-card/50 rounded-xl border border-border p-4">
             <div className="flex items-center gap-3">
               <div
                 className={`w-10 h-10 ${stat.bgColor} rounded-lg flex items-center justify-center`}
@@ -88,9 +80,7 @@ export function OrdersStats({ stats, loading }: OrdersStatsProps) {
                 {loading ? (
                   <div className="h-8 w-12 bg-secondary rounded animate-pulse" />
                 ) : (
-                  <p className={`text-2xl font-bold ${stat.valueColor}`}>
-                    {stat.value}
-                  </p>
+                  <p className={`text-2xl font-bold ${stat.valueColor}`}>{stat.value}</p>
                 )}
                 <p className="text-xs text-muted-foreground">{stat.label}</p>
               </div>

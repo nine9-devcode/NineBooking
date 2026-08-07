@@ -168,9 +168,7 @@ export function GalleryUpload({
         <div className="flex items-center gap-4 text-xs text-muted-foreground">
           {existingCount > 0 && <span>รูปเดิม: {existingCount}</span>}
           {newCount > 0 && (
-            <span className="text-warning">
-              รูปใหม่: {newCount} (ยังไม่บันทึก)
-            </span>
+            <span className="text-warning">รูปใหม่: {newCount} (ยังไม่บันทึก)</span>
           )}
         </div>
       )}
@@ -179,9 +177,7 @@ export function GalleryUpload({
 }
 
 // อัปโหลดรูปแกลเลอรีผ่าน /api/upload/image
-export async function uploadGallery(
-  items: GalleryItem[]
-): Promise<string[]> {
+export async function uploadGallery(items: GalleryItem[]): Promise<string[]> {
   const uploadPromises = items.map(async (item) => {
     // If existing URL (no file), return as-is
     if (!item.file && item.url) {

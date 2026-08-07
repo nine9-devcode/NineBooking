@@ -3,12 +3,7 @@
 import { LucideIcon } from "lucide-react"
 
 // ===== Status Types =====
-export type QuotationStatus = 
-  | "DRAFT" 
-  | "SENT" 
-  | "ACCEPTED" 
-  | "REJECTED" 
-  | "EXPIRED"
+export type QuotationStatus = "DRAFT" | "SENT" | "ACCEPTED" | "REJECTED" | "EXPIRED"
 
 export interface StatusConfig {
   label: string

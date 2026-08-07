@@ -167,8 +167,7 @@ const CATALOG: SeedCategory[] = [
         name: "ปุ่มกดออก EB-01",
         subtitle: "สเตนเลสไม่ต้องสัมผัส",
         slug: "exit-button-eb-01",
-        description:
-          "<p>ปุ่มกดเปิดประตูจากด้านใน แบบไม่ต้องสัมผัส ลดการแพร่กระจายเชื้อโรค</p>",
+        description: "<p>ปุ่มกดเปิดประตูจากด้านใน แบบไม่ต้องสัมผัส ลดการแพร่กระจายเชื้อโรค</p>",
         hue: 144,
       },
     ],
@@ -418,7 +417,11 @@ async function main() {
           images: gallery,
           categoryId: category.id,
           datasheets: [
-            { type: "url", name: "คู่มือการใช้งาน (ตัวอย่าง)", value: "https://example.com/manual.pdf" },
+            {
+              type: "url",
+              name: "คู่มือการใช้งาน (ตัวอย่าง)",
+              value: "https://example.com/manual.pdf",
+            },
           ] as Prisma.InputJsonValue,
         },
       })
@@ -471,7 +474,10 @@ async function main() {
     for (const product of allProducts) {
       // สินค้ายอดนิยมบางตัวมีคนดูมากกว่า จะได้เห็นความต่างในกราฟ
       const base = product.name.includes("IN-200") || product.name.includes("PoE") ? 12 : 4
-      const viewCount = Math.max(0, Math.round(base + Math.sin(day / 7) * 4 + Math.random() * 6))
+      const viewCount = Math.max(
+        0,
+        Math.round(base + Math.sin(day / 7) * 4 + Math.random() * 6)
+      )
       if (viewCount > 0) {
         summaries.push({ productId: product.id, date, viewCount })
       }
@@ -493,9 +499,21 @@ async function main() {
   // ── ใบจองตัวอย่าง คละสถานะ ──
   const orderPlans = [
     { status: "PENDING" as const, days: 1, items: ["camera-in-200", "poe-switch-8"] },
-    { status: "CONFIRMED" as const, days: 5, items: ["camera-out-200", "nvr-8", "cat6-cable-305m"] },
-    { status: "COMPLETED" as const, days: 12, items: ["fingerprint-fp-100", "magnetic-lock-600"] },
-    { status: "COMPLETED" as const, days: 25, items: ["camera-in-600-pro", "nvr-16", "poe-switch-16"] },
+    {
+      status: "CONFIRMED" as const,
+      days: 5,
+      items: ["camera-out-200", "nvr-8", "cat6-cable-305m"],
+    },
+    {
+      status: "COMPLETED" as const,
+      days: 12,
+      items: ["fingerprint-fp-100", "magnetic-lock-600"],
+    },
+    {
+      status: "COMPLETED" as const,
+      days: 25,
+      items: ["camera-in-600-pro", "nvr-16", "poe-switch-16"],
+    },
     { status: "CANCELLED" as const, days: 33, items: ["adapter-12v-2a"] },
   ]
 
@@ -611,7 +629,8 @@ async function main() {
       subject: "กล้องตัวที่สั่งไปยังไม่ได้รับ",
       category: "BOOKING" as const,
       status: "PENDING" as const,
-      description: "สั่งจองไว้เมื่อสัปดาห์ที่แล้ว ยังไม่ได้รับการติดต่อกลับเลยครับ รบกวนตรวจสอบให้หน่อย",
+      description:
+        "สั่งจองไว้เมื่อสัปดาห์ที่แล้ว ยังไม่ได้รับการติดต่อกลับเลยครับ รบกวนตรวจสอบให้หน่อย",
       days: 2,
       response: null,
     },

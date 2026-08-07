@@ -1,29 +1,29 @@
 // app/admin/(dashboard)/page.tsx
 
-'use client';
+"use client"
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { LayoutDashboard, RefreshCw, FileText } from 'lucide-react';
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { LayoutDashboard, RefreshCw, FileText } from "lucide-react"
 import {
   StatsCards,
   YearlyChart,
   CategoryPieChart,
   RecentOrdersTable,
   TopProducts,
-} from '@/features/dashboard/components';
+} from "@/features/dashboard/components"
 
 export default function AdminDashboard() {
-  const [refreshKey, setRefreshKey] = useState(0);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0)
+  const [isRefreshing, setIsRefreshing] = useState(false)
 
   const handleRefresh = async () => {
-    setIsRefreshing(true);
-    setRefreshKey((prev) => prev + 1);
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    setIsRefreshing(false);
-  };
+    setIsRefreshing(true)
+    setRefreshKey((prev) => prev + 1)
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    setIsRefreshing(false)
+  }
 
   return (
     <div className="space-y-6 pb-8">
@@ -48,7 +48,7 @@ export default function AdminDashboard() {
             disabled={isRefreshing}
             className="border-border text-foreground hover:bg-card hover:text-foreground"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? "animate-spin" : ""}`} />
             รีเฟรช
           </Button>
 
@@ -90,5 +90,5 @@ export default function AdminDashboard() {
         <TopProducts />
       </div>
     </div>
-  );
+  )
 }

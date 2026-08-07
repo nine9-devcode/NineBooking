@@ -126,17 +126,17 @@ export default function ProfilePage() {
             {/* Header Card - full width */}
             <div className="lg:col-span-full bg-card rounded-lg shadow-md p-6">
               <div className="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6">
-                <ProfileAvatar
-                  name={profile.name}
-                  image={profile.image}
-                  size="lg"
-                />
+                <ProfileAvatar name={profile.name} image={profile.image} size="lg" />
                 <div className="flex-1 text-center sm:text-left">
-                  <h2 className="text-xl sm:text-2xl font-bold font-heading mb-1">{profile.name}</h2>
+                  <h2 className="text-xl sm:text-2xl font-bold font-heading mb-1">
+                    {profile.name}
+                  </h2>
                   {profile.nickname && (
                     <p className="text-muted-foreground text-sm mb-1">({profile.nickname})</p>
                   )}
-                  <p className="text-muted-foreground mb-3 text-sm sm:text-base">{profile.email}</p>
+                  <p className="text-muted-foreground mb-3 text-sm sm:text-base">
+                    {profile.email}
+                  </p>
                 </div>
               </div>
             </div>
@@ -166,7 +166,9 @@ export default function ProfilePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <ProfileInfoDisplay
                   label="ประเภทที่อยู่อาศัย"
-                  value={profile.residenceType ? getResidenceTypeLabel(profile.residenceType) : null}
+                  value={
+                    profile.residenceType ? getResidenceTypeLabel(profile.residenceType) : null
+                  }
                 />
                 <ProfileInfoDisplay label="ที่อยู่" value={profile.address} />
                 <ProfileInfoDisplay label="จังหวัด" value={profile.province} />
@@ -227,10 +229,7 @@ export default function ProfilePage() {
             onSuccess={fetchProfile}
           />
 
-          <EditPasswordModal
-            open={editPasswordOpen}
-            onOpenChange={setEditPasswordOpen}
-          />
+          <EditPasswordModal open={editPasswordOpen} onOpenChange={setEditPasswordOpen} />
         </div>
       </div>
 

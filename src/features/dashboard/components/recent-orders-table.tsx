@@ -1,56 +1,52 @@
 // ไฟล์: components/admin/dashboard/recent-orders-table.tsx
 
-'use client';
+"use client"
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { format } from 'date-fns';
-import { th } from 'date-fns/locale';
-import {
-  ShoppingBag,
-  ExternalLink,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import type { OrderStatus } from "@prisma/client";
-import { OrderStatusBadge } from "@/components/ui/status-badge";
+import { useEffect, useState } from "react"
+import Link from "next/link"
+import Image from "next/image"
+import { format } from "date-fns"
+import { th } from "date-fns/locale"
+import { ShoppingBag, ExternalLink } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import type { OrderStatus } from "@prisma/client"
+import { OrderStatusBadge } from "@/components/ui/status-badge"
 
 interface RecentOrder {
-  id: string;
-  orderNumber: string;
-  status: string;
-  createdAt: string;
-  totalItems: number;
+  id: string
+  orderNumber: string
+  status: string
+  createdAt: string
+  totalItems: number
   customer: {
-    name: string | null;
-    nickname: string | null;
-    email: string;
-    image: string | null;
-  };
+    name: string | null
+    nickname: string | null
+    email: string
+    image: string | null
+  }
 }
 
-
 export function RecentOrdersTable() {
-  const [orders, setOrders] = useState<RecentOrder[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<RecentOrder[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchRecentOrders = async () => {
       try {
-        const response = await fetch('/api/admin/dashboard/recent-orders?limit=5');
+        const response = await fetch("/api/admin/dashboard/recent-orders?limit=5")
         if (response.ok) {
-          const data = await response.json();
-          setOrders(data);
+          const data = await response.json()
+          setOrders(data)
         }
       } catch (error) {
-        console.error('Error fetching recent orders:', error);
+        console.error("Error fetching recent orders:", error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchRecentOrders();
-  }, []);
+    fetchRecentOrders()
+  }, [])
 
   if (loading) {
     return (
@@ -62,7 +58,7 @@ export function RecentOrdersTable() {
           ))}
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -78,7 +74,12 @@ export function RecentOrdersTable() {
             <p className="text-sm text-muted-foreground">5 รายการล่าสุด</p>
           </div>
         </div>
-        <Button asChild variant="outline" size="sm" className="border-border text-foreground hover:bg-card hover:text-foreground">
+        <Button
+          asChild
+          variant="outline"
+          size="sm"
+          className="border-border text-foreground hover:bg-card hover:text-foreground"
+        >
           <Link href="/admin/orders">
             ดูทั้งหมด
             <ExternalLink className="w-4 h-4 ml-2" />
@@ -90,12 +91,13 @@ export function RecentOrdersTable() {
         <div className="flex flex-col items-center justify-center py-12 text-center">
           <ShoppingBag className="w-12 h-12 text-foreground mb-3" />
           <p className="text-muted-foreground">ยังไม่มีคำสั่งจอง</p>
-          <p className="text-muted-foreground text-sm mt-1">คำสั่งจองจะแสดงที่นี่เมื่อมีลูกค้าทำการจอง</p>
+          <p className="text-muted-foreground text-sm mt-1">
+            คำสั่งจองจะแสดงที่นี่เมื่อมีลูกค้าทำการจอง
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
           {orders.map((order) => {
-
             return (
               <Link
                 key={order.id}
@@ -107,7 +109,7 @@ export function RecentOrdersTable() {
                   {order.customer.image ? (
                     <Image
                       src={order.customer.image}
-                      alt={order.customer.name || 'Customer'}
+                      alt={order.customer.name || "Customer"}
                       width={40}
                       height={40}
                       className="w-10 h-10 rounded-full object-cover border-2 border-primary"
@@ -136,21 +138,19 @@ export function RecentOrdersTable() {
 
                 {/* Items & Date */}
                 <div className="flex-shrink-0 text-right">
-                  <p className="text-foreground text-sm font-medium">
-                    {order.totalItems} ชิ้น
-                  </p>
+                  <p className="text-foreground text-sm font-medium">{order.totalItems} ชิ้น</p>
                   <p className="text-muted-foreground text-xs">
-                    {format(new Date(order.createdAt), 'dd MMM yy', { locale: th })}
+                    {format(new Date(order.createdAt), "dd MMM yy", { locale: th })}
                   </p>
                 </div>
 
                 {/* Arrow */}
                 <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
               </Link>
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }

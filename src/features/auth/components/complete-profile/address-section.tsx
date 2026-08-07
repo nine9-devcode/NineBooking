@@ -46,12 +46,10 @@ export function AddressSection({
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">
-            ข้อมูลที่อยู่ (ไม่บังคับ)
-          </span>
+          <span className="bg-card px-2 text-muted-foreground">ข้อมูลที่อยู่ (ไม่บังคับ)</span>
         </div>
       </div>
-      
+
       {/* ที่อยู่ */}
       <div className="space-y-2">
         <Label htmlFor="address">
@@ -73,9 +71,7 @@ export function AddressSection({
           maxLength={200}
           className={formErrors.address ? "border-destructive/40" : ""}
         />
-        {formErrors.address && (
-          <p className="text-sm text-destructive">{formErrors.address}</p>
-        )}
+        {formErrors.address && <p className="text-sm text-destructive">{formErrors.address}</p>}
       </div>
 
       {/* จังหวัด & อำเภอ */}

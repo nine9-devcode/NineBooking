@@ -49,11 +49,7 @@ interface CategoryPairingModalProps {
   category: Category | null
 }
 
-export function CategoryPairingModal({
-  open,
-  onClose,
-  category,
-}: CategoryPairingModalProps) {
+export function CategoryPairingModal({ open, onClose, category }: CategoryPairingModalProps) {
   const [pairedCategories, setPairedCategories] = useState<PairedCategory[]>([])
   const [allCategories, setAllCategories] = useState<Category[]>([])
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("")
@@ -83,9 +79,7 @@ export function CategoryPairingModal({
 
     setLoading(true)
     try {
-      const res = await fetch(
-        `/api/admin/category-pairings?categoryId=${category.id}`
-      )
+      const res = await fetch(`/api/admin/category-pairings?categoryId=${category.id}`)
       const data = await res.json()
 
       if (res.ok) {
@@ -172,21 +166,21 @@ export function CategoryPairingModal({
   // สร้าง flat list พร้อม level
   const getFlatCategoriesWithLevel = () => {
     const result: { category: Category; level: number; parentName?: string }[] = []
-    
+
     // หา parent categories (ไม่มี parentId)
     const parents = allCategories.filter((cat) => !cat.parentId)
-    
+
     parents.forEach((parent) => {
       // เพิ่ม parent
       result.push({ category: parent, level: 0 })
-      
+
       // หา children ของ parent นี้
       const children = allCategories.filter((cat) => cat.parentId === parent.id)
       children.forEach((child) => {
         result.push({ category: child, level: 1, parentName: parent.name })
       })
     })
-    
+
     return result
   }
 
@@ -196,7 +190,7 @@ export function CategoryPairingModal({
 
     const pairedIds = pairedCategories.map((p) => p.category.id)
     const flatCategories = getFlatCategoriesWithLevel()
-    
+
     return flatCategories.filter(
       (item) => item.category.id !== category.id && !pairedIds.includes(item.category.id)
     )
@@ -254,9 +248,7 @@ export function CategoryPairingModal({
             {(() => {
               const parentName = getParentName(category)
               return parentName ? (
-                <p className="text-xs text-muted-foreground mt-1">
-                  อยู่ในหมวด: {parentName}
-                </p>
+                <p className="text-xs text-muted-foreground mt-1">อยู่ในหมวด: {parentName}</p>
               ) : null
             })()}
           </div>
@@ -275,9 +267,7 @@ export function CategoryPairingModal({
             ) : pairedCategories.length === 0 ? (
               <div className="bg-card/30 rounded-lg p-6 text-center border border-dashed border-border">
                 <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
-                <p className="text-muted-foreground text-sm">
-                  ยังไม่มีหมวดหมู่ที่จับคู่
-                </p>
+                <p className="text-muted-foreground text-sm">ยังไม่มีหมวดหมู่ที่จับคู่</p>
               </div>
             ) : (
               <div className="space-y-2 max-h-48 overflow-y-auto">
@@ -295,9 +285,7 @@ export function CategoryPairingModal({
                         )}
                       </div>
                       <div>
-                        <p className="font-medium text-foreground">
-                          {paired.category.name}
-                        </p>
+                        <p className="font-medium text-foreground">{paired.category.name}</p>
                         <p className="text-xs text-muted-foreground">
                           {paired.category.slug}
                           {getParentName(paired.category) && (
@@ -347,36 +335,36 @@ export function CategoryPairingModal({
                   {(() => {
                     const available = getAvailableCategories()
                     return available.length === 0 ? (
-                    <SelectItem value="none" disabled className="text-muted-foreground">
-                      ไม่มีหมวดหมู่ที่สามารถจับคู่ได้
-                    </SelectItem>
-                  ) : (
-                    available.map((item) => (
-                      <SelectItem
-                        key={item.category.id}
-                        value={item.category.id}
-                        className="text-foreground"
-                      >
-                        {/* indent หมวดย่อย */}
-                        <span className="flex items-center gap-2">
-                          {item.level === 1 && (
-                            <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                          )}
-                          {item.level === 0 && (
-                            <FolderTree className="w-3 h-3 text-primary" />
-                          )}
-                          <span className={item.level === 1 ? "text-foreground" : ""}>
-                            {item.category.name}
-                          </span>
-                          {item.level === 1 && item.parentName && (
-                            <span className="text-xs text-muted-foreground">
-                              ({item.parentName})
-                            </span>
-                          )}
-                        </span>
+                      <SelectItem value="none" disabled className="text-muted-foreground">
+                        ไม่มีหมวดหมู่ที่สามารถจับคู่ได้
                       </SelectItem>
-                    ))
-                  )
+                    ) : (
+                      available.map((item) => (
+                        <SelectItem
+                          key={item.category.id}
+                          value={item.category.id}
+                          className="text-foreground"
+                        >
+                          {/* indent หมวดย่อย */}
+                          <span className="flex items-center gap-2">
+                            {item.level === 1 && (
+                              <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                            )}
+                            {item.level === 0 && (
+                              <FolderTree className="w-3 h-3 text-primary" />
+                            )}
+                            <span className={item.level === 1 ? "text-foreground" : ""}>
+                              {item.category.name}
+                            </span>
+                            {item.level === 1 && item.parentName && (
+                              <span className="text-xs text-muted-foreground">
+                                ({item.parentName})
+                              </span>
+                            )}
+                          </span>
+                        </SelectItem>
+                      ))
+                    )
                   })()}
                 </SelectContent>
               </Select>
@@ -402,7 +390,7 @@ export function CategoryPairingModal({
               <div className="text-sm text-info">
                 <p className="font-medium mb-1">การจับคู่แบบ Two-way</p>
                 <p className="text-info/80">
-                  เมื่อลูกค้าเลือกสินค้าจากหมวด &quot;{category.name}&quot; 
+                  เมื่อลูกค้าเลือกสินค้าจากหมวด &quot;{category.name}&quot;
                   ระบบจะแนะนำสินค้าจากหมวดที่จับคู่ไว้ (ไม่บังคับ)
                 </p>
                 <p className="text-info/80 mt-1">

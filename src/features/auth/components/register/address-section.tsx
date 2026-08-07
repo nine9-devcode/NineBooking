@@ -10,11 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { 
-  provinces,
-  type District, 
-  type SubDistrict 
-} from "@/lib/thailand-addresses"
+import { provinces, type District, type SubDistrict } from "@/lib/thailand-addresses"
 import { RegisterFormValues, RegisterFormErrors } from "./schema"
 
 interface AddressSectionProps {
@@ -69,12 +65,8 @@ export function AddressSection({
           maxLength={200}
           className={formErrors.address ? "border-destructive/40" : ""}
         />
-        {formErrors.address && (
-          <p className="text-sm text-destructive">{formErrors.address}</p>
-        )}
-        <p className="text-xs text-muted-foreground">
-          ถ้ากรอก ต้องมีอย่างน้อย 5 ตัวอักษร
-        </p>
+        {formErrors.address && <p className="text-sm text-destructive">{formErrors.address}</p>}
+        <p className="text-xs text-muted-foreground">ถ้ากรอก ต้องมีอย่างน้อย 5 ตัวอักษร</p>
       </div>
 
       {/* จังหวัด & อำเภอ */}

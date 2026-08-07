@@ -216,9 +216,7 @@ export default function CategoriesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">จัดการหมวดหมู่</h1>
-          <p className="text-muted-foreground mt-2">
-            จัดการหมวดหมู่สินค้าทั้งหมดในระบบ
-          </p>
+          <p className="text-muted-foreground mt-2">จัดการหมวดหมู่สินค้าทั้งหมดในระบบ</p>
         </div>
 
         <div className="flex gap-3">
@@ -230,10 +228,7 @@ export default function CategoriesPage() {
             <RefreshCw className="w-4 h-4 mr-2" />
             รีเฟรช
           </Button>
-          <Button
-            onClick={handleAdd}
-            className="bg-primary hover:bg-primary/90"
-          >
+          <Button onClick={handleAdd} className="bg-primary hover:bg-primary/90">
             <Plus className="w-4 h-4 mr-2" />
             เพิ่มหมวดหมู่
           </Button>
@@ -252,9 +247,7 @@ export default function CategoriesPage() {
           <CardHeader className="pb-3">
             <div className="flex items-center gap-2">
               <FolderTree className="w-4 h-4 text-primary" />
-              <p className="text-sm text-muted-foreground font-medium">
-                หมวดหมู่ทั้งหมด
-              </p>
+              <p className="text-sm text-muted-foreground font-medium">หมวดหมู่ทั้งหมด</p>
             </div>
           </CardHeader>
           <CardContent>

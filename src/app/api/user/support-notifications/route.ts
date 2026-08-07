@@ -10,10 +10,7 @@ export async function GET(request: NextRequest) {
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -34,10 +31,7 @@ export async function GET(request: NextRequest) {
     // ดึง list ทั้งหมด (unread ก่อน)
     const notifications = await prisma.userSupportNotification.findMany({
       where: { userId },
-      orderBy: [
-        { isRead: "asc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ isRead: "asc" }, { createdAt: "desc" }],
       take: 20,
     })
 
@@ -46,9 +40,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ notifications, unreadCount })
   } catch (error) {
     console.error("Error fetching support notifications:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาด" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาด" }, { status: 500 })
   }
 }

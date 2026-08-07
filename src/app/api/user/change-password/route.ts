@@ -8,10 +8,7 @@ export async function POST(request: Request) {
     const session = await auth()
 
     if (!session || !session.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบก่อน" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบก่อน" }, { status: 401 })
     }
 
     const body = await request.json()
@@ -19,10 +16,7 @@ export async function POST(request: Request) {
 
     // Validate
     if (!currentPassword || !newPassword) {
-      return NextResponse.json(
-        { error: "กรุณากรอกข้อมูลให้ครบถ้วน" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "กรุณากรอกข้อมูลให้ครบถ้วน" }, { status: 400 })
     }
 
     if (newPassword.length < 6) {
@@ -40,10 +34,7 @@ export async function POST(request: Request) {
     })
 
     if (!user) {
-      return NextResponse.json(
-        { error: "ไม่พบข้อมูลผู้ใช้" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบข้อมูลผู้ใช้" }, { status: 404 })
     }
 
     // บัญชีที่ไม่มีรหัสผ่าน (เช่น admin ที่ถูกสร้างไว้แต่ยังไม่ตั้งรหัส)
@@ -58,10 +49,7 @@ export async function POST(request: Request) {
     const isCorrectPassword = await bcrypt.compare(currentPassword, user.password)
 
     if (!isCorrectPassword) {
-      return NextResponse.json(
-        { error: "รหัสผ่านปัจจุบันไม่ถูกต้อง" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "รหัสผ่านปัจจุบันไม่ถูกต้อง" }, { status: 400 })
     }
 
     // Hash รหัสผ่านใหม่
@@ -82,9 +70,6 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     console.error("Change password error:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง" }, { status: 500 })
   }
 }

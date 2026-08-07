@@ -17,8 +17,7 @@ const ERROR_MESSAGES: Record<string, string> = {
   ADMIN_NOT_ALLOWED: "บัญชีผู้ดูแลระบบต้องเข้าสู่ระบบผ่านหน้า /admin/login",
   INVALID_CREDENTIALS: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
   CredentialsSignin: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
-  ACCOUNT_LOCKED:
-    "กรอกรหัสผ่านผิดหลายครั้งเกินไป บัญชีถูกล็อคชั่วคราว 15 นาที",
+  ACCOUNT_LOCKED: "กรอกรหัสผ่านผิดหลายครั้งเกินไป บัญชีถูกล็อคชั่วคราว 15 นาที",
 }
 
 const SUCCESS_MESSAGES: Record<string, string> = {

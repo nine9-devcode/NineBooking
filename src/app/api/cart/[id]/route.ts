@@ -18,10 +18,7 @@ export async function PATCH(
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -46,17 +43,11 @@ export async function PATCH(
     })
 
     if (!existingCartItem) {
-      return NextResponse.json(
-        { error: "ไม่พบรายการในตะกร้า" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบรายการในตะกร้า" }, { status: 404 })
     }
 
     if (existingCartItem.userId !== userId) {
-      return NextResponse.json(
-        { error: "ไม่มีสิทธิ์แก้ไขรายการนี้" },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: "ไม่มีสิทธิ์แก้ไขรายการนี้" }, { status: 403 })
     }
 
     // ตรวจสอบ paired product (ถ้ามีการเปลี่ยน)
@@ -67,10 +58,7 @@ export async function PATCH(
       })
 
       if (!pairedProduct || !pairedProduct.isActive) {
-        return NextResponse.json(
-          { error: "สินค้าที่จับคู่ไม่พร้อมใช้งาน" },
-          { status: 400 }
-        )
+        return NextResponse.json({ error: "สินค้าที่จับคู่ไม่พร้อมใช้งาน" }, { status: 400 })
       }
     }
 
@@ -121,10 +109,7 @@ export async function PATCH(
     })
   } catch (error) {
     console.error("Error updating cart item:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการอัพเดท" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการอัพเดท" }, { status: 500 })
   }
 }
 
@@ -137,10 +122,7 @@ export async function DELETE(
     const session = await auth()
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "กรุณาเข้าสู่ระบบ" },
-        { status: 401 }
-      )
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 })
     }
 
     const userId = session.user.id
@@ -152,17 +134,11 @@ export async function DELETE(
     })
 
     if (!existingCartItem) {
-      return NextResponse.json(
-        { error: "ไม่พบรายการในตะกร้า" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบรายการในตะกร้า" }, { status: 404 })
     }
 
     if (existingCartItem.userId !== userId) {
-      return NextResponse.json(
-        { error: "ไม่มีสิทธิ์ลบรายการนี้" },
-        { status: 403 }
-      )
+      return NextResponse.json({ error: "ไม่มีสิทธิ์ลบรายการนี้" }, { status: 403 })
     }
 
     // ลบ cart item
@@ -182,9 +158,6 @@ export async function DELETE(
     })
   } catch (error) {
     console.error("Error deleting cart item:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการลบรายการ" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการลบรายการ" }, { status: 500 })
   }
 }

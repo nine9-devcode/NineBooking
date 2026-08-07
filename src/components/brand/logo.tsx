@@ -30,7 +30,15 @@ export function Logo({
         </linearGradient>
       </defs>
 
-      <rect x="0" y="4" width="48" height="48" rx="12" fill="url(#nb-logo-mark)" opacity="0.18" />
+      <rect
+        x="0"
+        y="4"
+        width="48"
+        height="48"
+        rx="12"
+        fill="url(#nb-logo-mark)"
+        opacity="0.18"
+      />
       <path
         d="M14 40V16l20 24V16"
         fill="none"

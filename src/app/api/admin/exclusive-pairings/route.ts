@@ -12,19 +12,13 @@ export async function GET(request: NextRequest) {
     const productId = searchParams.get("productId")
 
     if (!productId) {
-      return NextResponse.json(
-        { error: "กรุณาระบุ productId" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "กรุณาระบุ productId" }, { status: 400 })
     }
 
     // ดึง Exclusive Pairings ทั้ง 2 ทาง
     const pairings = await prisma.exclusivePairing.findMany({
       where: {
-        OR: [
-          { productAId: productId },
-          { productBId: productId },
-        ],
+        OR: [{ productAId: productId }, { productBId: productId }],
       },
       include: {
         productA: {
@@ -61,9 +55,8 @@ export async function GET(request: NextRequest) {
 
     // แปลงให้ส่งเฉพาะสินค้าคู่ (ไม่ใช่ตัวเอง)
     const pairedProducts = pairings.map((pairing) => {
-      const pairedProduct = pairing.productAId === productId
-        ? pairing.productB
-        : pairing.productA
+      const pairedProduct =
+        pairing.productAId === productId ? pairing.productB : pairing.productA
 
       return {
         pairingId: pairing.id,
@@ -84,10 +77,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching exclusive pairings:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
@@ -101,17 +91,11 @@ export async function POST(request: NextRequest) {
     const { productAId, productBId } = body
 
     if (!productAId || !productBId) {
-      return NextResponse.json(
-        { error: "กรุณาระบุสินค้าทั้ง 2 ตัว" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "กรุณาระบุสินค้าทั้ง 2 ตัว" }, { status: 400 })
     }
 
     if (productAId === productBId) {
-      return NextResponse.json(
-        { error: "ไม่สามารถจับคู่สินค้ากับตัวเองได้" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "ไม่สามารถจับคู่สินค้ากับตัวเองได้" }, { status: 400 })
     }
 
     // เรียงลำดับ ID เพื่อป้องกันการสร้างซ้ำ (A-B กับ B-A)
@@ -128,10 +112,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (existing) {
-      return NextResponse.json(
-        { error: "สินค้าคู่นี้ถูกจับคู่ไว้แล้ว" },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: "สินค้าคู่นี้ถูกจับคู่ไว้แล้ว" }, { status: 400 })
     }
 
     // สร้าง Exclusive Pairing
@@ -164,9 +145,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error creating exclusive pairing:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการสร้างการจับคู่" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการสร้างการจับคู่" }, { status: 500 })
   }
 }

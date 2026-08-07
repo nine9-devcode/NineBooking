@@ -33,14 +33,14 @@ export function CategorySidebar({
   const [categories, setCategories] = useState<Category[]>(cachedCategories || [])
   const [totalProducts, setTotalProducts] = useState(cachedTotalProducts || 0)
   const [loading, setLoading] = useState(() => {
-    const isCacheValid = cachedCategories && (Date.now() - cacheTimestamp < CACHE_TTL_MS)
+    const isCacheValid = cachedCategories && Date.now() - cacheTimestamp < CACHE_TTL_MS
     return !isCacheValid
   })
   const [expandedIds, setExpandedIds] = useState<Set<string>>(cachedExpandedIds)
   const hasFetched = useRef(false)
 
   useEffect(() => {
-    const isCacheValid = cachedCategories && (Date.now() - cacheTimestamp < CACHE_TTL_MS)
+    const isCacheValid = cachedCategories && Date.now() - cacheTimestamp < CACHE_TTL_MS
     if (isCacheValid || hasFetched.current) return
 
     const fetchCategories = async () => {
@@ -81,7 +81,7 @@ export function CategorySidebar({
         break
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategoryId, categories])
 
   const toggleExpand = (categoryId: string, e: React.MouseEvent) => {
@@ -125,7 +125,10 @@ export function CategorySidebar({
           <div className="border-t border-border mx-4 my-2" />
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="flex items-center justify-between px-4 py-2.5">
-              <div className="h-4 bg-secondary rounded animate-pulse" style={{ width: `${60 + i * 10}%` }} />
+              <div
+                className="h-4 bg-secondary rounded animate-pulse"
+                style={{ width: `${60 + i * 10}%` }}
+              />
               <div className="h-5 w-8 bg-secondary rounded-full animate-pulse ml-2" />
             </div>
           ))}

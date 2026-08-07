@@ -54,7 +54,11 @@ export function AddToCartButton({
     setIsSuccess(false)
 
     try {
-      const cartItems: { productId: string; quantity: number; pairedProductId: string | null }[] = []
+      const cartItems: {
+        productId: string
+        quantity: number
+        pairedProductId: string | null
+      }[] = []
 
       // สินค้าหลัก
       cartItems.push({
@@ -75,9 +79,7 @@ export function AddToCartButton({
       }
 
       // เพิ่มทั้งหมดลงตะกร้า
-      const results = await Promise.all(
-        cartItems.map((item) => addToCart(item))
-      )
+      const results = await Promise.all(cartItems.map((item) => addToCart(item)))
 
       // ถ้าทุกอันสำเร็จ
       if (results.every((r) => r)) {
@@ -141,7 +143,9 @@ export function AddToCartButton({
             </li>
             {pairedProducts.map((p, idx) => (
               <li key={idx} className="flex justify-between text-muted-foreground">
-                <span className="pl-2">↳ คู่กับ: {p.productName || `สินค้าคู่ ${idx + 1}`}</span>
+                <span className="pl-2">
+                  ↳ คู่กับ: {p.productName || `สินค้าคู่ ${idx + 1}`}
+                </span>
                 <span>{p.quantity} ชิ้น</span>
               </li>
             ))}
@@ -159,9 +163,7 @@ export function AddToCartButton({
         disabled={isLoading}
         size="lg"
         className={`w-full transition-all duration-300 ${
-          isSuccess
-            ? "bg-success hover:bg-success"
-            : "bg-primary hover:bg-primary/90"
+          isSuccess ? "bg-success hover:bg-success" : "bg-primary hover:bg-primary/90"
         }`}
       >
         {isLoading ? (

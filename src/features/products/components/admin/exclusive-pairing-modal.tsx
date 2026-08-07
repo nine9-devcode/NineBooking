@@ -1,12 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -123,7 +118,9 @@ export function ExclusivePairingModal({
 
     setLoading(true)
     try {
-      const res = await fetch(`/api/admin/exclusive-pairings?productId=${product.id}`, { signal })
+      const res = await fetch(`/api/admin/exclusive-pairings?productId=${product.id}`, {
+        signal,
+      })
       const data = await res.json()
 
       if (res.ok) {
@@ -143,7 +140,9 @@ export function ExclusivePairingModal({
     if (!product) return
 
     try {
-      const res = await fetch(`/api/admin/products?limit=1000&excludeId=${product.id}`, { signal })
+      const res = await fetch(`/api/admin/products?limit=1000&excludeId=${product.id}`, {
+        signal,
+      })
       const data = await res.json()
 
       if (res.ok) {
@@ -231,7 +230,7 @@ export function ExclusivePairingModal({
   const pairedIds = new Set(pairedProducts.map((p) => p.id))
   const filteredProducts = availableProducts.filter((p) => {
     if (pairedIds.has(p.id)) return false
-    
+
     if (search) {
       const searchLower = search.toLowerCase()
       return (
@@ -265,7 +264,10 @@ export function ExclusivePairingModal({
               </div>
               <div className="min-w-0">
                 <p className="font-semibold text-foreground truncate">{product.name}</p>
-                <Badge variant="outline" className="border-border text-muted-foreground text-xs">
+                <Badge
+                  variant="outline"
+                  className="border-border text-muted-foreground text-xs"
+                >
                   {product.category.name}
                 </Badge>
               </div>
@@ -307,7 +309,7 @@ export function ExclusivePairingModal({
                 <ChevronDown className="w-4 h-4 text-muted-foreground" />
               )}
             </button>
-            
+
             {showPaired && (
               <div className="p-2">
                 {loading ? (
@@ -326,8 +328,12 @@ export function ExclusivePairingModal({
                         className="flex items-center justify-between bg-card rounded px-3 py-2"
                       >
                         <div className="min-w-0">
-                          <p className="font-medium text-foreground text-sm truncate">{paired.name}</p>
-                          <p className="text-xs text-muted-foreground">{paired.category.name}</p>
+                          <p className="font-medium text-foreground text-sm truncate">
+                            {paired.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {paired.category.name}
+                          </p>
                         </div>
                         <Button
                           variant="ghost"
@@ -363,7 +369,7 @@ export function ExclusivePairingModal({
                 เลือกสินค้าที่ต้องการจับคู่ ({filteredProducts.length})
               </span>
             </div>
-            
+
             <div className="h-48 overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-secondary [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-secondary">
               {filteredProducts.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
@@ -374,7 +380,7 @@ export function ExclusivePairingModal({
                 <div className="p-2 space-y-1">
                   {filteredProducts.map((prod) => {
                     const isSelected = selectedIds.has(prod.id)
-                    
+
                     return (
                       <button
                         key={prod.id}
@@ -386,7 +392,9 @@ export function ExclusivePairingModal({
                         }`}
                       >
                         <div className="min-w-0">
-                          <p className={`font-medium text-sm truncate ${isSelected ? "text-primary" : "text-foreground"}`}>
+                          <p
+                            className={`font-medium text-sm truncate ${isSelected ? "text-primary" : "text-foreground"}`}
+                          >
                             {prod.name}
                           </p>
                           <p className="text-xs text-muted-foreground">{prod.category.name}</p>
@@ -418,7 +426,10 @@ export function ExclusivePairingModal({
                 className="data-[state=unchecked]:bg-secondary"
               />
               <div>
-                <Label htmlFor="show-category-pairings" className="text-sm text-foreground cursor-pointer">
+                <Label
+                  htmlFor="show-category-pairings"
+                  className="text-sm text-foreground cursor-pointer"
+                >
                   แสดงสินค้าจากหมวดที่จับคู่ด้วย
                 </Label>
                 <p className="text-xs text-muted-foreground mt-0.5">
@@ -426,13 +437,18 @@ export function ExclusivePairingModal({
                 </p>
               </div>
             </div>
-            {togglingCategory && <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />}
+            {togglingCategory && (
+              <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+            )}
           </div>
 
           <div className="flex items-center justify-between px-6 py-4">
             <p className="text-sm text-muted-foreground">
               {selectedIds.size > 0 && (
-                <>เลือกแล้ว <span className="text-primary font-medium">{selectedIds.size}</span> รายการ</>
+                <>
+                  เลือกแล้ว <span className="text-primary font-medium">{selectedIds.size}</span>{" "}
+                  รายการ
+                </>
               )}
             </p>
             <div className="flex gap-2">

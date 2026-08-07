@@ -2,11 +2,31 @@
 "use client"
 
 import Image from "next/image"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Edit, Trash2, Calendar, ShoppingBag, Users, MessageSquare, AlertCircle } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
+import {
+  Edit,
+  Trash2,
+  Calendar,
+  ShoppingBag,
+  Users,
+  MessageSquare,
+  AlertCircle,
+} from "lucide-react"
 import { DataPagination } from "@/components/ui/data-pagination"
 import { getResidenceTypeLabel, getMemberTypeLabel, MEMBER_TYPE_COLORS } from "@/lib/constants"
 
@@ -41,9 +61,16 @@ interface UsersTableProps {
 }
 
 // Helper: แปลง memberType เป็น variant ที่ถูกต้อง
-function getMemberTypeBadgeVariant(memberType: string | null | undefined): "default" | "secondary" | "destructive" | "outline" {
-  const variant = MEMBER_TYPE_COLORS[memberType || 'other']
-  if (variant === "default" || variant === "secondary" || variant === "destructive" || variant === "outline") {
+function getMemberTypeBadgeVariant(
+  memberType: string | null | undefined
+): "default" | "secondary" | "destructive" | "outline" {
+  const variant = MEMBER_TYPE_COLORS[memberType || "other"]
+  if (
+    variant === "default" ||
+    variant === "secondary" ||
+    variant === "destructive" ||
+    variant === "outline"
+  ) {
     return variant
   }
   return "secondary" // fallback
@@ -87,7 +114,7 @@ export function UsersTable({
   onPageChange,
   onRefresh,
   onEdit,
-  onDelete
+  onDelete,
 }: UsersTableProps) {
   // Loading state
   if (isLoading) {
@@ -99,12 +126,8 @@ export function UsersTable({
     return (
       <div className="rounded-md border border-border p-12 text-center">
         <Users className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-medium text-foreground mb-2">
-          ไม่พบข้อมูลสมาชิก
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          ลองเปลี่ยนคำค้นหาหรือตัวกรอง
-        </p>
+        <h3 className="text-lg font-medium text-foreground mb-2">ไม่พบข้อมูลสมาชิก</h3>
+        <p className="text-sm text-muted-foreground">ลองเปลี่ยนคำค้นหาหรือตัวกรอง</p>
       </div>
     )
   }
@@ -116,11 +139,21 @@ export function UsersTable({
           <TableHeader>
             <TableRow className="border-border hover:bg-transparent">
               <TableHead className="text-muted-foreground">สมาชิก</TableHead>
-              <TableHead className="hidden md:table-cell text-muted-foreground">ข้อมูลเพิ่มเติม</TableHead>
-              <TableHead className="hidden sm:table-cell text-muted-foreground">ติดต่อ</TableHead>
-              <TableHead className="hidden md:table-cell text-muted-foreground">ประเภทสมาชิก</TableHead>
-              <TableHead className="hidden md:table-cell text-muted-foreground">สถิติ</TableHead>
-              <TableHead className="hidden sm:table-cell text-muted-foreground">บทบาท</TableHead>
+              <TableHead className="hidden md:table-cell text-muted-foreground">
+                ข้อมูลเพิ่มเติม
+              </TableHead>
+              <TableHead className="hidden sm:table-cell text-muted-foreground">
+                ติดต่อ
+              </TableHead>
+              <TableHead className="hidden md:table-cell text-muted-foreground">
+                ประเภทสมาชิก
+              </TableHead>
+              <TableHead className="hidden md:table-cell text-muted-foreground">
+                สถิติ
+              </TableHead>
+              <TableHead className="hidden sm:table-cell text-muted-foreground">
+                บทบาท
+              </TableHead>
               <TableHead className="text-muted-foreground text-right">จัดการ</TableHead>
             </TableRow>
           </TableHeader>
@@ -152,7 +185,7 @@ export function UsersTable({
                             </span>
                           </div>
                         )}
-                        
+
                         {/* Badge สถานะ profile */}
                         {!isProfileComplete && (
                           <TooltipProvider>
@@ -162,9 +195,7 @@ export function UsersTable({
                                   <AlertCircle className="w-2.5 h-2.5 text-foreground" />
                                 </div>
                               </TooltipTrigger>
-                              <TooltipContent>
-                                ข้อมูลไม่สมบูรณ์
-                              </TooltipContent>
+                              <TooltipContent>ข้อมูลไม่สมบูรณ์</TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
                         )}
@@ -177,8 +208,8 @@ export function UsersTable({
                           </span>
                           {/* Badge ข้อมูลไม่สมบูรณ์ */}
                           {!isProfileComplete && (
-                            <Badge 
-                              variant="outline" 
+                            <Badge
+                              variant="outline"
                               className="text-[10px] px-1.5 py-0 h-4 bg-warning/10 text-warning border-warning/30"
                             >
                               ไม่สมบูรณ์
@@ -203,13 +234,9 @@ export function UsersTable({
                   {/* ข้อมูลเพิ่มเติม (ชื่อเล่น + ประเภทที่พัก) */}
                   <TableCell className="hidden md:table-cell">
                     <div className="space-y-1">
-                      <div className="text-sm text-foreground">
-                        {user.nickname || "-"}
-                      </div>
+                      <div className="text-sm text-foreground">{user.nickname || "-"}</div>
                       <div className="text-xs text-muted-foreground">
-                        {user.residenceType
-                          ? getResidenceTypeLabel(user.residenceType)
-                          : "-"}
+                        {user.residenceType ? getResidenceTypeLabel(user.residenceType) : "-"}
                       </div>
                     </div>
                   </TableCell>
@@ -223,7 +250,10 @@ export function UsersTable({
                   <TableCell className="hidden md:table-cell">
                     <div className="space-y-1.5 max-w-[200px]">
                       {user.role === "admin" ? (
-                        <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20">
+                        <Badge
+                          variant="outline"
+                          className="bg-destructive/10 text-destructive border-destructive/20"
+                        >
                           ผู้ดูแลระบบ
                         </Badge>
                       ) : (
@@ -279,9 +309,7 @@ export function UsersTable({
                           </Badge>
                         </TooltipTrigger>
                         <TooltipContent>
-                          {orderCount > 0
-                            ? `จองแล้ว ${orderCount} ครั้ง`
-                            : "ยังไม่เคยจอง"}
+                          {orderCount > 0 ? `จองแล้ว ${orderCount} ครั้ง` : "ยังไม่เคยจอง"}
                         </TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
@@ -289,9 +317,7 @@ export function UsersTable({
 
                   {/* บทบาท */}
                   <TableCell className="hidden sm:table-cell">
-                    <Badge
-                      variant={user.role === "admin" ? "default" : "secondary"}
-                    >
+                    <Badge variant={user.role === "admin" ? "default" : "secondary"}>
                       {user.role === "admin" ? "Admin" : "User"}
                     </Badge>
                   </TableCell>
@@ -341,11 +367,7 @@ export function UsersTable({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <DataPagination
-          page={page}
-          totalPages={totalPages}
-          onPageChange={onPageChange}
-        />
+        <DataPagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
       )}
     </div>
   )

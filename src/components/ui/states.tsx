@@ -66,7 +66,10 @@ export function EmptyState({
 }) {
   return (
     <div
-      className={cn("flex flex-col items-center justify-center px-6 py-16 text-center", className)}
+      className={cn(
+        "flex flex-col items-center justify-center px-6 py-16 text-center",
+        className
+      )}
     >
       {Icon && (
         <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted">

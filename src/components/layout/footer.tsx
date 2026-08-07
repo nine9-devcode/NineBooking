@@ -20,9 +20,7 @@ const LEGAL_LINKS = [
 
 export function Footer({ hasSidebar = false }: FooterProps) {
   return (
-    <footer
-      className={`border-t border-border bg-card ${hasSidebar ? "lg:ml-64" : ""}`}
-    >
+    <footer className={`border-t border-border bg-card ${hasSidebar ? "lg:ml-64" : ""}`}>
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="space-y-3">
@@ -35,9 +33,7 @@ export function Footer({ hasSidebar = false }: FooterProps) {
                 height={32}
                 className="object-contain"
               />
-              <span className="font-heading font-bold text-primary">
-                {siteConfig.name}
-              </span>
+              <span className="font-heading font-bold text-primary">{siteConfig.name}</span>
             </div>
             <p className="text-sm text-muted-foreground">
               ระบบจองสินค้าออนไลน์ พร้อมระบบหลังบ้านครบวงจร

@@ -40,15 +40,11 @@ export function QuotationShippingInfo({ shipping }: QuotationShippingInfoProps) 
         )}
 
         {/* ที่อยู่ */}
-        {formattedAddress && (
-          <p className="text-foreground">{formattedAddress}</p>
-        )}
+        {formattedAddress && <p className="text-foreground">{formattedAddress}</p>}
 
         {/* ถ้าไม่มีที่อยู่แต่มี residenceType */}
         {!formattedAddress && shipping.residenceType && (
-          <p className="text-muted-foreground text-sm italic">
-            ไม่ได้ระบุที่อยู่จัดส่ง
-          </p>
+          <p className="text-muted-foreground text-sm italic">ไม่ได้ระบุที่อยู่จัดส่ง</p>
         )}
       </div>
     </div>

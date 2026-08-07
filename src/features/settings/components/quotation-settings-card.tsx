@@ -16,7 +16,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import { Loader2, Save, RefreshCw, FileText, Plus, Trash2, CheckCircle2, User } from "lucide-react"
+import {
+  Loader2,
+  Save,
+  RefreshCw,
+  FileText,
+  Plus,
+  Trash2,
+  CheckCircle2,
+  User,
+} from "lucide-react"
 import { toast } from "sonner"
 import { getErrorMessage } from "@/lib/utils"
 
@@ -233,7 +242,6 @@ export function QuotationSettingsCard() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
-
           {/* ===== Company Info ===== */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider border-b border-border pb-2">
@@ -376,9 +384,13 @@ export function QuotationSettingsCard() {
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <User className={`w-4 h-4 flex-shrink-0 ${seller.isActive ? "text-primary" : "text-muted-foreground"}`} />
+                      <User
+                        className={`w-4 h-4 flex-shrink-0 ${seller.isActive ? "text-primary" : "text-muted-foreground"}`}
+                      />
                       <div className="min-w-0">
-                        <p className={`text-sm font-medium truncate ${seller.isActive ? "text-foreground" : "text-foreground"}`}>
+                        <p
+                          className={`text-sm font-medium truncate ${seller.isActive ? "text-foreground" : "text-foreground"}`}
+                        >
                           {seller.name}
                         </p>
                         <p className="text-xs text-muted-foreground">{seller.phone}</p>
@@ -460,7 +472,6 @@ export function QuotationSettingsCard() {
               </Button>
             </div>
           </div>
-
         </CardContent>
       </Card>
 

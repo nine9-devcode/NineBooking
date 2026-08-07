@@ -10,7 +10,7 @@ export async function GET(
     const { slug } = await params
 
     const product = await prisma.product.findUnique({
-      where: { 
+      where: {
         slug,
         isActive: true,
       },
@@ -42,10 +42,7 @@ export async function GET(
     })
 
     if (!product) {
-      return NextResponse.json(
-        { error: "ไม่พบสินค้า" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบสินค้า" }, { status: 404 })
     }
 
     // ดึงสินค้าที่เกี่ยวข้อง (หมวดหมู่เดียวกัน)
@@ -79,9 +76,6 @@ export async function GET(
     })
   } catch (error) {
     console.error("Error fetching product:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูลสินค้า" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูลสินค้า" }, { status: 500 })
   }
 }

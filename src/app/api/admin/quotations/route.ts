@@ -91,21 +91,15 @@ export async function GET(request: NextRequest) {
     ])
 
     // Get stats — นับเฉพาะ isLatest
-    const [
-      totalCount,
-      draftCount,
-      sentCount,
-      acceptedCount,
-      rejectedCount,
-      expiredCount,
-    ] = await Promise.all([
-      prisma.quotation.count({ where: { isLatest: true } }),
-      prisma.quotation.count({ where: { status: "DRAFT", isLatest: true } }),
-      prisma.quotation.count({ where: { status: "SENT", isLatest: true } }),
-      prisma.quotation.count({ where: { status: "ACCEPTED", isLatest: true } }),
-      prisma.quotation.count({ where: { status: "REJECTED", isLatest: true } }),
-      prisma.quotation.count({ where: { status: "EXPIRED", isLatest: true } }),
-    ])
+    const [totalCount, draftCount, sentCount, acceptedCount, rejectedCount, expiredCount] =
+      await Promise.all([
+        prisma.quotation.count({ where: { isLatest: true } }),
+        prisma.quotation.count({ where: { status: "DRAFT", isLatest: true } }),
+        prisma.quotation.count({ where: { status: "SENT", isLatest: true } }),
+        prisma.quotation.count({ where: { status: "ACCEPTED", isLatest: true } }),
+        prisma.quotation.count({ where: { status: "REJECTED", isLatest: true } }),
+        prisma.quotation.count({ where: { status: "EXPIRED", isLatest: true } }),
+      ])
 
     // Format response
     const formattedQuotations = quotations.map((q) => ({
@@ -156,10 +150,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching quotations:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }
 
@@ -188,10 +179,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!order) {
-      return NextResponse.json(
-        { error: "ไม่พบคำสั่งจองที่ระบุ" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบคำสั่งจองที่ระบุ" }, { status: 404 })
     }
 
     // ยอดเงินคำนวณด้วย Decimal ตลอดสาย ไม่ผ่าน float
@@ -216,40 +204,40 @@ export async function POST(request: NextRequest) {
       const quotationNumber = await nextQuotationBaseNumber(tx)
 
       return tx.quotation.create({
-      data: {
-        quotationNumber,
-        baseNumber: quotationNumber,
-        version: 1,
-        isLatest: true,
-        orderId: data.orderId,
-        subtotal,
-        includeVat: data.includeVat,
-        vatPercent: new Decimal(data.vatPercent),
-        vatAmount,
-        totalAmount,
-        validDays: data.validDays,
-        validUntil,
-        notes: data.notes || null,
-        pdfNotes: data.pdfNotes !== undefined ? data.pdfNotes : null,
-        status: "DRAFT",
-        createdBy: guard.user.id,
-        createdByName: guard.user.name || "Admin",
-        items: {
-          create: data.items.map((item, index) => ({
-            productId: item.productId,
-            productName: item.productName,
-            productImage: item.productImage,
-            isPairedProduct: item.isPairedProduct,
-            pairedWithIndex: item.pairedWithTempId
-              ? tempIdToIndex[item.pairedWithTempId] ?? null
-              : null,
-            quantity: item.quantity,
-            unitPrice: new Decimal(item.unitPrice),
-            amount: lineAmount(item),
-            sortOrder: index,
-          })),
+        data: {
+          quotationNumber,
+          baseNumber: quotationNumber,
+          version: 1,
+          isLatest: true,
+          orderId: data.orderId,
+          subtotal,
+          includeVat: data.includeVat,
+          vatPercent: new Decimal(data.vatPercent),
+          vatAmount,
+          totalAmount,
+          validDays: data.validDays,
+          validUntil,
+          notes: data.notes || null,
+          pdfNotes: data.pdfNotes !== undefined ? data.pdfNotes : null,
+          status: "DRAFT",
+          createdBy: guard.user.id,
+          createdByName: guard.user.name || "Admin",
+          items: {
+            create: data.items.map((item, index) => ({
+              productId: item.productId,
+              productName: item.productName,
+              productImage: item.productImage,
+              isPairedProduct: item.isPairedProduct,
+              pairedWithIndex: item.pairedWithTempId
+                ? (tempIdToIndex[item.pairedWithTempId] ?? null)
+                : null,
+              quantity: item.quantity,
+              unitPrice: new Decimal(item.unitPrice),
+              amount: lineAmount(item),
+              sortOrder: index,
+            })),
+          },
         },
-      },
       })
     })
 
@@ -263,9 +251,6 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error creating quotation:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการสร้างใบเสนอราคา" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการสร้างใบเสนอราคา" }, { status: 500 })
   }
 }

@@ -30,8 +30,9 @@ export function PersonalInfoSection({
   handleResidenceTypeChange,
 }: PersonalInfoSectionProps) {
   // ตรวจสอบว่าค่าปัจจุบันเป็นค่าที่กำหนดไว้หรือไม่
-  const isPresetValue = RESIDENCE_TYPES.some(t => t.value === formData.residenceType)
-  const isCustomValue = formData.residenceType && formData.residenceType !== "other" && !isPresetValue
+  const isPresetValue = RESIDENCE_TYPES.some((t) => t.value === formData.residenceType)
+  const isCustomValue =
+    formData.residenceType && formData.residenceType !== "other" && !isPresetValue
   const showCustomInput = formData.residenceType === "other" || isCustomValue
 
   // เช็คว่าเบอร์ที่กรอกตรงกับเบอร์ที่ verify แล้วหรือไม่
@@ -58,9 +59,7 @@ export function PersonalInfoSection({
           maxLength={40}
           className={formErrors.name ? "border-destructive/40" : ""}
         />
-        {formErrors.name && (
-          <p className="text-sm text-destructive">{formErrors.name}</p>
-        )}
+        {formErrors.name && <p className="text-sm text-destructive">{formErrors.name}</p>}
         <p className="text-xs text-muted-foreground">
           กรอกชื่อ-นามสกุลจริง (ไม่อนุญาตตัวเลขหรืออักขระพิเศษ)
         </p>
@@ -113,9 +112,7 @@ export function PersonalInfoSection({
             className={formErrors.phone ? "border-destructive" : ""}
           />
         </div>
-        {formErrors.phone && (
-          <p className="text-sm text-destructive">{formErrors.phone}</p>
-        )}
+        {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
         <p className="text-xs text-muted-foreground">ใส่เบอร์โทรศัพท์ 10 หลัก</p>
       </div>
 
@@ -125,7 +122,11 @@ export function PersonalInfoSection({
           ประเภทที่อยู่อาศัย <span className="text-destructive">*</span>
         </Label>
         <Select
-          value={isCustomValue || formData.residenceType === "other" ? "other" : formData.residenceType}
+          value={
+            isCustomValue || formData.residenceType === "other"
+              ? "other"
+              : formData.residenceType
+          }
           onValueChange={(value) => {
             if (value === "other") {
               handleResidenceTypeChange("other")
@@ -135,11 +136,11 @@ export function PersonalInfoSection({
           }}
           disabled={isLoading}
         >
-          <SelectTrigger 
-            className={formErrors.residenceType ? "border-destructive/40" : ""}
-          >
-            <SelectValue 
-              placeholder={isCustomValue ? `อื่นๆ: ${formData.residenceType}` : "เลือกประเภทที่อยู่อาศัย"} 
+          <SelectTrigger className={formErrors.residenceType ? "border-destructive/40" : ""}>
+            <SelectValue
+              placeholder={
+                isCustomValue ? `อื่นๆ: ${formData.residenceType}` : "เลือกประเภทที่อยู่อาศัย"
+              }
             />
           </SelectTrigger>
           <SelectContent>

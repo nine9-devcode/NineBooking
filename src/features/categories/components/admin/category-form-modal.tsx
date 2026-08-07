@@ -163,7 +163,7 @@ export function CategoryFormModal({
   // กรอง parent categories
   const getAvailableParents = (): ParentCategory[] => {
     if (!isEdit || !category) return parentCategories
-    
+
     return parentCategories.filter((parent) => {
       // ไม่แสดงตัวเอง
       if (parent.id === category.id) return false
@@ -176,9 +176,7 @@ export function CategoryFormModal({
   const onSubmit = async (data: CategoryFormData) => {
     setLoading(true)
     try {
-      const url = isEdit
-        ? `/api/admin/categories/${category.id}`
-        : "/api/admin/categories"
+      const url = isEdit ? `/api/admin/categories/${category.id}` : "/api/admin/categories"
 
       // Prepare data
       const submitData = {
@@ -200,9 +198,7 @@ export function CategoryFormModal({
       const result = await response.json()
 
       if (response.ok) {
-        toast.success(
-          isEdit ? "แก้ไขหมวดหมู่สำเร็จ" : "เพิ่มหมวดหมู่สำเร็จ"
-        )
+        toast.success(isEdit ? "แก้ไขหมวดหมู่สำเร็จ" : "เพิ่มหมวดหมู่สำเร็จ")
         onSuccess()
         onClose()
       } else {
@@ -227,16 +223,18 @@ export function CategoryFormModal({
             {isEdit ? "แก้ไขหมวดหมู่" : "เพิ่มหมวดหมู่ใหม่"}
           </DialogTitle>
           <DialogDescription className="text-muted-foreground">
-            {isEdit
-              ? "แก้ไขข้อมูลหมวดหมู่สินค้า"
-              : "เพิ่มหมวดหมู่สินค้าใหม่เข้าสู่ระบบ"}
+            {isEdit ? "แก้ไขข้อมูลหมวดหมู่สินค้า" : "เพิ่มหมวดหมู่สินค้าใหม่เข้าสู่ระบบ"}
           </DialogDescription>
         </DialogHeader>
 
         {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto pr-2">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6" id="category-form">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-6"
+              id="category-form"
+            >
               {/* Parent Category Selector */}
               <FormField
                 control={form.control}

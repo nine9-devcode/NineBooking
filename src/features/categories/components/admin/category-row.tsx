@@ -13,11 +13,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   Edit,
   Trash2,
@@ -158,9 +154,7 @@ export function CategoryRow({
 
       {/* คำอธิบาย */}
       <TableCell className="hidden md:table-cell">
-        <p className="text-muted-foreground max-w-xs truncate">
-          {category.description || "-"}
-        </p>
+        <p className="text-muted-foreground max-w-xs truncate">{category.description || "-"}</p>
       </TableCell>
 
       {/* จำนวนสินค้า */}
@@ -240,10 +234,12 @@ export function CategoryRow({
             disabled={togglingId === category.id}
             className="data-[state=checked]:bg-success data-[state=unchecked]:bg-destructive/50"
           />
-          <span className={cn(
-            "text-xs font-medium min-w-[24px]",
-            category.isActive ? "text-success" : "text-destructive"
-          )}>
+          <span
+            className={cn(
+              "text-xs font-medium min-w-[24px]",
+              category.isActive ? "text-success" : "text-destructive"
+            )}
+          >
             {category.isActive ? "เปิด" : "ปิด"}
           </span>
         </div>

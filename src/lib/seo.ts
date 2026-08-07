@@ -1,10 +1,10 @@
 // ไฟล์: lib/seo.ts
 // Helper functions สำหรับ generate SEO metadata
 
-import { Metadata } from 'next'
+import { Metadata } from "next"
 
-import { siteConfig } from '@/config/site'
-import { prisma } from '@/lib/db'
+import { siteConfig } from "@/config/site"
+import { prisma } from "@/lib/db"
 
 // ===== Site config: ค่าใน DB (แก้จากหน้า admin) ทับค่าตั้งต้นใน config/site =====
 export async function getSiteConfig() {
@@ -33,21 +33,21 @@ interface ProductSeoData {
 
 // ===== Helper: Strip HTML tags =====
 export function stripHtml(html: string | null | undefined): string {
-  if (!html) return ''
+  if (!html) return ""
   return html
-    .replace(/<[^>]*>/g, '') // ลบ HTML tags
-    .replace(/&nbsp;/g, ' ') // แปลง &nbsp;
-    .replace(/&amp;/g, '&')  // แปลง &amp;
-    .replace(/&lt;/g, '<')   // แปลง &lt;
-    .replace(/&gt;/g, '>')   // แปลง &gt;
-    .replace(/\s+/g, ' ')    // รวม whitespace
+    .replace(/<[^>]*>/g, "") // ลบ HTML tags
+    .replace(/&nbsp;/g, " ") // แปลง &nbsp;
+    .replace(/&amp;/g, "&") // แปลง &amp;
+    .replace(/&lt;/g, "<") // แปลง &lt;
+    .replace(/&gt;/g, ">") // แปลง &gt;
+    .replace(/\s+/g, " ") // รวม whitespace
     .trim()
 }
 
 // ===== Helper: Truncate text =====
 export function truncate(text: string, maxLength: number = 160): string {
   if (text.length <= maxLength) return text
-  return text.slice(0, maxLength - 3).trim() + '...'
+  return text.slice(0, maxLength - 3).trim() + "..."
 }
 
 /**

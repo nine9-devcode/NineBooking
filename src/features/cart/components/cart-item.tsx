@@ -45,14 +45,14 @@ export function CartItemCard({ group, isSelected, onSelectChange }: CartItemProp
   // ลบทั้ง group (สินค้าหลัก + คู่ทั้งหมด)
   const handleRemoveGroup = async () => {
     setIsRemoving(true)
-    
+
     // ลบ main item
     if (group.mainItem) {
       await removeFromCart(group.mainItem.id)
     }
     // ลบ paired items
     await Promise.all(group.pairedItems.map((item) => removeFromCart(item.id)))
-    
+
     setIsRemoving(false)
   }
 
@@ -131,9 +131,7 @@ export function CartItemCard({ group, isSelected, onSelectChange }: CartItemProp
               รวม <span className="font-semibold text-primary">{totalQuantity}</span> ชิ้น
             </span>
             {group.pairedItems.length > 0 && (
-              <span className="text-warning">
-                • มี {group.pairedItems.length} สินค้าคู่
-              </span>
+              <span className="text-warning">• มี {group.pairedItems.length} สินค้าคู่</span>
             )}
           </div>
         </div>
@@ -177,7 +175,9 @@ export function CartItemCard({ group, isSelected, onSelectChange }: CartItemProp
             <div className="flex items-center gap-2">
               <div className="flex items-center border border-border rounded-lg bg-card">
                 <button
-                  onClick={() => handleUpdateQuantity(group.mainItem!.id, group.mainItem!.quantity - 1)}
+                  onClick={() =>
+                    handleUpdateQuantity(group.mainItem!.id, group.mainItem!.quantity - 1)
+                  }
                   disabled={group.mainItem.quantity <= 1 || isUpdating === group.mainItem.id}
                   className="p-2 hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-l-lg"
                 >
@@ -191,7 +191,9 @@ export function CartItemCard({ group, isSelected, onSelectChange }: CartItemProp
                   )}
                 </span>
                 <button
-                  onClick={() => handleUpdateQuantity(group.mainItem!.id, group.mainItem!.quantity + 1)}
+                  onClick={() =>
+                    handleUpdateQuantity(group.mainItem!.id, group.mainItem!.quantity + 1)
+                  }
                   disabled={isUpdating === group.mainItem.id || group.mainItem.quantity >= 99}
                   className="p-2 hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-r-lg"
                 >

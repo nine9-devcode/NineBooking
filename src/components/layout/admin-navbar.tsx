@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button"
 // import Image from "next/image"
 import { LogOut, Menu, MonitorCog } from "lucide-react"
 import { NavbarAvatar } from "@/components/layout/navbar-avatar"
-import { NotificationBell } from '@/features/notifications/components/notification-bell'
-import { useState, useEffect } from "react" 
+import { NotificationBell } from "@/features/notifications/components/notification-bell"
+import { useState, useEffect } from "react"
 
 interface AdminNavbarProps {
   onMobileMenuToggle?: () => void
@@ -38,35 +38,27 @@ export function AdminNavbar({ onMobileMenuToggle }: AdminNavbarProps) {
             <Menu className="w-5 h-5" />
           </button>
           <div className="p-2 bg-card rounded-lg">
-             <MonitorCog className="w-6 h-6 text-primary" />
+            <MonitorCog className="w-6 h-6 text-primary" />
           </div>
           <div className="flex flex-col">
             <span className="text-lg font-bold text-foreground font-heading">
               NineBooking Admin
             </span>
-            <span className="text-xs text-muted-foreground -mt-1">
-              ระบบจัดการหลังบ้าน
-            </span>
+            <span className="text-xs text-muted-foreground -mt-1">ระบบจัดการหลังบ้าน</span>
           </div>
         </div>
 
         {/* Right: User Info + Logout */}
         <div className="flex items-center gap-4">
-
           {/* แจ้งเตือน */}
           {mounted && <NotificationBell />}
 
           {/* User Info */}
           {session?.user && (
             <div className="flex items-center gap-3 px-3 py-2 bg-card rounded-lg">
-              <NavbarAvatar
-                name={session.user.name || "Admin"}
-                image={session.user.image}
-              />
+              <NavbarAvatar name={session.user.name || "Admin"} image={session.user.image} />
               <div className="hidden md:block">
-                <p className="text-sm font-semibold text-foreground">
-                  {session.user.name}
-                </p>
+                <p className="text-sm font-semibold text-foreground">{session.user.name}</p>
                 <p className="text-xs text-muted-foreground">ผู้ดูแลระบบ</p>
               </div>
             </div>

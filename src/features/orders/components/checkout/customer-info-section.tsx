@@ -102,7 +102,7 @@ export function CustomerInfoSection({
               value={formData.customerPhone}
               placeholder="08X-XXX-XXXX"
               className="pl-10 pr-10 bg-muted"
-              disabled={true}  // ปิดการแก้ไข
+              disabled={true} // ปิดการแก้ไข
               required
             />
             <Lock className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -110,8 +110,8 @@ export function CustomerInfoSection({
           {/* ลิงก์ไปหน้า Profile */}
           <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
             <span>เบอร์โทรที่ยืนยันแล้ว</span>
-            <Link 
-              href="/profile" 
+            <Link
+              href="/profile"
               className="text-primary hover:underline inline-flex items-center gap-0.5"
             >
               แก้ไขที่หน้าโปรไฟล์

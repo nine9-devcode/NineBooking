@@ -11,14 +11,10 @@ interface ProductGalleryProps {
   productName: string
 }
 
-export function ProductGallery({
-  mainImage,
-  images,
-  productName,
-}: ProductGalleryProps) {
+export function ProductGallery({ mainImage, images, productName }: ProductGalleryProps) {
   // รวมรูปทั้งหมด (main + gallery)
   const allImages = mainImage ? [mainImage, ...images] : images
-  
+
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
@@ -144,7 +140,7 @@ export function ProductGallery({
         <div
           className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
           onClick={() => setLightboxOpen(false)}
-              aria-label="ปิดภาพขยาย"
+          aria-label="ปิดภาพขยาย"
         >
           {/* Close Button */}
           <button

@@ -1,7 +1,11 @@
-'use client'
+"use client"
 
-import { createContext, useContext } from 'react'
-import { useNotifications, UnifiedNotification, NotificationType } from '@/features/notifications/hooks/use-notifications'
+import { createContext, useContext } from "react"
+import {
+  useNotifications,
+  UnifiedNotification,
+  NotificationType,
+} from "@/features/notifications/hooks/use-notifications"
 
 interface AdminNotificationContextValue {
   notifications: UnifiedNotification[]
@@ -11,7 +15,11 @@ interface AdminNotificationContextValue {
   totalCount: number
   isLoading: boolean
   hasNewNotification: boolean
-  markAsRead: (notificationId: string, targetId: string, type: NotificationType) => Promise<void>
+  markAsRead: (
+    notificationId: string,
+    targetId: string,
+    type: NotificationType
+  ) => Promise<void>
   markAllAsRead: () => Promise<void>
   clearAll: () => Promise<void>
   refetch: () => Promise<void>

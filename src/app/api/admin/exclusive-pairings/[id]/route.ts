@@ -23,10 +23,7 @@ export async function DELETE(
     })
 
     if (!pairing) {
-      return NextResponse.json(
-        { error: "ไม่พบการจับคู่นี้" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบการจับคู่นี้" }, { status: 404 })
     }
 
     // ลบ pairing
@@ -39,9 +36,6 @@ export async function DELETE(
     })
   } catch (error) {
     console.error("Error deleting exclusive pairing:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการลบการจับคู่" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการลบการจับคู่" }, { status: 500 })
   }
 }

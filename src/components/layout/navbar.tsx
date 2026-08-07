@@ -30,9 +30,8 @@ interface NavbarProps {
   onSelectCategory?: (categoryId: string | null, name?: string, slug?: string) => void
 }
 
-
-export function Navbar({ 
-  currentPage, 
+export function Navbar({
+  currentPage,
   selectedCategoryId = null,
   onSelectCategory,
 }: NavbarProps) {
@@ -58,7 +57,8 @@ export function Navbar({
 
   // ดึง notification count
   const { unreadCount: unreadOrderCount, hasUnread: hasUnreadOrder } = useOrderNotifications()
-  const { unreadCount: unreadSupportCount, hasUnread: hasUnreadSupport } = useSupportNotifications()
+  const { unreadCount: unreadSupportCount, hasUnread: hasUnreadSupport } =
+    useSupportNotifications()
 
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/login" })
@@ -74,7 +74,6 @@ export function Navbar({
     }
     setSidebarOpen(false)
   }
-
 
   return (
     <>
@@ -162,16 +161,17 @@ export function Navbar({
                       <p className="text-sm font-semibold text-foreground">
                         {session.user.name}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {session.user.email}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{session.user.email}</p>
                     </div>
                     <ChevronDown className="w-4 h-4 text-muted-foreground" />
                   </button>
 
                   {/* Dropdown Menu */}
                   {profileOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-card rounded-lg shadow-lg border border-border py-2 z-50" role="menu">
+                    <div
+                      className="absolute right-0 mt-2 w-64 bg-card rounded-lg shadow-lg border border-border py-2 z-50"
+                      role="menu"
+                    >
                       {/* User Info */}
                       <div className="px-4 py-3 border-b border-border">
                         <div className="flex items-center gap-3 mb-2">
@@ -297,19 +297,16 @@ export function Navbar({
           {/* Sidebar */}
           <aside className="absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border overflow-y-auto">
             <CategorySidebar
-            selectedCategoryId={selectedCategoryId}
-            onSelectCategory={handleCategorySelect}
-          />
+              selectedCategoryId={selectedCategoryId}
+              onSelectCategory={handleCategorySelect}
+            />
           </aside>
         </div>
       )}
 
       {/* Close dropdown when clicking outside */}
       {profileOpen && (
-        <div
-          className="fixed inset-0 z-30"
-          onClick={() => setProfileOpen(false)}
-        />
+        <div className="fixed inset-0 z-30" onClick={() => setProfileOpen(false)} />
       )}
     </>
   )

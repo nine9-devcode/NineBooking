@@ -51,9 +51,16 @@ interface QuotationsTableProps {
 }
 
 // Helper: เลือกสี Badge
-function getMemberTypeBadgeVariant(memberType: string | null | undefined): "default" | "secondary" | "destructive" | "outline" {
-  const variant = MEMBER_TYPE_COLORS[memberType || 'other']
-  if (variant === "default" || variant === "secondary" || variant === "destructive" || variant === "outline") {
+function getMemberTypeBadgeVariant(
+  memberType: string | null | undefined
+): "default" | "secondary" | "destructive" | "outline" {
+  const variant = MEMBER_TYPE_COLORS[memberType || "other"]
+  if (
+    variant === "default" ||
+    variant === "secondary" ||
+    variant === "destructive" ||
+    variant === "outline"
+  ) {
     return variant
   }
   return "secondary"
@@ -67,7 +74,12 @@ function formatShortDate(date: string): string {
   })
 }
 
-export function QuotationsTable({ quotations, loading, emptyMessage, onDelete }: QuotationsTableProps) {
+export function QuotationsTable({
+  quotations,
+  loading,
+  emptyMessage,
+  onDelete,
+}: QuotationsTableProps) {
   // Loading state
   if (loading) {
     return (
@@ -85,12 +97,8 @@ export function QuotationsTable({ quotations, loading, emptyMessage, onDelete }:
       <div className="bg-card/50 rounded-xl border border-border">
         <div className="text-center py-20">
           <FileText className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-foreground mb-2">
-            ไม่พบใบเสนอราคา
-          </h3>
-          <p className="text-muted-foreground">
-            {emptyMessage || "ยังไม่มีใบเสนอราคาในระบบ"}
-          </p>
+          <h3 className="text-lg font-semibold text-foreground mb-2">ไม่พบใบเสนอราคา</h3>
+          <p className="text-muted-foreground">{emptyMessage || "ยังไม่มีใบเสนอราคาในระบบ"}</p>
         </div>
       </div>
     )
@@ -104,11 +112,19 @@ export function QuotationsTable({ quotations, loading, emptyMessage, onDelete }:
             <TableHeader>
               <TableRow className="border-border hover:bg-transparent">
                 <TableHead className="w-44 text-muted-foreground">เลขที่</TableHead>
-                <TableHead className="hidden sm:table-cell text-muted-foreground">ลูกค้า</TableHead>
-                <TableHead className="hidden md:table-cell w-32 text-muted-foreground">อ้างอิง</TableHead>
-                <TableHead className="hidden sm:table-cell w-28 text-right text-muted-foreground">ยอดรวม</TableHead>
+                <TableHead className="hidden sm:table-cell text-muted-foreground">
+                  ลูกค้า
+                </TableHead>
+                <TableHead className="hidden md:table-cell w-32 text-muted-foreground">
+                  อ้างอิง
+                </TableHead>
+                <TableHead className="hidden sm:table-cell w-28 text-right text-muted-foreground">
+                  ยอดรวม
+                </TableHead>
                 <TableHead className="w-28 text-muted-foreground">สถานะ</TableHead>
-                <TableHead className="hidden md:table-cell w-44 text-muted-foreground">ระยะเวลา</TableHead>
+                <TableHead className="hidden md:table-cell w-44 text-muted-foreground">
+                  ระยะเวลา
+                </TableHead>
                 <TableHead className="w-24 text-center text-muted-foreground">จัดการ</TableHead>
               </TableRow>
             </TableHeader>
@@ -181,13 +197,18 @@ export function QuotationsTable({ quotations, loading, emptyMessage, onDelete }:
                           {/* Row 2: Member Type Badge + Note */}
                           <div className="flex items-center gap-1.5 mt-1">
                             {quotation.customer.userDeleted ? (
-                              <Badge variant="outline" className="h-5 px-1.5 text-[10px] font-normal border-destructive/40 text-destructive bg-destructive/10">
+                              <Badge
+                                variant="outline"
+                                className="h-5 px-1.5 text-[10px] font-normal border-destructive/40 text-destructive bg-destructive/10"
+                              >
                                 บัญชีถูกลบแล้ว
                               </Badge>
                             ) : (
                               <>
                                 <Badge
-                                  variant={getMemberTypeBadgeVariant(quotation.customer.memberType)}
+                                  variant={getMemberTypeBadgeVariant(
+                                    quotation.customer.memberType
+                                  )}
                                   className="h-5 px-1.5 text-[10px] capitalize font-normal border-opacity-50"
                                 >
                                   {getMemberTypeLabel(quotation.customer.memberType ?? null)}
@@ -202,7 +223,9 @@ export function QuotationsTable({ quotations, loading, emptyMessage, onDelete }:
                                       </div>
                                     </TooltipTrigger>
                                     <TooltipContent className="bg-card border-border text-foreground max-w-[250px] break-words z-50">
-                                      <p className="text-xs font-semibold mb-1 text-muted-foreground">หมายเหตุสมาชิก:</p>
+                                      <p className="text-xs font-semibold mb-1 text-muted-foreground">
+                                        หมายเหตุสมาชิก:
+                                      </p>
                                       {quotation.customer.memberTypeNote}
                                     </TooltipContent>
                                   </Tooltip>
@@ -243,7 +266,9 @@ export function QuotationsTable({ quotations, loading, emptyMessage, onDelete }:
 
                     {/* Status */}
                     <TableCell>
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.darkColor}`}>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.darkColor}`}
+                      >
                         <StatusIcon className="w-3 h-3" />
                         {statusConfig.label}
                       </span>
@@ -294,9 +319,17 @@ export function QuotationsTable({ quotations, loading, emptyMessage, onDelete }:
                               <MoreHorizontal className="w-4 h-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-background border-border">
+                          <DropdownMenuContent
+                            align="end"
+                            className="bg-background border-border"
+                          >
                             <DropdownMenuItem
-                              onClick={() => window.open(`/api/admin/quotations/${quotation.id}/pdf`, "_blank")}
+                              onClick={() =>
+                                window.open(
+                                  `/api/admin/quotations/${quotation.id}/pdf`,
+                                  "_blank"
+                                )
+                              }
                               className="text-foreground hover:bg-secondary cursor-pointer"
                             >
                               <Download className="w-4 h-4 mr-2" />

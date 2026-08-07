@@ -276,10 +276,10 @@ export function RichTextEditor({
       }}
     >
       <Toolbar editor={editor} />
-        <EditorContent
+      <EditorContent
         editor={editor}
         className="tiptap-editor flex-1 w-full h-full overflow-y-auto focus:outline-none [&_.ProseMirror]:min-h-full [&_.ProseMirror]:p-4 [&_.ProseMirror]:outline-none"
-        />
+      />
     </div>
   )
 }

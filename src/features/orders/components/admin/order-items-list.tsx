@@ -38,16 +38,12 @@ export function OrderItemsList({
           <div className="flex items-center gap-4 mt-2 text-xs">
             <span className="text-muted-foreground">
               สินค้าหลัก:{" "}
-              <span className="text-primary font-medium">
-                {mainQuantity || 0} ชิ้น
-              </span>
+              <span className="text-primary font-medium">{mainQuantity || 0} ชิ้น</span>
             </span>
             {(pairedQuantity || 0) > 0 && (
               <span className="text-muted-foreground">
                 สินค้าคู่:{" "}
-                <span className="text-warning font-medium">
-                  {pairedQuantity} ชิ้น
-                </span>
+                <span className="text-warning font-medium">{pairedQuantity} ชิ้น</span>
               </span>
             )}
           </div>
@@ -79,9 +75,7 @@ export function OrderItemsList({
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="font-medium text-foreground">
-                      {group.product.name}
-                    </h3>
+                    <h3 className="font-medium text-foreground">{group.product.name}</h3>
                     {group.product.category && (
                       <span className="text-xs text-muted-foreground">
                         {group.product.category}
@@ -135,9 +129,7 @@ export function OrderItemsList({
               <div className="mt-4 p-4 bg-warning/10 rounded-lg border border-warning/20">
                 <div className="flex items-center gap-2 mb-3">
                   <LinkIcon className="w-4 h-4 text-warning" />
-                  <span className="text-sm font-medium text-warning">
-                    สินค้าที่ใช้คู่กัน
-                  </span>
+                  <span className="text-sm font-medium text-warning">สินค้าที่ใช้คู่กัน</span>
                 </div>
                 <div className="space-y-3">
                   {group.pairedItems.map((paired) => (
@@ -180,16 +172,15 @@ export function OrderItemsList({
                       <span className="text-sm font-semibold text-warning bg-warning/10 px-2.5 py-1 rounded">
                         {paired.quantity} ชิ้น
                       </span>
-                      {paired.pairedProduct.slug &&
-                        paired.pairedProduct.isActive && (
-                          <Link
-                            href={`/products/${paired.pairedProduct.slug}`}
-                            target="_blank"
-                            className="p-1.5 hover:bg-warning/20 rounded transition-colors"
-                          >
-                            <ExternalLink className="w-4 h-4 text-warning" />
-                          </Link>
-                        )}
+                      {paired.pairedProduct.slug && paired.pairedProduct.isActive && (
+                        <Link
+                          href={`/products/${paired.pairedProduct.slug}`}
+                          target="_blank"
+                          className="p-1.5 hover:bg-warning/20 rounded transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4 text-warning" />
+                        </Link>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -203,9 +194,7 @@ export function OrderItemsList({
       <div className="px-6 py-4 border-t border-border bg-card/80">
         <div className="flex justify-between items-center">
           <span className="text-muted-foreground">รวมทั้งหมด</span>
-          <span className="text-lg font-bold text-foreground">
-            {totalQuantity} ชิ้น
-          </span>
+          <span className="text-lg font-bold text-foreground">{totalQuantity} ชิ้น</span>
         </div>
       </div>
     </div>

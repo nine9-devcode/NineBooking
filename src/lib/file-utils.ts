@@ -1,9 +1,4 @@
-import { 
-  FileText, 
-  FileSpreadsheet, 
-  File as FileIcon,
-  type LucideIcon 
-} from "lucide-react"
+import { FileText, FileSpreadsheet, File as FileIcon, type LucideIcon } from "lucide-react"
 import { DATASHEET_CONFIG } from "@/features/products/datasheet.types"
 
 /**
@@ -12,11 +7,11 @@ import { DATASHEET_CONFIG } from "@/features/products/datasheet.types"
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return "0 Bytes"
-  
+
   const k = 1024
   const sizes = ["Bytes", "KB", "MB", "GB"]
   const i = Math.floor(Math.log(bytes) / Math.log(k))
-  
+
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`
 }
 
@@ -25,7 +20,7 @@ export function formatFileSize(bytes: number): string {
  * @example getFileExtension("document.pdf") // "pdf"
  */
 export function getFileExtension(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase() || ""
+  const ext = filename.split(".").pop()?.toLowerCase() || ""
   return ext
 }
 
@@ -60,11 +55,11 @@ export function getFileValidationError(file: File): string | null {
   if (!isValidFileType(file)) {
     return "ประเภทไฟล์ไม่ถูกต้อง กรุณาเลือกไฟล์ PDF, DOC, DOCX, XLS หรือ XLSX"
   }
-  
+
   if (!isValidFileSize(file)) {
     return `ไฟล์มีขนาดใหญ่เกินไป (สูงสุด ${formatFileSize(DATASHEET_CONFIG.maxFileSize)})`
   }
-  
+
   return null
 }
 
@@ -72,16 +67,16 @@ export function getFileValidationError(file: File): string | null {
  * Get icon component based on file extension
  */
 export function getFileIcon(extension: string): LucideIcon {
-  const ext = extension.toLowerCase().replace('.', '')
-  
+  const ext = extension.toLowerCase().replace(".", "")
+
   switch (ext) {
-    case 'pdf':
+    case "pdf":
       return FileText // PDF icon (สีแดง)
-    case 'doc':
-    case 'docx':
+    case "doc":
+    case "docx":
       return FileText // Word icon (สีน้ำเงิน)
-    case 'xls':
-    case 'xlsx':
+    case "xls":
+    case "xlsx":
       return FileSpreadsheet // Excel icon (สีเขียว)
     default:
       return FileIcon // Generic file icon
@@ -92,16 +87,16 @@ export function getFileIcon(extension: string): LucideIcon {
  * Get icon color class based on file extension
  */
 export function getFileIconColor(extension: string): string {
-  const ext = extension.toLowerCase().replace('.', '')
-  
+  const ext = extension.toLowerCase().replace(".", "")
+
   switch (ext) {
-    case 'pdf':
+    case "pdf":
       return "text-destructive"
-    case 'doc':
-    case 'docx':
+    case "doc":
+    case "docx":
       return "text-info"
-    case 'xls':
-    case 'xlsx':
+    case "xls":
+    case "xlsx":
       return "text-success"
     default:
       return "text-muted-foreground"
@@ -112,21 +107,21 @@ export function getFileIconColor(extension: string): string {
  * Get human-readable file type name
  */
 export function getFileTypeName(extension: string): string {
-  const ext = extension.toLowerCase().replace('.', '')
-  
+  const ext = extension.toLowerCase().replace(".", "")
+
   switch (ext) {
-    case 'pdf':
-      return 'PDF Document'
-    case 'doc':
-      return 'Word Document'
-    case 'docx':
-      return 'Word Document'
-    case 'xls':
-      return 'Excel Spreadsheet'
-    case 'xlsx':
-      return 'Excel Spreadsheet'
+    case "pdf":
+      return "PDF Document"
+    case "doc":
+      return "Word Document"
+    case "docx":
+      return "Word Document"
+    case "xls":
+      return "Excel Spreadsheet"
+    case "xlsx":
+      return "Excel Spreadsheet"
     default:
-      return 'Document'
+      return "Document"
   }
 }
 
@@ -136,5 +131,5 @@ export function getFileTypeName(extension: string): string {
  */
 export function getAcceptString(): string {
   const extensions = Object.values(DATASHEET_CONFIG.allowedFileTypes).flat()
-  return extensions.join(',')
+  return extensions.join(",")
 }

@@ -27,9 +27,7 @@ export function LegalPage({
             <header className="border-b border-border pb-6">
               <h1 className="mb-2 text-2xl font-bold text-foreground">{title}</h1>
               <p className="text-muted-foreground">{subtitle}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                อัปเดตล่าสุด: {updatedAt}
-              </p>
+              <p className="mt-2 text-sm text-muted-foreground">อัปเดตล่าสุด: {updatedAt}</p>
             </header>
 
             {children}
@@ -42,13 +40,7 @@ export function LegalPage({
   )
 }
 
-export function LegalSection({
-  heading,
-  children,
-}: {
-  heading: string
-  children: ReactNode
-}) {
+export function LegalSection({ heading, children }: { heading: string; children: ReactNode }) {
   return (
     <section className="space-y-3">
       <h2 className="text-xl font-semibold text-foreground">{heading}</h2>

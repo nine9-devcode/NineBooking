@@ -13,24 +13,24 @@ import {
   Hr,
   Row,
   Column,
-} from '@react-email/components'
-import { OrderEmailData } from '@/lib/mailer/order-mail'
+} from "@react-email/components"
+import { OrderEmailData } from "@/lib/mailer/order-mail"
 
 interface OrderConfirmationEmailProps {
   data: OrderEmailData
 }
 
 export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   const orderUrl = `${baseUrl}/orders/${data.orderId}`
 
   // Format date
-  const orderDate = new Date(data.createdAt).toLocaleDateString('th-TH', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  const orderDate = new Date(data.createdAt).toLocaleDateString("th-TH", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   })
 
   // Display name with nickname
@@ -57,27 +57,28 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
               <strong>เรียน</strong> {displayName}
             </Text>
             <Text style={text}>
-              ขอบพระคุณที่ไว้วางใจใช้บริการของเรา 
-              ระบบได้รับคำสั่งจองของท่านเรียบร้อยแล้ว
+              ขอบพระคุณที่ไว้วางใจใช้บริการของเรา ระบบได้รับคำสั่งจองของท่านเรียบร้อยแล้ว
               และอยู่ระหว่างการตรวจสอบโดยเจ้าหน้าที่
             </Text>
           </Section>
 
-          <Hr style={{
-          border: 'none',
-          borderTop: '1px solid #e5e7eb',
-          margin: '24px 0',
-        }} />
+          <Hr
+            style={{
+              border: "none",
+              borderTop: "1px solid #e5e7eb",
+              margin: "24px 0",
+            }}
+          />
 
           {/* Order Summary */}
           <Section style={section}>
             <Heading style={h2}>รายการสินค้าที่จอง</Heading>
-            
+
             {data.orderItems.map((item, index) => (
               <div key={index} style={itemContainer}>
                 {/* Main Product */}
                 <Row>
-                  <Column style={{ width: '80px' }}>
+                  <Column style={{ width: "80px" }}>
                     {item.productImage ? (
                       <Img
                         src={item.productImage}
@@ -88,7 +89,7 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
                       <div style={noImage}>-</div>
                     )}
                   </Column>
-                  <Column style={{ paddingLeft: '16px' }}>
+                  <Column style={{ paddingLeft: "16px" }}>
                     <Text style={productName}>{item.productName}</Text>
                     <Text style={quantityText}>
                       จำนวน: <strong>{item.mainQuantity}</strong> หน่วย
@@ -107,7 +108,7 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
                     <Text style={pairedTitle}>สินค้าที่ใช้ร่วมกัน:</Text>
                     {item.pairedProducts.map((paired, pIndex) => (
                       <Row key={pIndex} style={pairedItemRow}>
-                        <Column style={{ width: '44px' }}>
+                        <Column style={{ width: "44px" }}>
                           {paired.image ? (
                             <Img
                               src={paired.image}
@@ -118,7 +119,9 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
                             <div style={pairedNoImage}>-</div>
                           )}
                         </Column>
-                        <Column style={{ paddingLeft: '10px', verticalAlign: 'middle' as const }}>
+                        <Column
+                          style={{ paddingLeft: "10px", verticalAlign: "middle" as const }}
+                        >
                           <Text style={pairedItemName}>{paired.name}</Text>
                           <Text style={pairedItemQty}>{paired.quantity} หน่วย</Text>
                         </Column>
@@ -150,11 +153,13 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
                 </Column>
               </Row>
             )}
-           <Hr style={{
-            border: 'none',
-             borderTop: '1px solid #e5e7eb',
-            margin: '8px 0px',
-            }} />
+            <Hr
+              style={{
+                border: "none",
+                borderTop: "1px solid #e5e7eb",
+                margin: "8px 0px",
+              }}
+            />
             <Row>
               <Column>
                 <Text style={totalLabel}>จำนวนรวม:</Text>
@@ -164,8 +169,6 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
               </Column>
             </Row>
           </Section>
-
-          
 
           {/* Customer Info */}
           <Section style={section}>
@@ -189,11 +192,13 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
           {/* Shipping Address */}
           {data.shippingAddress && (
             <>
-              <Hr style={{
-            border: 'none',
-            borderTop: '1px solid #e5e7eb',
-            margin: '24px 0',
-           }} />
+              <Hr
+                style={{
+                  border: "none",
+                  borderTop: "1px solid #e5e7eb",
+                  margin: "24px 0",
+                }}
+              />
               <Section style={section}>
                 <Heading style={h2}>ที่อยู่สำหรับจัดส่ง</Heading>
                 {data.shippingResidenceType && (
@@ -210,8 +215,7 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
                 )}
                 {data.shippingProvince && (
                   <Text style={infoText}>
-                    {data.shippingProvince}{' '}
-                    {data.shippingPostalCode && data.shippingPostalCode}
+                    {data.shippingProvince} {data.shippingPostalCode && data.shippingPostalCode}
                   </Text>
                 )}
               </Section>
@@ -229,11 +233,13 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
             </>
           )}
 
-        <Hr style={{
-          border: 'none',
-          borderTop: '1px solid #e5e7eb',
-          margin: '24px 0',
-        }} />
+          <Hr
+            style={{
+              border: "none",
+              borderTop: "1px solid #e5e7eb",
+              margin: "24px 0",
+            }}
+          />
 
           {/* Next Steps */}
           <Section style={section}>
@@ -245,8 +251,7 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
               <strong>2.</strong> เจ้าหน้าที่จะติดต่อกลับ เพื่อแจ้งรายละเอียดให้ท่านทราบ
             </Text>
             <Text style={stepText}>
-              <strong>3.</strong> ท่านสามารถตรวจสอบสถานะคำสั่งจองได้ตลอดเวลา
-              ผ่านระบบออนไลน์
+              <strong>3.</strong> ท่านสามารถตรวจสอบสถานะคำสั่งจองได้ตลอดเวลา ผ่านระบบออนไลน์
             </Text>
           </Section>
 
@@ -258,7 +263,7 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
           </Section>
 
           {/* Footer */}
-          
+
           <Section style={footer}>
             <Text style={footerText}>
               <strong>ติดต่อสอบถาม</strong>
@@ -267,9 +272,7 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
               <br />
               เวลาทำการ: จันทร์-เสาร์ เวลา 08:30-17:30 น.
             </Text>
-            <Text style={footerText}>
-              อีเมลฉบับนี้ส่งอัตโนมัติจากระบบ กรุณาอย่าตอบกลับ
-            </Text>
+            <Text style={footerText}>อีเมลฉบับนี้ส่งอัตโนมัติจากระบบ กรุณาอย่าตอบกลับ</Text>
             <Text style={footerCopyright}>
               © {new Date().getFullYear()} NineBooking. All rights reserved.
             </Text>
@@ -285,281 +288,281 @@ export function OrderConfirmationEmail({ data }: OrderConfirmationEmailProps) {
 // ================================
 
 const main = {
-  backgroundColor: '#f6f9fc',
+  backgroundColor: "#f6f9fc",
   fontFamily:
     '"Sarabun", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
 }
 
 const container = {
-  backgroundColor: '#ffffff',
-  margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
-  maxWidth: '600px',
-  border: '1px solid #e5e7eb',
-  borderRadius: '8px',
+  backgroundColor: "#ffffff",
+  margin: "0 auto",
+  padding: "20px 0 48px",
+  marginBottom: "64px",
+  maxWidth: "600px",
+  border: "1px solid #e5e7eb",
+  borderRadius: "8px",
 }
 
 const header = {
-  padding: '32px 32px 24px',
-  backgroundColor: '#f97316',
-  borderRadius: '8px 8px 0 0',
-  textAlign: 'center' as const,
+  padding: "32px 32px 24px",
+  backgroundColor: "#f97316",
+  borderRadius: "8px 8px 0 0",
+  textAlign: "center" as const,
 }
 
 const h1 = {
-  color: '#ffffff',
-  fontSize: '28px',
-  fontWeight: '600',
-  margin: '0 0 12px',
-  letterSpacing: '-0.5px',
+  color: "#ffffff",
+  fontSize: "28px",
+  fontWeight: "600",
+  margin: "0 0 12px",
+  letterSpacing: "-0.5px",
 }
 
 const orderNumber = {
-  color: '#ffffff',
-  fontSize: '16px',
-  fontWeight: '500',
-  margin: '0',
+  color: "#ffffff",
+  fontSize: "16px",
+  fontWeight: "500",
+  margin: "0",
 }
 
 const dateText = {
-  color: '#fed7aa',
-  fontSize: '13px',
-  margin: '8px 0 0',
-  fontWeight: '400',
+  color: "#fed7aa",
+  fontSize: "13px",
+  margin: "8px 0 0",
+  fontWeight: "400",
 }
 
 const section = {
-  padding: '0 32px',
-  marginTop: '24px',
+  padding: "0 32px",
+  marginTop: "24px",
 }
 
 const h2 = {
-  color: '#1f2937',
-  fontSize: '18px',
-  fontWeight: '600',
-  margin: '0 0 16px',
-  borderBottom: '2px solid #f97316',
-  paddingBottom: '8px',
+  color: "#1f2937",
+  fontSize: "18px",
+  fontWeight: "600",
+  margin: "0 0 16px",
+  borderBottom: "2px solid #f97316",
+  paddingBottom: "8px",
 }
 
 const text = {
-  color: '#374151',
-  fontSize: '15px',
-  lineHeight: '24px',
-  margin: '0 0 12px',
+  color: "#374151",
+  fontSize: "15px",
+  lineHeight: "24px",
+  margin: "0 0 12px",
 }
 
 const stepText = {
-  color: '#374151',
-  fontSize: '15px',
-  lineHeight: '24px',
-  margin: '0 0 12px',
-  paddingLeft: '8px',
+  color: "#374151",
+  fontSize: "15px",
+  lineHeight: "24px",
+  margin: "0 0 12px",
+  paddingLeft: "8px",
 }
 
 const itemContainer = {
-  padding: '16px',
-  backgroundColor: '#fafafa',
-  borderRadius: '6px',
-  marginBottom: '12px',
-  border: '1px solid #e5e7eb',
+  padding: "16px",
+  backgroundColor: "#fafafa",
+  borderRadius: "6px",
+  marginBottom: "12px",
+  border: "1px solid #e5e7eb",
 }
 
 const productImage = {
-  width: '80px',
-  height: '80px',
-  objectFit: 'cover' as const,
-  borderRadius: '6px',
-  border: '1px solid #e5e7eb',
+  width: "80px",
+  height: "80px",
+  objectFit: "cover" as const,
+  borderRadius: "6px",
+  border: "1px solid #e5e7eb",
 }
 
 const noImage = {
-  width: '80px',
-  height: '80px',
-  backgroundColor: '#f3f4f6',
-  borderRadius: '6px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '14px',
-  color: '#9ca3af',
-  border: '1px solid #e5e7eb',
+  width: "80px",
+  height: "80px",
+  backgroundColor: "#f3f4f6",
+  borderRadius: "6px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "14px",
+  color: "#9ca3af",
+  border: "1px solid #e5e7eb",
 }
 
 const productName = {
-  color: '#111827',
-  fontSize: '15px',
-  fontWeight: '600',
-  margin: '0 0 6px',
+  color: "#111827",
+  fontSize: "15px",
+  fontWeight: "600",
+  margin: "0 0 6px",
 }
 
 const quantityText = {
-  color: '#6b7280',
-  fontSize: '14px',
-  margin: '0 0 4px',
+  color: "#6b7280",
+  fontSize: "14px",
+  margin: "0 0 4px",
 }
 
 const pairedBadge = {
-  color: '#d97706',
-  fontSize: '12px',
-  fontWeight: '500',
-  margin: '4px 0 0',
-  backgroundColor: '#fef3c7',
-  padding: '2px 8px',
-  borderRadius: '4px',
-  display: 'inline-block',
+  color: "#d97706",
+  fontSize: "12px",
+  fontWeight: "500",
+  margin: "4px 0 0",
+  backgroundColor: "#fef3c7",
+  padding: "2px 8px",
+  borderRadius: "4px",
+  display: "inline-block",
 }
 
 const pairedContainer = {
-  marginTop: '12px',
-  paddingTop: '12px',
-  borderTop: '1px solid #e5e7eb',
+  marginTop: "12px",
+  paddingTop: "12px",
+  borderTop: "1px solid #e5e7eb",
 }
 
 const pairedTitle = {
-  color: '#6b7280',
-  fontSize: '13px',
-  fontWeight: '600',
-  margin: '0 0 8px',
+  color: "#6b7280",
+  fontSize: "13px",
+  fontWeight: "600",
+  margin: "0 0 8px",
 }
 
 const pairedItemRow = {
-  marginBottom: '8px',
-  backgroundColor: '#f9fafb',
-  borderRadius: '4px',
-  padding: '6px',
+  marginBottom: "8px",
+  backgroundColor: "#f9fafb",
+  borderRadius: "4px",
+  padding: "6px",
 }
 
 const pairedProductImage = {
-  width: '44px',
-  height: '44px',
-  objectFit: 'cover' as const,
-  borderRadius: '4px',
-  border: '1px solid #e5e7eb',
+  width: "44px",
+  height: "44px",
+  objectFit: "cover" as const,
+  borderRadius: "4px",
+  border: "1px solid #e5e7eb",
 }
 
 const pairedNoImage = {
-  width: '44px',
-  height: '44px',
-  backgroundColor: '#e5e7eb',
-  borderRadius: '4px',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  fontSize: '11px',
-  color: '#9ca3af',
+  width: "44px",
+  height: "44px",
+  backgroundColor: "#e5e7eb",
+  borderRadius: "4px",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "11px",
+  color: "#9ca3af",
 }
 
 const pairedItemName = {
-  color: '#374151',
-  fontSize: '13px',
-  fontWeight: '500',
-  margin: '0 0 2px',
+  color: "#374151",
+  fontSize: "13px",
+  fontWeight: "500",
+  margin: "0 0 2px",
 }
 
 const pairedItemQty = {
-  color: '#6b7280',
-  fontSize: '12px',
-  margin: '0',
+  color: "#6b7280",
+  fontSize: "12px",
+  margin: "0",
 }
 
 const summaryBox = {
-  padding: '20px 32px',
-  backgroundColor: '#fff7ed',
-  borderRadius: '6px',
-  marginTop: '24px',
-  border: '1px solid #fed7aa',
+  padding: "20px 32px",
+  backgroundColor: "#fff7ed",
+  borderRadius: "6px",
+  marginTop: "24px",
+  border: "1px solid #fed7aa",
 }
 
 const summaryLabel = {
-  color: '#78350f',
-  fontSize: '14px',
-  margin: '6px 0',
-  fontWeight: '500',
+  color: "#78350f",
+  fontSize: "14px",
+  margin: "6px 0",
+  fontWeight: "500",
 }
 
 const summaryValue = {
-  color: '#78350f',
-  fontSize: '14px',
-  fontWeight: '600',
-  margin: '6px 0',
+  color: "#78350f",
+  fontSize: "14px",
+  fontWeight: "600",
+  margin: "6px 0",
 }
 
 const totalLabel = {
-  color: '#78350f',
-  fontSize: '16px',
-  fontWeight: '600',
-  margin: '8px 0',
+  color: "#78350f",
+  fontSize: "16px",
+  fontWeight: "600",
+  margin: "8px 0",
 }
 
 const totalValue = {
-  color: '#78350f',
-  fontSize: '20px',
-  fontWeight: 'bold',
-  margin: '8px 0',
+  color: "#78350f",
+  fontSize: "20px",
+  fontWeight: "bold",
+  margin: "8px 0",
 }
 
 const infoText = {
-  color: '#374151',
-  fontSize: '14px',
-  lineHeight: '22px',
-  margin: '8px 0',
+  color: "#374151",
+  fontSize: "14px",
+  lineHeight: "22px",
+  margin: "8px 0",
 }
 
 const noteText = {
-  color: '#6b7280',
-  fontSize: '14px',
-  lineHeight: '22px',
-  padding: '16px',
-  backgroundColor: '#f9fafb',
-  borderRadius: '6px',
-  borderLeft: '3px solid #f97316',
-  margin: '0',
+  color: "#6b7280",
+  fontSize: "14px",
+  lineHeight: "22px",
+  padding: "16px",
+  backgroundColor: "#f9fafb",
+  borderRadius: "6px",
+  borderLeft: "3px solid #f97316",
+  margin: "0",
 }
 
 const buttonContainer = {
-  textAlign: 'center' as const,
-  marginTop: '32px',
-  padding: '0 32px',
+  textAlign: "center" as const,
+  marginTop: "32px",
+  padding: "0 32px",
 }
 
 const button = {
-  backgroundColor: '#f97316',
-  borderRadius: '6px',
-  color: '#ffffff',
-  fontSize: '15px',
-  fontWeight: '600',
-  textDecoration: 'none',
-  textAlign: 'center' as const,
-  display: 'inline-block',
-  padding: '14px 40px',
-  boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+  backgroundColor: "#f97316",
+  borderRadius: "6px",
+  color: "#ffffff",
+  fontSize: "15px",
+  fontWeight: "600",
+  textDecoration: "none",
+  textAlign: "center" as const,
+  display: "inline-block",
+  padding: "14px 40px",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
 }
 
 const hr = {
-  borderColor: '#e5e7eb',
-  margin: '24px 32px',
+  borderColor: "#e5e7eb",
+  margin: "24px 32px",
 }
 
 const footer = {
-  padding: '24px 32px 0',
-  textAlign: 'center' as const,
-  borderTop: '1px solid #e5e7eb',
-  marginTop: '32px',
+  padding: "24px 32px 0",
+  textAlign: "center" as const,
+  borderTop: "1px solid #e5e7eb",
+  marginTop: "32px",
 }
 
 const footerText = {
-  color: '#6b7280',
-  fontSize: '13px',
-  lineHeight: '20px',
-  margin: '0 0 12px',
+  color: "#6b7280",
+  fontSize: "13px",
+  lineHeight: "20px",
+  margin: "0 0 12px",
 }
 
 const footerCopyright = {
-  color: '#9ca3af',
-  fontSize: '12px',
-  margin: '16px 0 0',
+  color: "#9ca3af",
+  fontSize: "12px",
+  margin: "16px 0 0",
 }
 
 export default OrderConfirmationEmail

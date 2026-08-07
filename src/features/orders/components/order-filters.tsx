@@ -55,21 +55,24 @@ export function OrderFilters({
         >
           ทั้งหมด
         </button>
-        {(Object.entries(STATUS_CONFIG) as [OrderStatusKey, typeof STATUS_CONFIG[OrderStatusKey]][]).map(
-          ([key, config]) => (
-            <button
-              key={key}
-              onClick={() => onFilterChange(key)}
-              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                statusFilter === key
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-foreground hover:bg-secondary"
-              }`}
-            >
-              {config.label}
-            </button>
-          )
-        )}
+        {(
+          Object.entries(STATUS_CONFIG) as [
+            OrderStatusKey,
+            (typeof STATUS_CONFIG)[OrderStatusKey],
+          ][]
+        ).map(([key, config]) => (
+          <button
+            key={key}
+            onClick={() => onFilterChange(key)}
+            className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              statusFilter === key
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-foreground hover:bg-secondary"
+            }`}
+          >
+            {config.label}
+          </button>
+        ))}
       </div>
     </div>
   )

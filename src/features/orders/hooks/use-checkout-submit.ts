@@ -46,10 +46,7 @@ export function useCheckoutSubmit({ onRefreshCart }: UseCheckoutSubmitProps) {
   }
 
   // ส่งคำสั่งจอง
-  const handleSubmit = async (
-    formData: CheckoutFormData,
-    cartItemIds: string[]
-  ) => {
+  const handleSubmit = async (formData: CheckoutFormData, cartItemIds: string[]) => {
     // Validate
     if (!validateForm(formData, cartItemIds)) {
       return

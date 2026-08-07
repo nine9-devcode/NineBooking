@@ -76,7 +76,12 @@ interface AdminSidebarProps {
   onMobileClose: () => void
 }
 
-export function AdminSidebar({ collapsed, onCollapse, mobileOpen, onMobileClose }: AdminSidebarProps) {
+export function AdminSidebar({
+  collapsed,
+  onCollapse,
+  mobileOpen,
+  onMobileClose,
+}: AdminSidebarProps) {
   const pathname = usePathname()
   const { ordersUnreadCount, issuesUnreadCount } = useAdminNotifications()
 
@@ -117,7 +122,9 @@ export function AdminSidebar({ collapsed, onCollapse, mobileOpen, onMobileClose 
 
       {/* Mobile: Logo area */}
       <div className="md:hidden flex items-center gap-3 px-4 pt-4 pb-2 border-b border-border">
-        <span className="text-base font-bold text-foreground font-heading">NineBooking Admin</span>
+        <span className="text-base font-bold text-foreground font-heading">
+          NineBooking Admin
+        </span>
       </div>
 
       {/* Desktop: Toggle Collapse Button */}
@@ -126,20 +133,17 @@ export function AdminSidebar({ collapsed, onCollapse, mobileOpen, onMobileClose 
         className="hidden md:flex absolute -right-3 top-6 bg-card hover:bg-secondary text-muted-foreground rounded-full p-1 border border-border transition-colors"
         aria-label={collapsed ? "ขยาย Sidebar" : "ย่อ Sidebar"}
       >
-        {collapsed ? (
-          <ChevronRight className="w-4 h-4" />
-        ) : (
-          <ChevronLeft className="w-4 h-4" />
-        )}
+        {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
       </button>
 
       {/* Menu Items */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-2 mt-4">
         {menuItems.map((item) => {
           const Icon = item.icon
-          const isActive = item.href === "/admin"
-            ? pathname === "/admin"
-            : pathname === item.href || pathname.startsWith(item.href + "/")
+          const isActive =
+            item.href === "/admin"
+              ? pathname === "/admin"
+              : pathname === item.href || pathname.startsWith(item.href + "/")
 
           const badgeCount = getBadgeCount(item.href)
 

@@ -15,22 +15,18 @@ import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { User, MapPin, Loader2, Save } from "lucide-react"
-import {
-  provinces,
-  districts,
-  subDistricts,
-} from "@/lib/thailand-addresses"
+import { provinces, districts, subDistricts } from "@/lib/thailand-addresses"
 
 import { editUserSchema, EditUserFormValues, EditUserModalProps } from "./schema"
 import { PersonalInfoTab } from "./personal-info-tab"
 import { AddressTab } from "./address-tab"
 
-export function EditUserModal({ 
-  isOpen, 
-  user, 
-  onClose, 
-  onSave, 
-  isLoading 
+export function EditUserModal({
+  isOpen,
+  user,
+  onClose,
+  onSave,
+  isLoading,
 }: EditUserModalProps) {
   const form = useForm<EditUserFormValues>({
     resolver: zodResolver(editUserSchema),
@@ -63,20 +59,20 @@ export function EditUserModal({
       let subDistrictCode = ""
 
       if (user.province) {
-        const p = provinces.find(p => p.nameTh === user.province)
+        const p = provinces.find((p) => p.nameTh === user.province)
         if (p) {
           provinceCode = p.code.toString()
 
           if (user.district) {
             const d = districts.find(
-              d => d.provinceCode === p.code && d.nameTh === user.district
+              (d) => d.provinceCode === p.code && d.nameTh === user.district
             )
             if (d) {
               districtCode = d.code.toString()
 
               if (user.subDistrict) {
                 const sd = subDistricts.find(
-                  sd => sd.districtCode === d.code && sd.nameTh === user.subDistrict
+                  (sd) => sd.districtCode === d.code && sd.nameTh === user.subDistrict
                 )
                 if (sd) {
                   subDistrictCode = sd.code.toString()
@@ -119,11 +115,11 @@ export function EditUserModal({
     if (data.residenceType === "other") {
       form.setError("residenceType", {
         type: "manual",
-        message: "กรุณาระบุประเภทที่อยู่อาศัย"
+        message: "กรุณาระบุประเภทที่อยู่อาศัย",
       })
       return
     }
-    
+
     const { provinceCode, districtCode, subDistrictCode, ...saveData } = data
     onSave(saveData as EditUserFormValues)
   }
@@ -139,18 +135,21 @@ export function EditUserModal({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSave)} className="flex flex-col flex-1 overflow-hidden">
+          <form
+            onSubmit={form.handleSubmit(handleSave)}
+            className="flex flex-col flex-1 overflow-hidden"
+          >
             <Tabs defaultValue="personal" className="flex-1 flex flex-col overflow-hidden">
               <TabsList className="grid w-full grid-cols-2 bg-card flex-shrink-0">
-                <TabsTrigger 
-                  value="personal" 
+                <TabsTrigger
+                  value="personal"
                   className="text-muted-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex items-center gap-2"
                 >
                   <User className="w-4 h-4" />
                   <span className="hidden sm:inline">ข้อมูลส่วนตัว</span>
                   <span className="sm:hidden">ส่วนตัว</span>
                 </TabsTrigger>
-                <TabsTrigger 
+                <TabsTrigger
                   value="address"
                   className="text-muted-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex items-center gap-2"
                 >

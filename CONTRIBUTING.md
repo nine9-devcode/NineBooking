@@ -11,10 +11,10 @@ npm run dev
 
 บัญชีสำหรับทดลอง (สร้างโดย `prisma/seed.ts`)
 
-| บทบาท | อีเมล | รหัสผ่าน | เข้าที่ |
-|---|---|---|---|
-| ผู้ดูแลระบบ | `admin@ninebooking.dev` | `Admin@1234` | `/admin/login` |
-| ผู้ใช้ทั่วไป | `demo@ninebooking.dev` | `Demo@1234` | `/login` |
+| บทบาท        | อีเมล                   | รหัสผ่าน     | เข้าที่        |
+| ------------ | ----------------------- | ------------ | -------------- |
+| ผู้ดูแลระบบ  | `admin@ninebooking.dev` | `Admin@1234` | `/admin/login` |
+| ผู้ใช้ทั่วไป | `demo@ninebooking.dev`  | `Demo@1234`  | `/login`       |
 
 ## ก่อนเปิด PR
 

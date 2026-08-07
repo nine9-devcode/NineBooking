@@ -1,10 +1,10 @@
 // ไฟล์: app/products/[slug]/page.tsx
 // Server Component พร้อม Dynamic SEO Metadata
 
-import { Metadata } from 'next'
-import { prisma } from '@/lib/db'
-import { generateProductMetadata } from '@/lib/seo'
-import { ProductDetail } from '@/features/products/components/product-detail'
+import { Metadata } from "next"
+import { prisma } from "@/lib/db"
+import { generateProductMetadata } from "@/lib/seo"
+import { ProductDetail } from "@/features/products/components/product-detail"
 
 // ===== Types =====
 interface PageProps {
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   try {
     // ดึงข้อมูลสินค้าสำหรับ SEO
     const product = await prisma.product.findUnique({
-      where: { 
+      where: {
         slug,
         isActive: true,
       },
@@ -38,19 +38,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     // ถ้าไม่พบสินค้า ใช้ default metadata
     if (!product) {
       return {
-        title: 'ไม่พบสินค้า',
-        description: 'สินค้าที่คุณค้นหาไม่มีอยู่ในระบบ',
+        title: "ไม่พบสินค้า",
+        description: "สินค้าที่คุณค้นหาไม่มีอยู่ในระบบ",
       }
     }
 
     // Generate metadata จากข้อมูลสินค้า
     return generateProductMetadata(product, slug)
-
   } catch (error) {
-    console.error('Error generating metadata:', error)
+    console.error("Error generating metadata:", error)
     return {
-      title: 'สินค้า',
-      description: 'รายละเอียดสินค้า',
+      title: "สินค้า",
+      description: "รายละเอียดสินค้า",
     }
   }
 }
@@ -62,4 +61,3 @@ export default async function ProductPage({ params }: PageProps) {
   // ส่ง slug ไปให้ Client Component
   return <ProductDetail slug={slug} />
 }
-

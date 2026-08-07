@@ -64,8 +64,18 @@ export function formatDate(date: string | Date, includeTime = false): string {
 export function formatThaiDate(date: Date | string): string {
   const d = new Date(date)
   const thaiMonths = [
-    'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-    'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม",
   ]
   const day = d.getDate()
   const month = thaiMonths[d.getMonth()]
@@ -76,23 +86,23 @@ export function formatThaiDate(date: Date | string): string {
 // Number to Thai Text
 export function numberToThaiText(num: number): string {
   if (num === 0) return "ศูนย์บาทถ้วน"
-  
+
   const digits = ["", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"]
   const positions = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"]
-  
+
   const baht = Math.floor(num)
   const satang = Math.round((num - baht) * 100)
-  
+
   let result = ""
-  
+
   if (baht > 0) {
     let remaining = baht
     let position = 0
-    
+
     while (remaining > 0) {
       const digit = remaining % 10
       remaining = Math.floor(remaining / 10)
-      
+
       if (digit > 0) {
         let digitText = digits[digit]
         if (position === 1 && digit === 2) digitText = "ยี่"
@@ -100,36 +110,36 @@ export function numberToThaiText(num: number): string {
         if (position === 0 && digit === 1 && baht > 10) digitText = "เอ็ด"
         result = digitText + positions[position] + result
       }
-      
+
       position++
       if (position === 7) {
         result = "ล้าน" + result
         position = 1
       }
     }
-    
+
     result += "บาท"
   }
-  
+
   if (satang > 0) {
     const satangTens = Math.floor(satang / 10)
     const satangUnits = satang % 10
-    
+
     if (satangTens > 0) {
       if (satangTens === 2) result += "ยี่สิบ"
       else if (satangTens === 1) result += "สิบ"
       else result += digits[satangTens] + "สิบ"
     }
-    
+
     if (satangUnits > 0) {
       if (satangUnits === 1 && satangTens > 0) result += "เอ็ด"
       else result += digits[satangUnits]
     }
-    
+
     result += "สตางค์"
   } else if (baht > 0) {
     result += "ถ้วน"
   }
-  
+
   return result
 }

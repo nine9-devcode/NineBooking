@@ -1,11 +1,6 @@
 import type { Metadata } from "next"
 
-import {
-  LegalList,
-  LegalNote,
-  LegalPage,
-  LegalSection,
-} from "@/components/legal/legal-page"
+import { LegalList, LegalNote, LegalPage, LegalSection } from "@/components/legal/legal-page"
 import { siteConfig } from "@/config/site"
 
 export const metadata: Metadata = {
@@ -23,8 +18,8 @@ export default function TermsPage() {
     >
       <LegalNote>
         <strong>หมายเหตุ:</strong> {siteConfig.name} เป็นโปรเจกตัวอย่างแบบโอเพนซอร์ส
-        เผยแพร่ภายใต้สัญญาอนุญาต MIT เพื่อการเรียนรู้และสาธิตความสามารถของระบบ
-        ข้อมูลสินค้า ราคา และคำสั่งจองทั้งหมดเป็นข้อมูลตัวอย่าง ไม่มีการซื้อขายจริง
+        เผยแพร่ภายใต้สัญญาอนุญาต MIT เพื่อการเรียนรู้และสาธิตความสามารถของระบบ ข้อมูลสินค้า ราคา
+        และคำสั่งจองทั้งหมดเป็นข้อมูลตัวอย่าง ไม่มีการซื้อขายจริง
       </LegalNote>
 
       <LegalSection heading="1. คำนิยาม">
@@ -41,8 +36,8 @@ export default function TermsPage() {
               <strong>&quot;สินค้า&quot;</strong> หมายถึง สินค้าและบริการที่แสดงอยู่ในระบบ
             </>,
             <>
-              <strong>&quot;ใบจอง&quot;</strong> หมายถึง
-              รายการที่ผู้ใช้ส่งเข้ามาผ่านระบบ ยังไม่ถือเป็นการซื้อขายที่สมบูรณ์
+              <strong>&quot;ใบจอง&quot;</strong> หมายถึง รายการที่ผู้ใช้ส่งเข้ามาผ่านระบบ
+              ยังไม่ถือเป็นการซื้อขายที่สมบูรณ์
             </>,
           ]}
         />
@@ -83,8 +78,8 @@ export default function TermsPage() {
 
       <LegalSection heading="5. ทรัพย์สินทางปัญญา">
         <p>
-          ซอร์สโค้ดของโปรเจกนี้เผยแพร่ภายใต้สัญญาอนุญาต MIT
-          สามารถนำไปใช้ ดัดแปลง และเผยแพร่ต่อได้โดยคงประกาศลิขสิทธิ์ไว้
+          ซอร์สโค้ดของโปรเจกนี้เผยแพร่ภายใต้สัญญาอนุญาต MIT สามารถนำไปใช้ ดัดแปลง
+          และเผยแพร่ต่อได้โดยคงประกาศลิขสิทธิ์ไว้
         </p>
         <p>
           ชื่อและเครื่องหมายการค้าของบุคคลที่สามที่อาจปรากฏในข้อมูลตัวอย่าง

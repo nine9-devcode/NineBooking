@@ -30,9 +30,7 @@ export function AuthShell({
           <Link href="/" aria-label="กลับหน้าแรก" className="text-foreground">
             <Logo className="text-foreground" />
           </Link>
-          <CardDescription className="text-center text-sm">
-            {description}
-          </CardDescription>
+          <CardDescription className="text-center text-sm">{description}</CardDescription>
         </CardHeader>
 
         <CardContent>{children}</CardContent>

@@ -24,10 +24,7 @@ export async function GET(
     })
 
     if (!product) {
-      return NextResponse.json(
-        { error: "ไม่พบสินค้า" },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: "ไม่พบสินค้า" }, { status: 404 })
     }
 
     // ========================================
@@ -36,10 +33,7 @@ export async function GET(
     // ========================================
     const exclusivePairings = await prisma.exclusivePairing.findMany({
       where: {
-        OR: [
-          { productAId: product.id },
-          { productBId: product.id },
-        ],
+        OR: [{ productAId: product.id }, { productBId: product.id }],
       },
       include: {
         productA: {
@@ -84,18 +78,14 @@ export async function GET(
       // ดึงเฉพาะสินค้าคู่ (ไม่เอาตัวเอง) และเอาเฉพาะที่ยัง active อยู่
       const exclusiveProducts = exclusivePairings
         .map((pairing) =>
-          pairing.productAId === product.id
-            ? pairing.productB
-            : pairing.productA
+          pairing.productAId === product.id ? pairing.productB : pairing.productA
         )
         .filter((p) => p.isActive)
 
       // กรณี 1: ปิด switch → ส่งเฉพาะสินค้าที่จับคู่ตรงเท่านั้น
       if (!product.showCategoryPairings) {
         const exclusiveCategories = [
-          ...new Map(
-            exclusiveProducts.map((p) => [p.category.id, p.category])
-          ).values(),
+          ...new Map(exclusiveProducts.map((p) => [p.category.id, p.category])).values(),
         ]
         return NextResponse.json({
           isExclusive: true,
@@ -108,10 +98,7 @@ export async function GET(
       // หาหมวดที่จับคู่กับหมวดของสินค้านี้
       const categoryPairings = await prisma.categoryPairing.findMany({
         where: {
-          OR: [
-            { categoryAId: product.categoryId },
-            { categoryBId: product.categoryId },
-          ],
+          OR: [{ categoryAId: product.categoryId }, { categoryBId: product.categoryId }],
         },
         select: {
           categoryAId: true,
@@ -134,10 +121,7 @@ export async function GET(
             where: {
               categoryId: cat.id,
               isActive: true,
-              AND: [
-                { exclusivePairingsA: { none: {} } },
-                { exclusivePairingsB: { none: {} } },
-              ],
+              AND: [{ exclusivePairingsA: { none: {} } }, { exclusivePairingsB: { none: {} } }],
             },
             select: {
               id: true,
@@ -185,10 +169,7 @@ export async function GET(
     // หาหมวดที่จับคู่กับหมวดของสินค้านี้
     const categoryPairings = await prisma.categoryPairing.findMany({
       where: {
-        OR: [
-          { categoryAId: product.categoryId },
-          { categoryBId: product.categoryId },
-        ],
+        OR: [{ categoryAId: product.categoryId }, { categoryBId: product.categoryId }],
       },
       select: {
         categoryAId: true,
@@ -221,9 +202,7 @@ export async function GET(
 
     // แปลงให้ได้หมวดฝั่งตรงข้าม (ไม่เอาหมวดตัวเอง)
     const pairedCategories = categoryPairings.map((pairing) =>
-      pairing.categoryAId === product.categoryId
-        ? pairing.categoryB
-        : pairing.categoryA
+      pairing.categoryAId === product.categoryId ? pairing.categoryB : pairing.categoryA
     )
 
     // ดึงสินค้าทั้งหมดที่ active ในแต่ละหมวดที่จับคู่
@@ -263,9 +242,6 @@ export async function GET(
     })
   } catch (error) {
     console.error("Error fetching paired products:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }

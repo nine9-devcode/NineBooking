@@ -39,9 +39,10 @@ function CheckoutContent() {
 
   // Custom Hooks
   const { formData, handleChange, handleSelectChange } = useCheckoutForm(session)
-  const { handleSubmit, isLoading, error, setError, fieldErrors, setFieldErrors } = useCheckoutSubmit({
-    onRefreshCart: refreshCart,
-  })
+  const { handleSubmit, isLoading, error, setError, fieldErrors, setFieldErrors } =
+    useCheckoutSubmit({
+      onRefreshCart: refreshCart,
+    })
 
   // Wrapped onChange ที่ลบ field error เมื่อ user เริ่มแก้ไข
   const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -84,7 +85,7 @@ function CheckoutContent() {
   // ส่งฟอร์ม
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError("") 
+    setError("")
 
     const cartItemIds = selectedItems.map((item) => item.id)
     await handleSubmit(formData, cartItemIds)
@@ -205,14 +206,16 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={
-      <>
-        <Navbar currentPage="ยืนยันการจอง" />
-        <div className="pt-16 min-h-screen bg-muted flex items-center justify-center">
-          <Loader2 className="w-10 h-10 text-primary animate-spin" />
-        </div>
-      </>
-    }>
+    <Suspense
+      fallback={
+        <>
+          <Navbar currentPage="ยืนยันการจอง" />
+          <div className="pt-16 min-h-screen bg-muted flex items-center justify-center">
+            <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          </div>
+        </>
+      }
+    >
       <CheckoutContent />
     </Suspense>
   )

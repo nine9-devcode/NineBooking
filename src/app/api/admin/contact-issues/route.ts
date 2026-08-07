@@ -120,12 +120,8 @@ export async function GET(request: NextRequest) {
         newToday,
       },
     })
-
   } catch (error) {
     console.error("Error fetching contact issues:", error)
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
   }
 }

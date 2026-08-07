@@ -6,9 +6,7 @@ import { forbidden, unauthorized } from "@/lib/api/response"
 
 export type SessionUser = Session["user"]
 
-type Guard =
-  | { ok: true; user: SessionUser }
-  | { ok: false; response: NextResponse }
+type Guard = { ok: true; user: SessionUser } | { ok: false; response: NextResponse }
 
 /**
  * ใช้แทนการเช็ค session ซ้ำๆ ในทุก route

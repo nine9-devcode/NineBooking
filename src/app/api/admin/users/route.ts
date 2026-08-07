@@ -28,8 +28,8 @@ export async function GET(request: NextRequest) {
     today.setHours(0, 0, 0, 0)
 
     const [
-      totalUsers, 
-      totalAdmins, 
+      totalUsers,
+      totalAdmins,
       newToday,
       completedProfiles,
       incompleteProfiles,
@@ -49,15 +49,15 @@ export async function GET(request: NextRequest) {
       prisma.user.count({
         where: {
           role: "user",
-          isProfileCompleted: true
-        }
+          isProfileCompleted: true,
+        },
       }),
       // นับ user ที่ยังกรอกโปรไฟล์ไม่ครบ
       prisma.user.count({
         where: {
           role: "user",
-          isProfileCompleted: false
-        }
+          isProfileCompleted: false,
+        },
       }),
       // นับตามประเภทสมาชิก (ลูกค้า, ผู้รับเหมา, ตัวแทน, อื่นๆ)
       prisma.user.count({ where: { memberType: "customer" } }),
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
 
     // สร้างเงื่อนไขค้นหา (ค้นจากชื่อ, อีเมล, ชื่อเล่น, เบอร์โทร, หมายเหตุ)
     const where: any = {}
-    
+
     if (search) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
@@ -172,17 +172,30 @@ export async function POST(request: NextRequest) {
     const { name, nickname, email, password, phone } = body
 
     // ตรวจสอบข้อมูลที่จำเป็น
-    if (!name || typeof name !== "string" || name.trim().length < 3 || name.trim().length > 40) {
+    if (
+      !name ||
+      typeof name !== "string" ||
+      name.trim().length < 3 ||
+      name.trim().length > 40
+    ) {
       return NextResponse.json({ error: "ชื่อต้องมี 3-40 ตัวอักษร" }, { status: 400 })
     }
     if (!email || typeof email !== "string") {
       return NextResponse.json({ error: "กรุณากรอกอีเมล" }, { status: 400 })
     }
-    if (!password || typeof password !== "string" || password.length < 6 || password.length > 50) {
+    if (
+      !password ||
+      typeof password !== "string" ||
+      password.length < 6 ||
+      password.length > 50
+    ) {
       return NextResponse.json({ error: "รหัสผ่านต้องมี 6-50 ตัวอักษร" }, { status: 400 })
     }
     if (!phone || !/^0[689]\d{8}$/.test(phone)) {
-      return NextResponse.json({ error: "เบอร์โทรไม่ถูกต้อง (ต้องขึ้นต้นด้วย 06, 08, 09 และมี 10 หลัก)" }, { status: 400 })
+      return NextResponse.json(
+        { error: "เบอร์โทรไม่ถูกต้อง (ต้องขึ้นต้นด้วย 06, 08, 09 และมี 10 หลัก)" },
+        { status: 400 }
+      )
     }
 
     const normalizedEmail = email.toLowerCase().trim()
@@ -206,7 +219,13 @@ export async function POST(request: NextRequest) {
         isProfileCompleted: true,
       },
       select: {
-        id: true, name: true, nickname: true, email: true, phone: true, role: true, createdAt: true,
+        id: true,
+        name: true,
+        nickname: true,
+        email: true,
+        phone: true,
+        role: true,
+        createdAt: true,
       },
     })
 
@@ -278,7 +297,7 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get("id")
 
     if (!id) return NextResponse.json({ error: "User ID is required" }, { status: 400 })
-    
+
     if (id === guard.user.id) {
       return NextResponse.json({ error: "คุณไม่สามารถลบบัญชีของตัวเองได้" }, { status: 400 })
     }

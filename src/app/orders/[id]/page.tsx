@@ -253,17 +253,12 @@ export default function OrderDetailPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {/* Header */}
           <div className="flex items-center gap-4 mb-6">
-            <Link
-              href="/orders"
-              className="p-2 rounded-lg hover:bg-muted transition-colors"
-            >
+            <Link href="/orders" className="p-2 rounded-lg hover:bg-muted transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold text-foreground">
-                  {order.orderNumber}
-                </h1>
+                <h1 className="text-2xl font-bold text-foreground">{order.orderNumber}</h1>
                 <button
                   onClick={handleCopy}
                   className="p-1 hover:bg-muted rounded transition-colors"
@@ -436,9 +431,7 @@ export default function OrderDetailPage() {
                     {formattedAddress && (
                       <div className="flex items-start gap-3">
                         <MapPin className="w-5 h-5 text-muted-foreground mt-0.5" />
-                        <p className="text-foreground leading-relaxed">
-                          {formattedAddress}
-                        </p>
+                        <p className="text-foreground leading-relaxed">{formattedAddress}</p>
                       </div>
                     )}
                   </div>
@@ -462,9 +455,7 @@ export default function OrderDetailPage() {
                       )}
                       <div className="w-2 h-2 mt-2 rounded-full bg-primary shrink-0" />
                       <div>
-                        <p className="text-sm font-medium text-foreground">
-                          สร้างใบจอง
-                        </p>
+                        <p className="text-sm font-medium text-foreground">สร้างใบจอง</p>
                         <p className="text-xs text-muted-foreground">
                           {new Date(order.createdAt).toLocaleDateString("th-TH", {
                             year: "numeric",
@@ -485,10 +476,10 @@ export default function OrderDetailPage() {
                             order.status === "CANCELLED"
                               ? "bg-destructive"
                               : order.status === "COMPLETED"
-                              ? "bg-success"
-                              : order.status === "CONFIRMED"
-                              ? "bg-info"
-                              : "bg-warning"
+                                ? "bg-success"
+                                : order.status === "CONFIRMED"
+                                  ? "bg-info"
+                                  : "bg-warning"
                           }`}
                         />
                         <div>
@@ -496,16 +487,13 @@ export default function OrderDetailPage() {
                             {statusConfig.label}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {new Date(order.updatedAt).toLocaleDateString(
-                              "th-TH",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              }
-                            )}
+                            {new Date(order.updatedAt).toLocaleDateString("th-TH", {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
                           </p>
                         </div>
                       </div>

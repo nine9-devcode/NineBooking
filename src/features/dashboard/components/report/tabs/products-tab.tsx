@@ -1,10 +1,10 @@
 // components/admin/report/tabs/products-tab.tsx
 
-import { ShoppingCart, Eye } from 'lucide-react';
-import type { ReportData } from '@/features/dashboard/summary-report.types';
+import { ShoppingCart, Eye } from "lucide-react"
+import type { ReportData } from "@/features/dashboard/summary-report.types"
 
 interface ProductsTabProps {
-  reportData: ReportData;
+  reportData: ReportData
 }
 
 export function ProductsTab({ reportData }: ProductsTabProps) {
@@ -13,18 +13,32 @@ export function ProductsTab({ reportData }: ProductsTabProps) {
       {/* Category Stats */}
       <div className="bg-background border border-border rounded-xl overflow-hidden">
         <div className="p-4 border-b border-border">
-          <h3 className="text-base font-semibold text-foreground">วิเคราะห์ตามหมวดหมู่สินค้า (Top 5)</h3>
+          <h3 className="text-base font-semibold text-foreground">
+            วิเคราะห์ตามหมวดหมู่สินค้า (Top 5)
+          </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-card/50">
               <tr>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground">#</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground">หมวดหมู่</th>
-                <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground">จำนวนจอง</th>
-                <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground">% จากคำสั่งจอง</th>
-                <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground">ยอดเข้าชม</th>
-                <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground">% จากยอดชม</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground">
+                  #
+                </th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-muted-foreground">
+                  หมวดหมู่
+                </th>
+                <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground">
+                  จำนวนจอง
+                </th>
+                <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground">
+                  % จากคำสั่งจอง
+                </th>
+                <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground">
+                  ยอดเข้าชม
+                </th>
+                <th className="text-center py-3 px-4 text-xs font-semibold text-muted-foreground">
+                  % จากยอดชม
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -36,20 +50,32 @@ export function ProductsTab({ reportData }: ProductsTabProps) {
                         {index + 1}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-foreground font-medium">{cat.categoryName}</td>
-                    <td className="py-3 px-4 text-center">
-                      <span className="text-primary font-semibold">{cat.orderCount.toLocaleString()}</span>
+                    <td className="py-3 px-4 text-foreground font-medium">
+                      {cat.categoryName}
                     </td>
-                    <td className="py-3 px-4 text-center text-muted-foreground">{cat.orderPercentage}%</td>
                     <td className="py-3 px-4 text-center">
-                      <span className="text-info font-semibold">{cat.viewCount.toLocaleString()}</span>
+                      <span className="text-primary font-semibold">
+                        {cat.orderCount.toLocaleString()}
+                      </span>
                     </td>
-                    <td className="py-3 px-4 text-center text-muted-foreground">{cat.viewPercentage}%</td>
+                    <td className="py-3 px-4 text-center text-muted-foreground">
+                      {cat.orderPercentage}%
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <span className="text-info font-semibold">
+                        {cat.viewCount.toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-center text-muted-foreground">
+                      {cat.viewPercentage}%
+                    </td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-muted-foreground">ไม่พบข้อมูลหมวดหมู่</td>
+                  <td colSpan={6} className="py-8 text-center text-muted-foreground">
+                    ไม่พบข้อมูลหมวดหมู่
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -67,12 +93,19 @@ export function ProductsTab({ reportData }: ProductsTabProps) {
           <div className="space-y-2">
             {reportData.topProductsByOrders && reportData.topProductsByOrders.length > 0 ? (
               reportData.topProductsByOrders.map((product, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-card rounded-lg border border-border">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-card rounded-lg border border-border"
+                >
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-muted-foreground">#{index + 1}</span>
+                    <span className="text-sm font-bold text-muted-foreground">
+                      #{index + 1}
+                    </span>
                     <span className="text-sm text-foreground">{product.name}</span>
                   </div>
-                  <span className="text-sm font-semibold text-primary">{product.orderCount?.toLocaleString()} รายการ</span>
+                  <span className="text-sm font-semibold text-primary">
+                    {product.orderCount?.toLocaleString()} รายการ
+                  </span>
                 </div>
               ))
             ) : (
@@ -89,12 +122,19 @@ export function ProductsTab({ reportData }: ProductsTabProps) {
           <div className="space-y-2">
             {reportData.topProductsByViews && reportData.topProductsByViews.length > 0 ? (
               reportData.topProductsByViews.map((product, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-card rounded-lg border border-border">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-card rounded-lg border border-border"
+                >
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-muted-foreground">#{index + 1}</span>
+                    <span className="text-sm font-bold text-muted-foreground">
+                      #{index + 1}
+                    </span>
                     <span className="text-sm text-foreground">{product.name}</span>
                   </div>
-                  <span className="text-sm font-semibold text-info">{product.viewCount?.toLocaleString()} ครั้ง</span>
+                  <span className="text-sm font-semibold text-info">
+                    {product.viewCount?.toLocaleString()} ครั้ง
+                  </span>
                 </div>
               ))
             ) : (
@@ -104,5 +144,5 @@ export function ProductsTab({ reportData }: ProductsTabProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

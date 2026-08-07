@@ -56,11 +56,7 @@ export async function GET(
 }
 
 /** แอดมินดูได้ทุกไฟล์ ผู้ใช้ทั่วไปดูได้เฉพาะไฟล์ที่แนบมากับเรื่องของตัวเอง */
-async function canAccess(
-  relative: string,
-  userId: string,
-  isAdmin: boolean
-): Promise<boolean> {
+async function canAccess(relative: string, userId: string, isAdmin: boolean): Promise<boolean> {
   if (isAdmin) return true
 
   const url = `/api/files/${relative}`

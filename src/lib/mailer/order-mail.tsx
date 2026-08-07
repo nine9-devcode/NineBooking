@@ -67,8 +67,7 @@ export async function sendOrderEmails(data: OrderEmailData) {
   ])
 
   return {
-    success:
-      adminResult.status === "fulfilled" || customerResult.status === "fulfilled",
+    success: adminResult.status === "fulfilled" || customerResult.status === "fulfilled",
     adminResult,
     customerResult,
   }

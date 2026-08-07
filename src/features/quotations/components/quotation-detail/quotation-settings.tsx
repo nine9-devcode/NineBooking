@@ -16,12 +16,12 @@ import { Settings, Calendar, FileText, StickyNote } from "lucide-react"
 import { VALID_DAYS_OPTIONS, DEFAULT_PDF_NOTES } from "../constants"
 import { cn } from "@/lib/utils"
 
-type PdfNotesMode = 'template' | 'custom' | 'none'
+type PdfNotesMode = "template" | "custom" | "none"
 
 function getPdfNotesMode(pdfNotes: string | null): PdfNotesMode {
-  if (pdfNotes === null) return 'template'
-  if (pdfNotes === '') return 'none'
-  return 'custom'
+  if (pdfNotes === null) return "template"
+  if (pdfNotes === "") return "none"
+  return "custom"
 }
 
 interface QuotationSettingsProps {
@@ -46,16 +46,16 @@ export function QuotationSettings({
   // Mode is tracked independently — NOT derived from pdfNotes value
   // This prevents auto-switching when user clears the textarea
   const [mode, setMode] = useState<PdfNotesMode>(() => getPdfNotesMode(pdfNotes))
-  const [customText, setCustomText] = useState<string>(
-    () => pdfNotes !== null && pdfNotes !== '' ? pdfNotes : DEFAULT_PDF_NOTES
+  const [customText, setCustomText] = useState<string>(() =>
+    pdfNotes !== null && pdfNotes !== "" ? pdfNotes : DEFAULT_PDF_NOTES
   )
 
   const handleModeChange = (newMode: PdfNotesMode) => {
     setMode(newMode)
-    if (newMode === 'template') {
+    if (newMode === "template") {
       onPdfNotesChange(null)
-    } else if (newMode === 'none') {
-      onPdfNotesChange('')
+    } else if (newMode === "none") {
+      onPdfNotesChange("")
     } else {
       // 'custom' — use current customText (preserves text even if empty)
       onPdfNotesChange(customText)
@@ -130,7 +130,7 @@ export function QuotationSettings({
           {/* Mode selector */}
           {!readOnly && (
             <div className="flex gap-1 mb-3 p-1 bg-secondary/50 rounded-lg w-fit">
-              {(['template', 'custom', 'none'] as PdfNotesMode[]).map((m) => (
+              {(["template", "custom", "none"] as PdfNotesMode[]).map((m) => (
                 <button
                   key={m}
                   type="button"
@@ -142,14 +142,14 @@ export function QuotationSettings({
                       : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                   )}
                 >
-                  {m === 'template' ? 'มาตรฐาน' : m === 'custom' ? 'กำหนดเอง' : 'ไม่มี'}
+                  {m === "template" ? "มาตรฐาน" : m === "custom" ? "กำหนดเอง" : "ไม่มี"}
                 </button>
               ))}
             </div>
           )}
 
           {/* Content area */}
-          {mode === 'template' && (
+          {mode === "template" && (
             <div className="bg-secondary/30 border border-border rounded-lg p-3">
               <p className="text-xs text-muted-foreground mb-2">ข้อความที่จะแสดงใน PDF:</p>
               <p className="text-sm text-foreground whitespace-pre-line leading-relaxed">
@@ -158,7 +158,7 @@ export function QuotationSettings({
             </div>
           )}
 
-          {mode === 'custom' && (
+          {mode === "custom" && (
             <Textarea
               value={customText}
               onChange={(e) => handleCustomTextChange(e.target.value)}
@@ -168,16 +168,18 @@ export function QuotationSettings({
             />
           )}
 
-          {mode === 'none' && (
+          {mode === "none" && (
             <div className="bg-secondary/30 border border-dashed border-border rounded-lg p-3">
-              <p className="text-xs text-muted-foreground text-center">ไม่มีหมายเหตุแสดงใน PDF</p>
+              <p className="text-xs text-muted-foreground text-center">
+                ไม่มีหมายเหตุแสดงใน PDF
+              </p>
             </div>
           )}
 
-          {readOnly && mode === 'template' && (
+          {readOnly && mode === "template" && (
             <p className="text-xs text-muted-foreground mt-2">ใช้ฟอร์มมาตรฐาน</p>
           )}
-          {readOnly && mode === 'none' && (
+          {readOnly && mode === "none" && (
             <p className="text-xs text-muted-foreground mt-2">ไม่มีหมายเหตุ</p>
           )}
           {!readOnly && (

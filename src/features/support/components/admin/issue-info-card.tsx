@@ -39,9 +39,7 @@ export function IssueInfoCard({ subject, description, category }: IssueInfoCardP
 
         {/* Subject */}
         <div>
-          <label className="text-sm font-medium text-muted-foreground mb-2 block">
-            หัวข้อ
-          </label>
+          <label className="text-sm font-medium text-muted-foreground mb-2 block">หัวข้อ</label>
           <p className="text-foreground font-medium text-lg">{subject}</p>
         </div>
 

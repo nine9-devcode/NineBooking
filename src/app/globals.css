@@ -207,13 +207,28 @@
 }
 
 @keyframes bell-shake {
-  0% { transform: rotate(0deg); }
-  10% { transform: rotate(14deg); }
-  20% { transform: rotate(-8deg); }
-  30% { transform: rotate(14deg); }
-  40% { transform: rotate(-4deg); }
-  50% { transform: rotate(10deg); }
-  60%, 100% { transform: rotate(0deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(14deg);
+  }
+  20% {
+    transform: rotate(-8deg);
+  }
+  30% {
+    transform: rotate(14deg);
+  }
+  40% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(10deg);
+  }
+  60%,
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .animate-bell-shake {
@@ -416,6 +431,12 @@
   color: var(--muted-foreground);
 }
 
-.tiptap-editor [style*="text-align: center"] { text-align: center; }
-.tiptap-editor [style*="text-align: right"] { text-align: right; }
-.tiptap-editor [style*="text-align: justify"] { text-align: justify; }
+.tiptap-editor [style*="text-align: center"] {
+  text-align: center;
+}
+.tiptap-editor [style*="text-align: right"] {
+  text-align: right;
+}
+.tiptap-editor [style*="text-align: justify"] {
+  text-align: justify;
+}

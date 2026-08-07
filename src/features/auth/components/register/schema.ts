@@ -23,7 +23,6 @@ export const registerFormSchema = registerSchema
     path: ["confirmPassword"],
   })
 
-
 export type RegisterFormValues = z.infer<typeof registerFormSchema>
 
 // ค่าเริ่มต้นของ form

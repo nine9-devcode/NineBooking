@@ -1,7 +1,7 @@
-'use client'
+"use client"
 
-import { IssueHistoryItem } from './issue-history-item'
-import { Inbox } from 'lucide-react'
+import { IssueHistoryItem } from "./issue-history-item"
+import { Inbox } from "lucide-react"
 
 interface Issue {
   id: string
@@ -48,9 +48,7 @@ export function IssueHistoryList({ issues, loading }: IssueHistoryListProps) {
         <h3 className="text-base font-semibold text-muted-foreground mb-1">
           ยังไม่มีประวัติการแจ้งปัญหา
         </h3>
-        <p className="text-sm text-muted-foreground">
-          เมื่อคุณแจ้งปัญหา รายการจะแสดงที่นี่
-        </p>
+        <p className="text-sm text-muted-foreground">เมื่อคุณแจ้งปัญหา รายการจะแสดงที่นี่</p>
       </div>
     )
   }

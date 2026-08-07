@@ -3,12 +3,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Loader2, FileText, Download, ExternalLink } from "lucide-react"
 
@@ -108,10 +103,7 @@ export function QuotationPreviewModal({
           </DialogTitle>
         </DialogHeader>
 
-        <div
-          className="relative bg-card rounded-lg overflow-hidden"
-          style={{ height: "75vh" }}
-        >
+        <div className="relative bg-card rounded-lg overflow-hidden" style={{ height: "75vh" }}>
           {loading ? (
             <div className="flex flex-col items-center justify-center h-full gap-4">
               <Loader2 className="w-12 h-12 animate-spin text-primary" />
@@ -121,16 +113,16 @@ export function QuotationPreviewModal({
             <div className="flex flex-col items-center justify-center h-full gap-4">
               <FileText className="w-16 h-16 text-muted-foreground" />
               <p className="text-muted-foreground">{error}</p>
-              <Button onClick={loadPreview} variant="outline" className="border-border text-foreground hover:bg-card hover:text-foreground">
+              <Button
+                onClick={loadPreview}
+                variant="outline"
+                className="border-border text-foreground hover:bg-card hover:text-foreground"
+              >
                 ลองใหม่
               </Button>
             </div>
           ) : previewUrl ? (
-            <iframe
-              src={previewUrl}
-              className="w-full h-full border-0"
-              title="PDF Preview"
-            />
+            <iframe src={previewUrl} className="w-full h-full border-0" title="PDF Preview" />
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">
               ไม่สามารถแสดงตัวอย่างได้

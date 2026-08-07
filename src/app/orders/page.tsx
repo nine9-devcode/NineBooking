@@ -59,12 +59,8 @@ function OrdersPageContent() {
   const [loading, setLoading] = useState(true)
 
   // Initialize state from URL params
-  const [statusFilter, setStatusFilter] = useState(
-    searchParams.get("status") || "all"
-  )
-  const [searchQuery, setSearchQuery] = useState(
-    searchParams.get("search") || ""
-  )
+  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "all")
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
   const [debouncedSearch, setDebouncedSearch] = useState(searchQuery)
   const [sortOrder, setSortOrder] = useState<"desc" | "asc">(
     (searchParams.get("sort") as "desc" | "asc") || "desc"
@@ -159,16 +155,12 @@ function OrdersPageContent() {
   // Auto-refresh when tab becomes visible
   useEffect(() => {
     const handleVisibilityChange = () => {
-      if (
-        document.visibilityState === "visible" &&
-        sessionStatus === "authenticated"
-      ) {
+      if (document.visibilityState === "visible" && sessionStatus === "authenticated") {
         fetchOrders()
       }
     }
     document.addEventListener("visibilitychange", handleVisibilityChange)
-    return () =>
-      document.removeEventListener("visibilitychange", handleVisibilityChange)
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange)
   }, [sessionStatus, fetchOrders])
 
   // Fetch notifications (unread)
@@ -332,11 +324,13 @@ function OrdersPageContent() {
 
 export default function OrdersPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-10 h-10 animate-spin text-primary" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <Loader2 className="w-10 h-10 animate-spin text-primary" />
+        </div>
+      }
+    >
       <OrdersPageContent />
     </Suspense>
   )

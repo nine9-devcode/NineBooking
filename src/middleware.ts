@@ -35,13 +35,7 @@ async function isSiteOpen(): Promise<boolean> {
   return cachedShowHomePage
 }
 
-const PUBLIC_PATHS = [
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-  "/error",
-]
+const PUBLIC_PATHS = ["/login", "/register", "/forgot-password", "/reset-password", "/error"]
 const LEGAL_PATHS = ["/privacy-policy", "/terms"]
 
 export default auth(async (req) => {
@@ -95,8 +89,7 @@ export default auth(async (req) => {
 
   // โปรไฟล์ยังไม่ครบ → บังคับให้กรอกก่อนใช้งาน
   const user = req.auth?.user
-  const profileIncomplete =
-    !user?.nickname || !user?.phone || !user?.residenceType
+  const profileIncomplete = !user?.nickname || !user?.phone || !user?.residenceType
 
   if (
     profileIncomplete &&

@@ -56,10 +56,7 @@ export function ProductsSearch({
       </div>
 
       {/* Category Filter */}
-      <Select
-        value={defaultCategory}
-        onValueChange={onCategoryChange}
-      >
+      <Select value={defaultCategory} onValueChange={onCategoryChange}>
         <SelectTrigger className="w-full sm:w-[200px] bg-card border-border text-foreground">
           <SelectValue placeholder="ทุกหมวดหมู่" />
         </SelectTrigger>
@@ -68,11 +65,7 @@ export function ProductsSearch({
             ทุกหมวดหมู่
           </SelectItem>
           {categories.map((category) => (
-            <SelectItem
-              key={category.id}
-              value={category.id}
-              className="text-foreground"
-            >
+            <SelectItem key={category.id} value={category.id} className="text-foreground">
               {category.name}
             </SelectItem>
           ))}
@@ -80,17 +73,20 @@ export function ProductsSearch({
       </Select>
 
       {/* Status Filter */}
-      <Select
-        value={defaultStatus}
-        onValueChange={onStatusChange}
-      >
+      <Select value={defaultStatus} onValueChange={onStatusChange}>
         <SelectTrigger className="w-full sm:w-[180px] bg-card border-border text-foreground">
           <SelectValue placeholder="ทุกสถานะ" />
         </SelectTrigger>
         <SelectContent className="bg-background border-border">
-          <SelectItem value="all" className="text-foreground">ทุกสถานะ</SelectItem>
-          <SelectItem value="active" className="text-foreground">เปิดใช้งาน</SelectItem>
-          <SelectItem value="inactive" className="text-foreground">ปิดใช้งาน</SelectItem>
+          <SelectItem value="all" className="text-foreground">
+            ทุกสถานะ
+          </SelectItem>
+          <SelectItem value="active" className="text-foreground">
+            เปิดใช้งาน
+          </SelectItem>
+          <SelectItem value="inactive" className="text-foreground">
+            ปิดใช้งาน
+          </SelectItem>
         </SelectContent>
       </Select>
     </div>

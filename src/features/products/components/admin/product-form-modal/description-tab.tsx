@@ -6,19 +6,13 @@ import { FileText } from "lucide-react"
 import { RichTextEditor } from "@/features/products/components/admin/shared/rich-text-editor"
 import type { DescriptionTabProps } from "./types"
 
-export function DescriptionTab({
-  control,
-  errors,
-  loading,
-}: DescriptionTabProps) {
+export function DescriptionTab({ control, errors, loading }: DescriptionTabProps) {
   return (
     <div className="space-y-4 p-1">
       {/* Header */}
       <div className="flex items-center gap-2 pb-2 border-b border-border">
         <FileText className="w-5 h-5 text-primary" />
-        <h3 className="text-lg font-semibold text-foreground">
-          รายละเอียดสินค้า
-        </h3>
+        <h3 className="text-lg font-semibold text-foreground">รายละเอียดสินค้า</h3>
         <span className="text-destructive">*</span>
       </div>
 
@@ -37,11 +31,11 @@ export function DescriptionTab({
             />
           )}
         />
-        
+
         <p className="text-sm text-muted-foreground">
           ใช้ toolbar ด้านบนเพื่อจัดรูปแบบข้อความ เช่น ตัวหนา, หัวข้อ, รายการ, จัดข้อความ
         </p>
-        
+
         {errors.description && (
           <p className="text-sm text-destructive">{errors.description.message}</p>
         )}

@@ -13,19 +13,13 @@ interface CheckoutSummaryProps {
   isLoading: boolean
 }
 
-export function CheckoutSummary({
-  groupedItems,
-  summary,
-  isLoading,
-}: CheckoutSummaryProps) {
+export function CheckoutSummary({ groupedItems, summary, isLoading }: CheckoutSummaryProps) {
   return (
     <div className="lg:w-96">
       <div className="lg:sticky lg:top-24">
         <div className="bg-card rounded-xl border border-border p-6">
           {/* Header */}
-          <h2 className="text-lg font-semibold text-foreground mb-4">
-            สรุปรายการจอง
-          </h2>
+          <h2 className="text-lg font-semibold text-foreground mb-4">สรุปรายการจอง</h2>
 
           {/* Items Preview */}
           <div className="max-h-80 overflow-y-auto mb-4 -mx-2 px-2">
@@ -63,9 +57,7 @@ export function CheckoutSummary({
           {/* Total */}
           <div className="border-t border-border pt-4 mt-4">
             <div className="flex justify-between items-center mb-4">
-              <span className="text-lg font-semibold text-foreground">
-                รวมทั้งหมด
-              </span>
+              <span className="text-lg font-semibold text-foreground">รวมทั้งหมด</span>
               <span className="text-2xl font-bold text-primary">
                 {summary.totalQuantity} ชิ้น
               </span>
@@ -104,9 +96,7 @@ export function CheckoutSummary({
 
         {/* Info Box */}
         <div className="mt-4 p-4 bg-info/10 border border-info/40 rounded-xl">
-          <h4 className="text-sm font-semibold text-info mb-2">
-            📋 ขั้นตอนหลังจากจอง
-          </h4>
+          <h4 className="text-sm font-semibold text-info mb-2">📋 ขั้นตอนหลังจากจอง</h4>
           <ol className="text-xs text-info space-y-1 list-decimal list-inside">
             <li>ระบบจะสร้างใบจองและแสดงหมายเลขอ้างอิง</li>
             <li>ทางบริษัทจะตรวจสอบและติดต่อกลับ</li>

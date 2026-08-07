@@ -18,16 +18,16 @@ export interface OrderDetail {
     district: string | null
     subDistrict: string | null
     postalCode: string | null
-    residenceType: string | null  
+    residenceType: string | null
   }
   user: {
     id: string
     name: string | null
-    nickname: string | null       
+    nickname: string | null
     email: string | null
     phone: string | null
     image: string | null
-    residenceType: string | null  
+    residenceType: string | null
     memberSince: string
     memberType?: string | null
     memberTypeNote?: string | null

@@ -93,9 +93,7 @@ export async function POST(request: NextRequest) {
 
     // ตรวจสอบว่าสินค้ายัง active อยู่
     const inactiveProducts = cartItems.filter(
-      (item) =>
-        !item.product.isActive ||
-        (item.pairedProduct && !item.pairedProduct.isActive)
+      (item) => !item.product.isActive || (item.pairedProduct && !item.pairedProduct.isActive)
     )
 
     if (inactiveProducts.length > 0) {
@@ -227,10 +225,7 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error creating order:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการสร้างคำสั่งจอง" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการสร้างคำสั่งจอง" }, { status: 500 })
   }
 }
 
@@ -325,9 +320,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching orders:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }

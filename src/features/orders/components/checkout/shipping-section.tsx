@@ -45,75 +45,83 @@ export function ShippingSection({
   useEffect(() => {
     // ฟังก์ชันสำหรับตั้งค่าเริ่มต้น
     const initializeAddress = () => {
-      if (!formData.shippingProvince) return;
+      if (!formData.shippingProvince) return
 
       // 1. หาจังหวัด (Logic เดียวกับ Modal)
       const foundProvince = provinces.find(
         (p) => p.nameTh === formData.shippingProvince || p.nameEn === formData.shippingProvince
-      );
+      )
 
       if (foundProvince) {
-        const pCode = foundProvince.code.toString();
-        setProvinceCode(pCode);
-        
+        const pCode = foundProvince.code.toString()
+        setProvinceCode(pCode)
+
         // โหลดอำเภอ
-        const districts = getDistrictsByProvinceCode(foundProvince.code);
-        setFilteredDistricts(districts);
+        const districts = getDistrictsByProvinceCode(foundProvince.code)
+        setFilteredDistricts(districts)
 
         // 2. หาอำเภอ
         if (formData.shippingDistrict) {
           const foundDistrict = districts.find(
-            (d) => d.nameTh === formData.shippingDistrict || d.nameEn === formData.shippingDistrict
-          );
+            (d) =>
+              d.nameTh === formData.shippingDistrict || d.nameEn === formData.shippingDistrict
+          )
 
           if (foundDistrict) {
-            const dCode = foundDistrict.code.toString();
-            setDistrictCode(dCode);
-            
+            const dCode = foundDistrict.code.toString()
+            setDistrictCode(dCode)
+
             // โหลดตำบล
-            const subDistricts = getSubDistrictsByDistrictCode(foundDistrict.code);
-            setFilteredSubDistricts(subDistricts);
+            const subDistricts = getSubDistrictsByDistrictCode(foundDistrict.code)
+            setFilteredSubDistricts(subDistricts)
 
             // 3. หาตำบล
             if (formData.shippingSubDistrict) {
               const foundSubDistrict = subDistricts.find(
-                (sd) => sd.nameTh === formData.shippingSubDistrict || sd.nameEn === formData.shippingSubDistrict
-              );
+                (sd) =>
+                  sd.nameTh === formData.shippingSubDistrict ||
+                  sd.nameEn === formData.shippingSubDistrict
+              )
 
               if (foundSubDistrict) {
-                setSubdistrictCode(foundSubDistrict.code.toString());
-                
+                setSubdistrictCode(foundSubDistrict.code.toString())
+
                 // Auto-fill Postal Code ถ้ายังไม่มี
                 if (!formData.shippingPostalCode && onSelectChange) {
-                   onSelectChange("shippingPostalCode", foundSubDistrict.postalCode.toString());
+                  onSelectChange("shippingPostalCode", foundSubDistrict.postalCode.toString())
                 }
               }
             }
           }
         }
       } else {
-        console.warn("Province not found in list:", formData.shippingProvince);
+        console.warn("Province not found in list:", formData.shippingProvince)
       }
-    };
+    }
 
     // ทำงานเมื่อ formData มีค่า และ state ยังว่างอยู่ (ป้องกัน Loop)
     if (formData.shippingProvince && !provinceCode) {
-      initializeAddress();
+      initializeAddress()
     }
-  }, [formData.shippingProvince, formData.shippingDistrict, formData.shippingSubDistrict, provinceCode]);
+  }, [
+    formData.shippingProvince,
+    formData.shippingDistrict,
+    formData.shippingSubDistrict,
+    provinceCode,
+  ])
 
   // เมื่อเลือกจังหวัด (Reset ลูกโซ่)
   const handleProvinceChange = (value: string) => {
     const code = parseInt(value)
     setProvinceCode(value)
-    setDistrictCode("")      
-    setSubdistrictCode("")   
+    setDistrictCode("")
+    setSubdistrictCode("")
 
     const districts = getDistrictsByProvinceCode(code)
     setFilteredDistricts(districts)
     setFilteredSubDistricts([])
 
-    const selectedProvince = provinces.find(p => p.code === code)
+    const selectedProvince = provinces.find((p) => p.code === code)
     if (selectedProvince && onSelectChange) {
       onSelectChange("shippingProvince", selectedProvince.nameTh)
       onSelectChange("shippingDistrict", "")
@@ -126,12 +134,12 @@ export function ShippingSection({
   const handleDistrictChange = (value: string) => {
     const code = parseInt(value)
     setDistrictCode(value)
-    setSubdistrictCode("")   
+    setSubdistrictCode("")
 
     const subDistricts = getSubDistrictsByDistrictCode(code)
     setFilteredSubDistricts(subDistricts)
 
-    const selectedDistrict = filteredDistricts.find(d => d.code === code)
+    const selectedDistrict = filteredDistricts.find((d) => d.code === code)
     if (selectedDistrict && onSelectChange) {
       onSelectChange("shippingDistrict", selectedDistrict.nameTh)
       onSelectChange("shippingSubDistrict", "")
@@ -144,7 +152,7 @@ export function ShippingSection({
     const code = parseInt(value)
     setSubdistrictCode(value)
 
-    const selectedSubDistrict = filteredSubDistricts.find(sd => sd.code === code)
+    const selectedSubDistrict = filteredSubDistricts.find((sd) => sd.code === code)
     if (selectedSubDistrict && onSelectChange) {
       onSelectChange("shippingSubDistrict", selectedSubDistrict.nameTh)
       onSelectChange("shippingPostalCode", selectedSubDistrict.postalCode.toString())
@@ -222,7 +230,9 @@ export function ShippingSection({
               disabled={isLoading || !provinceCode}
             >
               <SelectTrigger>
-                <SelectValue placeholder={provinceCode ? "เลือกอำเภอ/เขต" : "เลือกจังหวัดก่อน"} />
+                <SelectValue
+                  placeholder={provinceCode ? "เลือกอำเภอ/เขต" : "เลือกจังหวัดก่อน"}
+                />
               </SelectTrigger>
               <SelectContent>
                 {filteredDistricts.map((district) => (

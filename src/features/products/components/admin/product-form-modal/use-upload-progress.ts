@@ -60,7 +60,7 @@ export function useUploadProgress(): UseUploadProgressReturn {
       const stepWeight = 100 / prev.totalSteps
       const baseProgress = (prev.currentStepIndex - 1) * stepWeight
       const currentProgress = (percent / 100) * stepWeight
-      
+
       return {
         ...prev,
         progress: Math.round(baseProgress + currentProgress),

@@ -86,50 +86,50 @@ export function DeleteProductDialog({
             <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center">
               <AlertTriangle className="w-6 h-6 text-destructive" />
             </div>
-            <AlertDialogTitle className="text-xl">
-              ยืนยันการลบสินค้า
-            </AlertDialogTitle>
+            <AlertDialogTitle className="text-xl">ยืนยันการลบสินค้า</AlertDialogTitle>
           </div>
-          
-          <AlertDialogDescription asChild>
-          <div className="text-muted-foreground space-y-3">
-            <div className="text-sm">
-              คุณต้องการลบสินค้า{" "}
-              <span className="text-foreground font-semibold">&quot;{product.name}&quot;</span>{" "}
-              ใช่หรือไม่?
-            </div>
 
-            <div className="bg-card/50 rounded-lg p-3 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Slug:</span>
-                <span className="text-foreground font-mono">{product.slug}</span>
+          <AlertDialogDescription asChild>
+            <div className="text-muted-foreground space-y-3">
+              <div className="text-sm">
+                คุณต้องการลบสินค้า{" "}
+                <span className="text-foreground font-semibold">
+                  &quot;{product.name}&quot;
+                </span>{" "}
+                ใช่หรือไม่?
               </div>
-              {product._count && product._count.orderItems > 0 && (
+
+              <div className="bg-card/50 rounded-lg p-3 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">คำสั่งจองที่เกี่ยวข้อง:</span>
-                  <Badge variant="outline" className="border-warning/40 text-warning">
-                    {product._count.orderItems} รายการ
-                  </Badge>
+                  <span className="text-muted-foreground">Slug:</span>
+                  <span className="text-foreground font-mono">{product.slug}</span>
+                </div>
+                {product._count && product._count.orderItems > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">คำสั่งจองที่เกี่ยวข้อง:</span>
+                    <Badge variant="outline" className="border-warning/40 text-warning">
+                      {product._count.orderItems} รายการ
+                    </Badge>
+                  </div>
+                )}
+              </div>
+
+              {hasOrders && (
+                <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
+                  <div className="text-destructive text-sm">
+                    <p className="font-medium">ไม่สามารถลบได้</p>
+                    <p className="mt-1 text-destructive">
+                      สินค้านี้มีคำสั่งจองที่เกี่ยวข้อง {product._count!.orderItems} รายการ
+                      กรุณายกเลิกหรือจัดการคำสั่งจองก่อน
+                    </p>
+                  </div>
                 </div>
               )}
-            </div>
 
-            {hasOrders && (
-              <div className="bg-destructive/10 border border-destructive/30 rounded-lg p-3">
-                <div className="text-destructive text-sm">
-                  <p className="font-medium">ไม่สามารถลบได้</p>
-                  <p className="mt-1 text-destructive">
-                    สินค้านี้มีคำสั่งจองที่เกี่ยวข้อง {product._count!.orderItems} รายการ
-                    กรุณายกเลิกหรือจัดการคำสั่งจองก่อน
-                  </p>
-                </div>
+              <div className="text-destructive text-sm font-semibold">
+                ⚠️ การดำเนินการนี้ไม่สามารถย้อนกลับได้
               </div>
-            )}
-
-            <div className="text-destructive text-sm font-semibold">
-              ⚠️ การดำเนินการนี้ไม่สามารถย้อนกลับได้
             </div>
-          </div>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

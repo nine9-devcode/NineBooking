@@ -163,9 +163,6 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error("Error fetching admin orders:", error)
-    return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดในการดึงข้อมูล" },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: "เกิดข้อผิดพลาดในการดึงข้อมูล" }, { status: 500 })
   }
 }

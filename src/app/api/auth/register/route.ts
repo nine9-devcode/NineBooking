@@ -10,10 +10,7 @@ export async function POST(request: Request) {
   try {
     // นับก่อน parse เสมอ ไม่งั้นยิงข้อมูลมั่วๆ รัวๆ เพื่อเลี่ยงการนับได้
     // ปลายทางคือ bcrypt cost 12 ซึ่งกิน CPU มากพอจะทำให้เซิร์ฟเวอร์ล่มได้
-    const rate = await consume(
-      `register:ip:${clientIp(request.headers)}`,
-      RATE_LIMITS.register
-    )
+    const rate = await consume(`register:ip:${clientIp(request.headers)}`, RATE_LIMITS.register)
     if (!rate.ok) return tooManyRequests(rate.retryAfterSec)
 
     const data = registerSchema.parse(await request.json())

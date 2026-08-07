@@ -1,6 +1,6 @@
 // Component/support/image-upload.tsx
-import { Camera, X, AlertCircle } from 'lucide-react'
-import { useState, useRef } from 'react'
+import { Camera, X, AlertCircle } from "lucide-react"
+import { useState, useRef } from "react"
 
 interface ImageUploadProps {
   image: File | null
@@ -11,13 +11,13 @@ interface ImageUploadProps {
   disabled?: boolean
 }
 
-export function ImageUpload({ 
-  image, 
-  imagePreview, 
-  onImageChange, 
-  onRemove, 
-  error, 
-  disabled 
+export function ImageUpload({
+  image,
+  imagePreview,
+  onImageChange,
+  onRemove,
+  error,
+  disabled,
 }: ImageUploadProps) {
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -26,7 +26,7 @@ export function ImageUpload({
     if (!file) return
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp']
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg", "image/webp"]
     if (!allowedTypes.includes(file.type)) {
       return
     }
@@ -53,7 +53,7 @@ export function ImageUpload({
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-    
+
     const file = e.dataTransfer.files[0]
     handleFileChange(file)
   }
@@ -63,7 +63,7 @@ export function ImageUpload({
       <label className="block text-sm font-medium text-foreground mb-2">
         ภาพหน้าจอ (ไม่บังคับ)
       </label>
-      
+
       {!imagePreview ? (
         <div
           onDragOver={handleDragOver}
@@ -84,15 +84,17 @@ export function ImageUpload({
             htmlFor="image"
             className={`flex flex-col items-center justify-center w-full h-48 sm:h-56 border-2 border-dashed rounded-lg cursor-pointer transition-all duration-200 ${
               isDragging
-                ? 'border-primary/40 bg-primary/10 scale-105'
-                : error 
-                ? 'border-destructive/40 bg-destructive/10' 
-                : 'border-border bg-muted hover:border-primary/40 hover:bg-primary/10'
-            } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                ? "border-primary/40 bg-primary/10 scale-105"
+                : error
+                  ? "border-destructive/40 bg-destructive/10"
+                  : "border-border bg-muted hover:border-primary/40 hover:bg-primary/10"
+            } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            <Camera className={`w-12 h-12 sm:w-14 sm:h-14 mb-3 ${
-              error ? 'text-destructive' : 'text-muted-foreground'
-            }`} />
+            <Camera
+              className={`w-12 h-12 sm:w-14 sm:h-14 mb-3 ${
+                error ? "text-destructive" : "text-muted-foreground"
+              }`}
+            />
             <p className="text-sm sm:text-base text-muted-foreground font-semibold">
               คลิกเพื่ออัปโหลดรูปภาพ
             </p>
@@ -107,11 +109,7 @@ export function ImageUpload({
       ) : (
         <div className="relative">
           <div className="w-full h-64 sm:h-80 bg-muted rounded-lg border border-border overflow-hidden">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="w-full h-full object-contain"
-            />
+            <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
           </div>
           <button
             type="button"
@@ -128,7 +126,7 @@ export function ImageUpload({
           )}
         </div>
       )}
-      
+
       {error && (
         <p className="mt-1 text-sm text-destructive flex items-center gap-1">
           <AlertCircle className="w-4 h-4" />

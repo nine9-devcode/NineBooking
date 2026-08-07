@@ -64,9 +64,11 @@ export function ConfirmDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>
-          {description && <AlertDialogDescription asChild={typeof description !== "string"}>
-            {typeof description === "string" ? description : <div>{description}</div>}
-          </AlertDialogDescription>}
+          {description && (
+            <AlertDialogDescription asChild={typeof description !== "string"}>
+              {typeof description === "string" ? description : <div>{description}</div>}
+            </AlertDialogDescription>
+          )}
         </AlertDialogHeader>
 
         {children}

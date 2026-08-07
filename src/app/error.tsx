@@ -33,8 +33,8 @@ export default function Error({
       <div className="space-y-2">
         <h1 className="text-xl font-semibold text-foreground">เกิดข้อผิดพลาดบางอย่าง</h1>
         <p className="max-w-md text-sm text-muted-foreground">
-          ระบบทำงานผิดพลาดชั่วคราว ลองใหม่อีกครั้งได้เลยครับ
-          ถ้ายังเจอปัญหาเดิม รบกวนแจ้งเราผ่านหน้าติดต่อ
+          ระบบทำงานผิดพลาดชั่วคราว ลองใหม่อีกครั้งได้เลยครับ ถ้ายังเจอปัญหาเดิม
+          รบกวนแจ้งเราผ่านหน้าติดต่อ
         </p>
         {error.digest && (
           <p className="text-xs text-muted-foreground">รหัสอ้างอิง: {error.digest}</p>

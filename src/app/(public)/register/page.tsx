@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
 
 import { FormAlert } from "@/features/auth/components/form-alert"
-import { AddressSection, PersonalInfoSection, useRegister } from "@/features/auth/components/register"
+import {
+  AddressSection,
+  PersonalInfoSection,
+  useRegister,
+} from "@/features/auth/components/register"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -95,9 +99,7 @@ function RegisterContent() {
 
       router.push("/login?registered=true")
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง"
-      )
+      setError(err instanceof Error ? err.message : "เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง")
     } finally {
       setIsLoading(false)
     }
@@ -132,9 +134,7 @@ function RegisterContent() {
             </TabsList>
 
             <TabsContent value="step1" className="mt-6 space-y-4">
-              {error && activeTab === "step1" && (
-                <FormAlert tone="error">{error}</FormAlert>
-              )}
+              {error && activeTab === "step1" && <FormAlert tone="error">{error}</FormAlert>}
 
               <PersonalInfoSection
                 formData={formData}
@@ -155,9 +155,7 @@ function RegisterContent() {
             </TabsContent>
 
             <TabsContent value="step2" className="mt-6 space-y-4">
-              {error && activeTab === "step2" && (
-                <FormAlert tone="error">{error}</FormAlert>
-              )}
+              {error && activeTab === "step2" && <FormAlert tone="error">{error}</FormAlert>}
 
               <AddressSection
                 formData={formData}

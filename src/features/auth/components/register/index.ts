@@ -2,9 +2,9 @@
 export { PersonalInfoSection } from "./personal-info-section"
 export { AddressSection } from "./address-section"
 export { useRegister } from "./use-register"
-export { 
+export {
   registerFormSchema,
-  defaultRegisterValues, 
+  defaultRegisterValues,
   defaultRegisterErrors,
   type RegisterFormValues,
   type RegisterFormErrors,

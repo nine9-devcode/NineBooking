@@ -1,38 +1,38 @@
 // components/admin/report/date-range-controls.tsx
 
-'use client';
+"use client"
 
-import { Button } from '@/components/ui/button';
-import { Calendar, RotateCcw, Download, Loader2, FileSpreadsheet } from 'lucide-react';
-import { format } from 'date-fns';
+import { Button } from "@/components/ui/button"
+import { Calendar, RotateCcw, Download, Loader2, FileSpreadsheet } from "lucide-react"
+import { format } from "date-fns"
 
 export interface QuickRange {
-  label: string;
-  days: number;
+  label: string
+  days: number
 }
 
 export const QUICK_RANGES: QuickRange[] = [
-  { label: 'วันนี้', days: 0 },
-  { label: '7 วัน', days: 7 },
-  { label: '30 วัน', days: 30 },
-  { label: '90 วัน', days: 90 },
-  { label: '180 วัน', days: 180 },
-  { label: '1 ปี', days: 365 },
-];
+  { label: "วันนี้", days: 0 },
+  { label: "7 วัน", days: 7 },
+  { label: "30 วัน", days: 30 },
+  { label: "90 วัน", days: 90 },
+  { label: "180 วัน", days: 180 },
+  { label: "1 ปี", days: 365 },
+]
 
 interface DateRangeControlsProps {
-  startDate: Date;
-  endDate: Date;
-  isLoading: boolean;
-  hasData: boolean;
-  isDownloadingPDF: boolean;
-  isDownloadingExcel: boolean;
-  onStartDateChange: (date: Date) => void;
-  onEndDateChange: (date: Date) => void;
-  onQuickRange: (days: number) => void;
-  onReset: () => void;
-  onDownloadPDF: () => void;
-  onDownloadExcel: () => void;
+  startDate: Date
+  endDate: Date
+  isLoading: boolean
+  hasData: boolean
+  isDownloadingPDF: boolean
+  isDownloadingExcel: boolean
+  onStartDateChange: (date: Date) => void
+  onEndDateChange: (date: Date) => void
+  onQuickRange: (days: number) => void
+  onReset: () => void
+  onDownloadPDF: () => void
+  onDownloadExcel: () => void
 }
 
 export function DateRangeControls({
@@ -85,10 +85,13 @@ export function DateRangeControls({
             <label className="text-xs text-muted-foreground">จาก</label>
             <input
               type="date"
-              value={format(startDate, 'yyyy-MM-dd')}
+              value={format(startDate, "yyyy-MM-dd")}
               onChange={(e) => {
-                const d = new Date(e.target.value);
-                if (!isNaN(d.getTime())) { d.setHours(0, 0, 0, 0); onStartDateChange(d); }
+                const d = new Date(e.target.value)
+                if (!isNaN(d.getTime())) {
+                  d.setHours(0, 0, 0, 0)
+                  onStartDateChange(d)
+                }
               }}
               className="bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none"
             />
@@ -97,10 +100,13 @@ export function DateRangeControls({
             <label className="text-xs text-muted-foreground">ถึง</label>
             <input
               type="date"
-              value={format(endDate, 'yyyy-MM-dd')}
+              value={format(endDate, "yyyy-MM-dd")}
               onChange={(e) => {
-                const d = new Date(e.target.value);
-                if (!isNaN(d.getTime())) { d.setHours(23, 59, 59, 999); onEndDateChange(d); }
+                const d = new Date(e.target.value)
+                if (!isNaN(d.getTime())) {
+                  d.setHours(23, 59, 59, 999)
+                  onEndDateChange(d)
+                }
               }}
               className="bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none"
             />
@@ -119,7 +125,7 @@ export function DateRangeControls({
             ) : (
               <Download className="w-4 h-4 mr-2" />
             )}
-            {isDownloadingPDF ? 'กำลังสร้าง...' : 'ส่งออก PDF'}
+            {isDownloadingPDF ? "กำลังสร้าง..." : "ส่งออก PDF"}
           </Button>
 
           <Button
@@ -133,10 +139,10 @@ export function DateRangeControls({
             ) : (
               <FileSpreadsheet className="w-4 h-4 mr-2" />
             )}
-            {isDownloadingExcel ? 'กำลังสร้าง...' : 'ส่งออก Excel'}
+            {isDownloadingExcel ? "กำลังสร้าง..." : "ส่งออก Excel"}
           </Button>
         </div>
       </div>
     </div>
-  );
+  )
 }

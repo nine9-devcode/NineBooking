@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/db"
 
 //บังคับให้เป็น Dynamic Route เพื่อไม่ให้ Next.js Cache ค่าเดิมตลอดกาล
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic"
 
 export async function GET() {
   try {

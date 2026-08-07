@@ -1,31 +1,30 @@
 // components/complete-profile/use-complete-profile.ts
 import { useState, useCallback } from "react"
-import { 
-  provinces, 
-  getDistrictsByProvinceCode, 
+import {
+  provinces,
+  getDistrictsByProvinceCode,
   getSubDistrictsByDistrictCode,
   getPostalCodeBySubDistrictCode,
   type District,
-  type SubDistrict
+  type SubDistrict,
 } from "@/lib/thailand-addresses"
-import { 
-  CompleteProfileFormValues, 
+import {
+  CompleteProfileFormValues,
   FormErrors,
-  defaultFormValues, 
+  defaultFormValues,
   defaultFormErrors,
 } from "./schema"
 
 export function useCompleteProfile() {
   // Form Data
   const [formData, setFormData] = useState<CompleteProfileFormValues>(defaultFormValues)
-  
+
   // Form Errors
   const [formErrors, setFormErrors] = useState<FormErrors>(defaultFormErrors)
-  
+
   // Filtered Options for Address
   const [filteredDistricts, setFilteredDistricts] = useState<District[]>([])
   const [filteredSubDistricts, setFilteredSubDistricts] = useState<SubDistrict[]>([])
-
 
   // Validate field
   const validateField = useCallback((name: string, value: string): string => {
@@ -36,7 +35,7 @@ export function useCompleteProfile() {
         if (value.length > 40) return "ชื่อต้องไม่เกิน 40 ตัวอักษร"
         if (!/^[ก-๙a-zA-Z\s]+$/.test(value)) return "ชื่อต้องเป็นตัวอักษรไทยหรืออังกฤษเท่านั้น"
         return ""
-        
+
       case "nickname":
         if (value.length === 0) return "กรุณากรอกชื่อเล่น"
         if (value.length > 20) return "ชื่อเล่นต้องไม่เกิน 20 ตัวอักษร"
@@ -59,49 +58,52 @@ export function useCompleteProfile() {
   }, [])
 
   // จัดการ input change
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    
-    // Special handling for phone (only numbers)
-    if (name === "phone") {
-      const numbersOnly = value.replace(/\D/g, "").slice(0, 10)
-      setFormData(prev => ({ ...prev, [name]: numbersOnly }))
-      setFormErrors(prev => ({ ...prev, [name]: validateField(name, numbersOnly) }))
-      return
-    }
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target
 
-    // Special handling for name (max 40 chars, only Thai/English)
-    if (name === "name" && value.length > 40) return
+      // Special handling for phone (only numbers)
+      if (name === "phone") {
+        const numbersOnly = value.replace(/\D/g, "").slice(0, 10)
+        setFormData((prev) => ({ ...prev, [name]: numbersOnly }))
+        setFormErrors((prev) => ({ ...prev, [name]: validateField(name, numbersOnly) }))
+        return
+      }
 
-    // Special handling for nickname (max 20 chars)
-    if (name === "nickname" && value.length > 20) return
+      // Special handling for name (max 40 chars, only Thai/English)
+      if (name === "name" && value.length > 40) return
 
-    // Special handling for address (max 200 chars)
-    if (name === "address" && value.length > 200) return
+      // Special handling for nickname (max 20 chars)
+      if (name === "nickname" && value.length > 20) return
 
-    setFormData(prev => ({ ...prev, [name]: value }))
-    
-    // Validate if it's a field with validation
-    if (name in formErrors) {
-      setFormErrors(prev => ({ 
-        ...prev, 
-        [name]: validateField(name, value) 
-      }))
-    }
-  }, [formErrors, validateField])
+      // Special handling for address (max 200 chars)
+      if (name === "address" && value.length > 200) return
+
+      setFormData((prev) => ({ ...prev, [name]: value }))
+
+      // Validate if it's a field with validation
+      if (name in formErrors) {
+        setFormErrors((prev) => ({
+          ...prev,
+          [name]: validateField(name, value),
+        }))
+      }
+    },
+    [formErrors, validateField]
+  )
 
   // เลือกประเภทที่อยู่อาศัย
   const handleResidenceTypeChange = useCallback((value: string) => {
-    setFormData(prev => ({ ...prev, residenceType: value }))
-    setFormErrors(prev => ({ ...prev, residenceType: "" }))
+    setFormData((prev) => ({ ...prev, residenceType: value }))
+    setFormErrors((prev) => ({ ...prev, residenceType: "" }))
   }, [])
 
   // เลือกจังหวัด
   const handleProvinceChange = useCallback((value: string) => {
     const provinceCode = parseInt(value)
-    const province = provinces.find(p => p.code === provinceCode)
-    
-    setFormData(prev => ({
+    const province = provinces.find((p) => p.code === provinceCode)
+
+    setFormData((prev) => ({
       ...prev,
       provinceCode: value,
       province: province?.nameTh || "",
@@ -111,41 +113,47 @@ export function useCompleteProfile() {
       subDistrict: "",
       postalCode: "",
     }))
-    
+
     setFilteredDistricts(getDistrictsByProvinceCode(provinceCode))
     setFilteredSubDistricts([])
   }, [])
 
   // เลือกอำเภอ
-  const handleDistrictChange = useCallback((value: string) => {
-    const districtCode = parseInt(value)
-    const district = filteredDistricts.find(d => d.code === districtCode)
-    
-    setFormData(prev => ({
-      ...prev,
-      districtCode: value,
-      district: district?.nameTh || "",
-      subdistrictCode: "",
-      subDistrict: "",
-      postalCode: "",
-    }))
-    
-    setFilteredSubDistricts(getSubDistrictsByDistrictCode(districtCode))
-  }, [filteredDistricts])
+  const handleDistrictChange = useCallback(
+    (value: string) => {
+      const districtCode = parseInt(value)
+      const district = filteredDistricts.find((d) => d.code === districtCode)
+
+      setFormData((prev) => ({
+        ...prev,
+        districtCode: value,
+        district: district?.nameTh || "",
+        subdistrictCode: "",
+        subDistrict: "",
+        postalCode: "",
+      }))
+
+      setFilteredSubDistricts(getSubDistrictsByDistrictCode(districtCode))
+    },
+    [filteredDistricts]
+  )
 
   // เลือกตำบล
-  const handleSubDistrictChange = useCallback((value: string) => {
-    const subdistrictCode = parseInt(value)
-    const subDistrict = filteredSubDistricts.find(sd => sd.code === subdistrictCode)
-    const postalCode = getPostalCodeBySubDistrictCode(subdistrictCode)
-    
-    setFormData(prev => ({
-      ...prev,
-      subdistrictCode: value,
-      subDistrict: subDistrict?.nameTh || "",
-      postalCode: postalCode.toString(),
-    }))
-  }, [filteredSubDistricts])
+  const handleSubDistrictChange = useCallback(
+    (value: string) => {
+      const subdistrictCode = parseInt(value)
+      const subDistrict = filteredSubDistricts.find((sd) => sd.code === subdistrictCode)
+      const postalCode = getPostalCodeBySubDistrictCode(subdistrictCode)
+
+      setFormData((prev) => ({
+        ...prev,
+        subdistrictCode: value,
+        subDistrict: subDistrict?.nameTh || "",
+        postalCode: postalCode.toString(),
+      }))
+    },
+    [filteredSubDistricts]
+  )
 
   // Validate Tab 1
   const validateTab1 = useCallback((): boolean => {
@@ -198,13 +206,12 @@ export function useCompleteProfile() {
     if (formData.address && formData.address.length > 0) {
       const addressError = validateField("address", formData.address)
       if (addressError) {
-        setFormErrors(prev => ({ ...prev, address: addressError }))
+        setFormErrors((prev) => ({ ...prev, address: addressError }))
         return false
       }
     }
     return true
   }, [formData.address, validateField])
-
 
   // Reset form
   const resetForm = useCallback(() => {
@@ -220,25 +227,24 @@ export function useCompleteProfile() {
     setFormData,
     formErrors,
     setFormErrors,
-    
+
     // Address Options
     filteredDistricts,
     filteredSubDistricts,
     provinces,
-    
-    
+
     // Handlers
     handleChange,
     handleResidenceTypeChange,
     handleProvinceChange,
     handleDistrictChange,
     handleSubDistrictChange,
-    
+
     // Validation
     validateTab1,
     validateTab2,
     validateField,
-    
+
     // Reset
     resetForm,
   }
