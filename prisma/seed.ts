@@ -327,6 +327,32 @@ async function syncDocumentCounters() {
   await prisma.documentCounter.createMany({ data: [...maxByKey.values()] })
 }
 
+/** ตัวอย่างประวัติการใช้งาน เพื่อให้หน้า /admin/audit-log ไม่ว่างเปล่าตอนเปิดดูครั้งแรก */
+async function seedAuditLog(
+  adminId: string,
+  orders: { id: string; orderNumber: string; status: string }[]
+) {
+  const entries: Prisma.AuditLogCreateManyInput[] = []
+
+  for (const order of orders) {
+    if (order.status === "PENDING") continue
+
+    entries.push({
+      actorId: adminId,
+      action: "order.status_changed",
+      entityType: "Order",
+      entityId: order.id,
+      before: { status: "PENDING" },
+      after: { status: order.status === "CANCELLED" ? "CANCELLED" : "CONFIRMED" },
+      createdAt: daysAgo(3),
+    })
+  }
+
+  if (entries.length > 0) {
+    await prisma.auditLog.createMany({ data: entries })
+  }
+}
+
 async function main() {
   console.log("กำลังใส่ข้อมูลตัวอย่าง...")
 
@@ -615,7 +641,9 @@ async function main() {
         totalAmount: subtotal + vatAmount,
         validDays: 15,
         validUntil,
+        // ใบแรกส่งให้ลูกค้าแล้วและยังตอบได้ เพื่อให้ลองกดยอมรับได้ทันทีหลัง seed
         status: index === 0 ? "SENT" : "DRAFT",
+        sentAt: index === 0 ? daysAgo(1) : null,
         createdBy: admin.id,
         createdByName: ADMIN.name,
         items: { create: quotationItems },
@@ -713,6 +741,7 @@ async function main() {
     data: { name: "ฝ่ายขาย (ตัวอย่าง)", phone: "02-000-0000", isActive: true },
   })
 
+  await seedAuditLog(admin.id, createdOrders)
   await syncDocumentCounters()
 
   const counts = {

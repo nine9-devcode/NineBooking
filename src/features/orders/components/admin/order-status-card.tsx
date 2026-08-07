@@ -8,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { isTerminal, nextStatuses, transitionMessage } from "@/features/orders/order-status"
+import type { OrderStatus } from "@prisma/client"
 import { getStatusConfig, STATUS_OPTIONS } from "./order-types"
 
 interface OrderStatusCardProps {
@@ -27,6 +29,12 @@ export function OrderStatusCard({
   const newStatusConfig = getStatusConfig(newStatus)
   const StatusIcon = statusConfig.icon
   const hasChanged = newStatus !== currentStatus
+
+  // สถานะที่ไปต่อไม่ได้จะถูกปิด ไม่ใช่ซ่อน — ผู้ใช้จะได้เห็นว่ามีตัวเลือกนี้อยู่
+  // แต่ตอนนี้เลือกไม่ได้ พร้อมเหตุผลใน title
+  const from = currentStatus as OrderStatus
+  const allowed = new Set<string>([currentStatus, ...nextStatuses(from)])
+  const locked = isTerminal(from)
 
   return (
     <div className="bg-card/50 rounded-xl border border-border p-6">
@@ -50,7 +58,7 @@ export function OrderStatusCard({
         {/* เปลี่ยนสถานะ */}
         <div className="flex items-center gap-3">
           <Label className="text-sm text-muted-foreground">เปลี่ยนสถานะ:</Label>
-          <Select value={newStatus} onValueChange={onStatusChange}>
+          <Select value={newStatus} onValueChange={onStatusChange} disabled={locked}>
             <SelectTrigger className="w-[180px] bg-secondary border-border text-foreground focus:ring-primary">
               <SelectValue />
             </SelectTrigger>
@@ -62,6 +70,12 @@ export function OrderStatusCard({
                   <SelectItem
                     key={option.value}
                     value={option.value}
+                    disabled={!allowed.has(option.value)}
+                    title={
+                      allowed.has(option.value)
+                        ? undefined
+                        : transitionMessage(from, option.value as OrderStatus)
+                    }
                     className="text-foreground focus:bg-secondary focus:text-foreground cursor-pointer"
                   >
                     <div className="flex items-center gap-2">
@@ -75,6 +89,12 @@ export function OrderStatusCard({
           </Select>
         </div>
       </div>
+
+      {locked && (
+        <p className="mt-4 rounded-lg border border-border bg-muted/50 p-3 text-sm text-muted-foreground">
+          {transitionMessage(from, from)}
+        </p>
+      )}
 
       {/* Warning เมื่อมีการเปลี่ยนแปลง */}
       {hasChanged && (

@@ -46,6 +46,7 @@ model User {
   orderNotifications   UserOrderNotification[]
   supportNotifications UserSupportNotification[]
   passwordResetTokens  PasswordResetToken[]
+  auditLogs            AuditLog[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -156,6 +157,10 @@ model Product {
   datasheets Json? // [{ name, url, fileType, fileSize }, ...]
   viewCount  Int   @default(0)
 
+  /// คอลัมน์ที่ Postgres คำนวณเองจาก name/subtitle/description (ดู migration)
+  /// Prisma อ่านชนิดนี้ไม่ได้ จึงประกาศเป็น Unsupported และค้นผ่าน $queryRaw แทน
+  searchVector Unsupported("tsvector")?
+
   categoryId String
   // Restrict โดยเจตนา: ลบหมวดที่ยังมีสินค้าอยู่ไม่ได้ ต้องย้ายสินค้าออกก่อน
   // (Category.parent เป็น Cascade เพราะหมวดย่อยไม่มีความหมายถ้าไม่มีหมวดแม่)
@@ -182,6 +187,7 @@ model Product {
   @@index([slug])
   @@index([isActive])
   @@index([viewCount])
+  @@index([searchVector], type: Gin)
 }
 
 // การเข้าชมรายครั้ง — cron สรุปลง ProductViewSummary แล้วลบทิ้ง
@@ -251,6 +257,36 @@ model ExclusivePairing {
   @@index([productBId])
 }
 
+/// บันทึกว่าใครทำอะไรกับข้อมูลไหนเมื่อไหร่
+///
+/// ก่อนหน้านี้ระบบไม่มีร่องรอยเลยว่าใครเปลี่ยนสถานะคำสั่งจอง ใครลบสินค้า
+/// หรือใครตั้งใครเป็นแอดมิน — ฟิลด์เดียวที่บอกตัวผู้กระทำคือ Quotation.createdBy
+/// ซึ่งเป็น String ที่ไม่มี FK ด้วยซ้ำ
+///
+/// before/after เก็บเป็น Json เพื่อไม่ต้องผูกกับรูปร่างของแต่ละตาราง
+/// เก็บเฉพาะฟิลด์ที่เปลี่ยนจริง ไม่ใช่ทั้งแถว
+model AuditLog {
+  id String @id @default(cuid())
+
+  actorId String
+  actor   User   @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  /// รูปแบบ "<entity>.<action>" เช่น "order.status_changed", "user.role_changed"
+  action     String
+  entityType String
+  entityId   String
+
+  before Json?
+  after  Json?
+  ip     String?
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+}
+
 // ===================================================================
 // Cart & Orders
 // ===================================================================
@@ -317,8 +353,10 @@ model Order {
   customerNote String? @db.Text
   adminNote    String? @db.Text
 
-  status      OrderStatus  @default(PENDING)
-  cancelledBy CancelledBy?
+  status       OrderStatus  @default(PENDING)
+  cancelledBy  CancelledBy?
+  cancelledAt  DateTime?
+  cancelReason String?      @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -397,6 +435,12 @@ model Quotation {
 
   createdBy     String?
   createdByName String?
+
+  // การตอบกลับของลูกค้า — ก่อนหน้านี้ ACCEPTED/REJECTED ตั้งได้แค่แอดมิน
+  // ลูกค้าจึงไม่มีทางกดยอมรับใบเสนอราคาของตัวเองได้เลย
+  respondedAt   DateTime?
+  respondedNote String?   @db.Text
+  sentAt        DateTime?
 
   // ทำเวอร์ชัน: QT-2026-0001 → V2, V3 โดยใช้ baseNumber เดียวกัน
   version    Int     @default(1)

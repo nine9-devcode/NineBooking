@@ -8,6 +8,7 @@ import { env } from "@/lib/env"
 import { cleanupExpiredRateLimits } from "@/lib/rate-limit"
 import { archiveProductViews } from "@/features/dashboard/archive-product-views"
 import { cleanupExpiredResetTokens } from "@/features/auth/password-reset"
+import { expireQuotations } from "@/features/quotations/services/respond"
 
 /**
  * งานตามเวลาของระบบ — สรุปยอดเข้าชมสินค้ารายวัน + เก็บกวาด token ที่หมดอายุ
@@ -49,10 +50,12 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 async function runJobs() {
   const startedAt = Date.now()
 
-  const [views, tokens, rateLimits] = await Promise.all([
+  const [views, tokens, rateLimits, quotations] = await Promise.all([
     archiveProductViews(),
     cleanupExpiredResetTokens(),
     cleanupExpiredRateLimits(),
+    // schema มี EXPIRED กับ validUntil มาตั้งแต่แรก แต่ไม่เคยมีอะไรเปลี่ยนสถานะให้
+    expireQuotations(),
   ])
 
   return {
@@ -61,6 +64,7 @@ async function runJobs() {
     archiveProductViews: views,
     expiredResetTokensRemoved: tokens,
     expiredRateLimitsRemoved: rateLimits,
+    quotationsExpired: quotations,
   }
 }
 

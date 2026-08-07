@@ -283,6 +283,16 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
+          {/* ใบเสนอราคา — ปุ่มนี้เป็นทางเข้าเดียวที่ลูกค้าจะกดยอมรับราคาได้ */}
+          <div className="mb-6">
+            <Button variant="outline" asChild>
+              <Link href={`/orders/${order.id}/quotation`}>
+                <FileText className="w-4 h-4" aria-hidden="true" />
+                ดูใบเสนอราคา
+              </Link>
+            </Button>
+          </div>
+
           {/* Status Card */}
           <div
             className={`rounded-xl border p-4 mb-6 ${statusConfig.color} ${statusConfig.borderColor}`}

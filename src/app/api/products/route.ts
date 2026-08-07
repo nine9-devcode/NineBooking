@@ -4,6 +4,10 @@ import { Prisma } from "@prisma/client"
 import { auth } from "@/lib/auth"
 import { parsePagination } from "@/lib/api/query"
 import { prisma } from "@/lib/db"
+import {
+  searchProductIds,
+  shouldUseFullText,
+} from "@/features/products/services/search-products"
 
 // GET - ดึงสินค้าที่ active (สำหรับ Customer)
 export async function GET(request: NextRequest) {
@@ -25,8 +29,10 @@ export async function GET(request: NextRequest) {
       isActive: true,
     }
 
-    // Search
-    if (search) {
+    // คำค้นสั้นมากใช้ ILIKE ตามเดิม — full-text ทำงานผ่าน searchProductIds ด้านล่าง
+    const useFullText = Boolean(search) && shouldUseFullText(search)
+
+    if (search && !useFullText) {
       where.OR = [
         { name: { contains: search, mode: "insensitive" } },
         { subtitle: { contains: search, mode: "insensitive" } },
@@ -108,6 +114,51 @@ export async function GET(request: NextRequest) {
           { category: { sortOrder: "asc" } },
           { createdAt: "desc" },
         ]
+    }
+
+    // ── ค้นด้วย full-text: หา id ที่เกี่ยวข้องก่อน แล้วดึงรายละเอียดตามปกติ ──
+    if (useFullText) {
+      const categoryIds =
+        where.categoryId && typeof where.categoryId === "object" && "in" in where.categoryId
+          ? (where.categoryId.in as string[])
+          : undefined
+
+      const { hits, total: matchCount } = await searchProductIds({
+        query: search,
+        categoryIds,
+        limit,
+        skip,
+      })
+
+      const found = await prisma.product.findMany({
+        where: { id: { in: hits.map((hit) => hit.id) } },
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              sortOrder: true,
+              parent: { select: { sortOrder: true } },
+            },
+          },
+        },
+      })
+
+      // findMany ไม่รักษาลำดับของ id ที่ส่งเข้าไป ต้องเรียงตามคะแนนเอง
+      const byId = new Map(found.map((product) => [product.id, product]))
+      const ranked = hits.map((hit) => byId.get(hit.id)).filter(Boolean)
+
+      return NextResponse.json({
+        products: ranked,
+        pagination: {
+          page,
+          limit,
+          total: matchCount,
+          totalPages: Math.ceil(matchCount / limit),
+        },
+        categoryInfo,
+      })
     }
 
     const [products, total] = await Promise.all([

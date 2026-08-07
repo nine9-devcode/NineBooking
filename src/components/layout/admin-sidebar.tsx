@@ -10,6 +10,7 @@ import {
   ShoppingCart,
   Users,
   Settings,
+  History,
   ChevronLeft,
   ChevronRight,
   MessageSquare,
@@ -61,6 +62,11 @@ const menuItems = [
     title: "สรุปรายงาน",
     href: "/admin/report",
     icon: BarChart3,
+  },
+  {
+    title: "ประวัติการใช้งาน",
+    href: "/admin/audit-log",
+    icon: History,
   },
   {
     title: "ตั้งค่า",

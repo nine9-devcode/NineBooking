@@ -2,7 +2,11 @@
 
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
+import { apiError } from "@/lib/api/response"
+import { AUDIT_ACTIONS, recordAudit } from "@/lib/audit"
 import { prisma } from "@/lib/db"
+import { clientIp } from "@/lib/rate-limit"
+import { InvalidTransitionError, assertTransition } from "@/features/orders/order-status"
 import { z } from "zod"
 import { groupOrderItems, summarizeOrderItems } from "@/features/orders/group-items"
 
@@ -10,6 +14,9 @@ import { groupOrderItems, summarizeOrderItems } from "@/features/orders/group-it
 const updateOrderSchema = z.object({
   status: z.enum(["PENDING", "CONFIRMED", "COMPLETED", "CANCELLED"]).optional(),
   adminNote: z.string().nullable().optional(),
+  // บังคับกรอกเมื่อยกเลิก — ของเดิมยกเลิกได้โดยไม่ต้องบอกเหตุผล
+  // ทำให้ตอบลูกค้าไม่ได้ว่าทำไมคำสั่งจองถึงถูกยกเลิก
+  cancelReason: z.string().trim().min(5, "กรุณาระบุเหตุผลอย่างน้อย 5 ตัวอักษร").optional(),
 })
 
 // GET - ดึงรายละเอียด Order
@@ -215,33 +222,79 @@ export async function PATCH(
     }
 
     const oldStatus = existingOrder.status
+    const statusChanged = Boolean(data.status && data.status !== oldStatus)
 
-    // Update order
-    const updatedOrder = await prisma.order.update({
-      where: { id },
-      data: {
-        ...(data.status && { status: data.status }),
-        ...(data.adminNote !== undefined && { adminNote: data.adminNote }),
-        ...(data.status === "CANCELLED" && { cancelledBy: "ADMIN" }),
-      },
-    })
+    // ตรวจกฎการเปลี่ยนสถานะก่อนแตะฐานข้อมูล
+    // ของเดิมเขียนค่าใหม่ทับโดยไม่ดูของเดิม จึงย้อนจาก CANCELLED กลับไป
+    // COMPLETED ได้ ซึ่งทำให้รายงานอ่านไม่รู้เรื่อง
+    if (data.status) {
+      try {
+        assertTransition(oldStatus, data.status)
+      } catch (error) {
+        if (error instanceof InvalidTransitionError) return apiError(error.message)
+        throw error
+      }
+    }
 
-    // สร้าง notification
-    if (data.status && data.status !== oldStatus && existingOrder.userId) {
-      await prisma.userOrderNotification.create({
+    if (data.status === "CANCELLED" && !data.cancelReason) {
+      return apiError("กรุณาระบุเหตุผลในการยกเลิก")
+    }
+
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      const order = await tx.order.update({
+        where: { id },
         data: {
-          userId: existingOrder.userId,
-          orderId: existingOrder.id,
-          orderNumber: existingOrder.orderNumber,
-          oldStatus: oldStatus,
-          newStatus: data.status,
+          ...(data.status && { status: data.status }),
+          ...(data.adminNote !== undefined && { adminNote: data.adminNote }),
+          ...(data.status === "CANCELLED" && {
+            cancelledBy: "ADMIN" as const,
+            cancelledAt: new Date(),
+            cancelReason: data.cancelReason,
+          }),
+          // ออกจากสถานะยกเลิกแล้วต้องล้างข้อมูลการยกเลิกด้วย
+          // ไม่งั้นใบที่ฟื้นมาจะขึ้นว่า "ยกเลิกโดยแอดมิน" ตลอดไป
+          ...(statusChanged &&
+            data.status !== "CANCELLED" &&
+            oldStatus === "CANCELLED" && {
+              cancelledBy: null,
+              cancelledAt: null,
+              cancelReason: null,
+            }),
         },
       })
 
-      console.log(
-        `Created notification for user ${existingOrder.userId}: ${existingOrder.orderNumber} ${oldStatus} -> ${data.status}`
-      )
-    }
+      if (statusChanged && data.status && existingOrder.userId) {
+        await tx.userOrderNotification.create({
+          data: {
+            userId: existingOrder.userId,
+            orderId: existingOrder.id,
+            orderNumber: existingOrder.orderNumber,
+            oldStatus,
+            newStatus: data.status,
+          },
+        })
+      }
+
+      if (statusChanged && data.status) {
+        await recordAudit(tx, {
+          actorId: guard.user.id,
+          action:
+            data.status === "CANCELLED"
+              ? AUDIT_ACTIONS.ORDER_CANCELLED
+              : AUDIT_ACTIONS.ORDER_STATUS_CHANGED,
+          entityType: "Order",
+          entityId: id,
+          before: { status: oldStatus },
+          after: {
+            status: data.status,
+            ...(data.cancelReason && { cancelReason: data.cancelReason }),
+          },
+          ip: clientIp(request.headers),
+        })
+      }
+
+      return order
+    })
 
     return NextResponse.json({
       success: true,
