@@ -106,6 +106,7 @@ export async function PATCH(
       action: AUDIT_ACTIONS.PRODUCT_UPDATED,
       entityType: "Product",
       entityId: id,
+      entityLabel: product.name,
       before: { name: existing.name, slug: existing.slug, isActive: existing.isActive },
       after: { name: product.name, slug: product.slug, isActive: product.isActive },
       ip: clientIp(request.headers),
@@ -152,6 +153,7 @@ export async function DELETE(
         action: AUDIT_ACTIONS.PRODUCT_DELETED,
         entityType: "Product",
         entityId: id,
+        entityLabel: product.name,
         before: { name: product.name, slug: product.slug },
         ip: clientIp(_request.headers),
       })

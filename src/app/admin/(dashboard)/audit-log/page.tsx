@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { History, ShieldCheck } from "lucide-react"
+import { History, Search, ShieldCheck } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { DataPagination } from "@/components/ui/data-pagination"
@@ -29,6 +29,7 @@ interface AuditEntry {
   action: string
   entityType: string
   entityId: string
+  entityLabel: string | null
   before: Record<string, unknown> | null
   after: Record<string, unknown> | null
   ip: string | null
@@ -72,6 +73,7 @@ export default function AuditLogPage() {
   const [total, setTotal] = useState(0)
   const [entityType, setEntityType] = useState("all")
   const [actorId, setActorId] = useState("all")
+  const [q, setQ] = useState("")
   const [from, setFrom] = useState("")
   const [to, setTo] = useState("")
 
@@ -83,6 +85,7 @@ export default function AuditLogPage() {
         limit: "25",
         entityType,
         actorId,
+        ...(q && { q }),
         ...(from && { from }),
         ...(to && { to }),
       })
@@ -99,7 +102,7 @@ export default function AuditLogPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, entityType, actorId, from, to])
+  }, [page, entityType, actorId, q, from, to])
 
   useEffect(() => {
     void load()
@@ -119,6 +122,28 @@ export default function AuditLogPage() {
       />
 
       <div className="flex flex-wrap items-end gap-3">
+        <div className="space-y-1.5">
+          <Label htmlFor="audit-q" className="text-xs text-muted-foreground">
+            ค้นหา
+          </Label>
+          <div className="relative">
+            <Search
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              aria-hidden="true"
+            />
+            <Input
+              id="audit-q"
+              value={q}
+              onChange={(event) => {
+                setQ(event.target.value)
+                setPage(1)
+              }}
+              placeholder="เลขที่เอกสาร ชื่อสินค้า หรืออีเมล"
+              className="w-64 pl-9"
+            />
+          </div>
+        </div>
+
         <Select
           value={entityType}
           onValueChange={(value) => {
@@ -193,11 +218,12 @@ export default function AuditLogPage() {
           />
         </div>
 
-        {(from || to || entityType !== "all" || actorId !== "all") && (
+        {(q || from || to || entityType !== "all" || actorId !== "all") && (
           <Button
             variant="ghost"
             size="sm"
             onClick={() => {
+              setQ("")
               setFrom("")
               setTo("")
               setEntityType("all")
@@ -247,7 +273,11 @@ export default function AuditLogPage() {
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     <div>{AUDIT_ENTITY_LABELS[entry.entityType] ?? entry.entityType}</div>
-                    <code className="text-xs">{entry.entityId.slice(-8)}</code>
+                    {/* entityId เป็น cuid ที่ไม่มีใครจำได้ — โชว์ชื่อที่บันทึกไว้แทน
+                        ถ้าเป็นบันทึกเก่าที่ยังไม่มี ค่อยตกกลับไปโชว์ id ท้าย 8 ตัว */}
+                    <span className="text-xs text-foreground">
+                      {entry.entityLabel ?? <code>{entry.entityId.slice(-8)}</code>}
+                    </span>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {describeChange(entry.before, entry.after)}

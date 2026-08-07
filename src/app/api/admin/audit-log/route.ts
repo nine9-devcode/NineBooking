@@ -17,6 +17,11 @@ export async function GET(request: NextRequest) {
 
     const where: Prisma.AuditLogWhereInput = {}
 
+    // ค้นจาก entityLabel (เลขที่เอกสาร / ชื่อสินค้า / อีเมล) ซึ่งเป็นสิ่งที่คนจำได้จริง
+    // ไม่ใช่ entityId ที่เป็น cuid ภายใน
+    const q = searchParams.get("q")?.trim()
+    if (q) where.entityLabel = { contains: q, mode: "insensitive" }
+
     const action = searchParams.get("action")
     if (action && action !== "all") where.action = action
 
@@ -47,6 +52,7 @@ export async function GET(request: NextRequest) {
           action: true,
           entityType: true,
           entityId: true,
+          entityLabel: true,
           before: true,
           after: true,
           ip: true,

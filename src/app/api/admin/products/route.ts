@@ -193,6 +193,7 @@ export async function POST(request: NextRequest) {
       action: AUDIT_ACTIONS.PRODUCT_CREATED,
       entityType: "Product",
       entityId: product.id,
+      entityLabel: product.name,
       after: { name: product.name, slug: product.slug },
       ip: clientIp(request.headers),
     })

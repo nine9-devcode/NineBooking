@@ -248,6 +248,7 @@ export async function POST(request: NextRequest) {
       action: AUDIT_ACTIONS.QUOTATION_CREATED,
       entityType: "Quotation",
       entityId: quotation.id,
+      entityLabel: quotation.quotationNumber,
       after: {
         quotationNumber: quotation.quotationNumber,
         totalAmount: quotation.totalAmount.toString(),

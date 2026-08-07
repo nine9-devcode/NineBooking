@@ -43,6 +43,7 @@ export async function respondToQuotation(params: {
     select: {
       id: true,
       status: true,
+      quotationNumber: true,
       isLatest: true,
       validUntil: true,
       respondedAt: true,
@@ -72,6 +73,7 @@ export async function respondToQuotation(params: {
       action: AUDIT_ACTIONS.QUOTATION_RESPONDED,
       entityType: "Quotation",
       entityId: quotationId,
+      entityLabel: quotation.quotationNumber,
       before: { status: quotation.status },
       after: { status, ...(note && { note }) },
       ip,

@@ -229,6 +229,7 @@ export async function DELETE(
         action: AUDIT_ACTIONS.CATEGORY_DELETED,
         entityType: "Category",
         entityId: params.id,
+        entityLabel: category.name,
         before: { name: category.name, slug: category.slug },
         ip: clientIp(request.headers),
       })

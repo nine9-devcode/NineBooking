@@ -284,6 +284,7 @@ export async function PATCH(
               : AUDIT_ACTIONS.ORDER_STATUS_CHANGED,
           entityType: "Order",
           entityId: id,
+          entityLabel: existingOrder.orderNumber,
           before: { status: oldStatus },
           after: {
             status: data.status,

@@ -25,6 +25,8 @@ export interface AuditEntry {
   action: AuditAction
   entityType: string
   entityId: string
+  /** ชื่อที่คนอ่านออก เช่น "ORD-20260807-001" — ใช้เป็นตัวค้นในหน้า audit log */
+  entityLabel?: string | null
   /** ค่าก่อนแก้ — ใส่เฉพาะฟิลด์ที่เปลี่ยน ไม่ต้องยัดทั้งแถว */
   before?: Prisma.InputJsonValue
   after?: Prisma.InputJsonValue
@@ -42,6 +44,7 @@ export async function recordAudit(
       action: entry.action,
       entityType: entry.entityType,
       entityId: entry.entityId,
+      entityLabel: entry.entityLabel ?? null,
       before: entry.before,
       after: entry.after,
       ip: entry.ip ?? null,
@@ -81,4 +84,23 @@ export function diffFields<T extends Record<string, unknown>>(
   return Object.keys(changedAfter).length > 0
     ? { before: changedBefore, after: changedAfter }
     : null
+}
+
+/**
+ * ลบบันทึกที่เก่ากว่าที่กำหนด — เรียกจาก /api/cron
+ *
+ * ตาราง audit โตทางเดียวโดยธรรมชาติ ถ้าไม่มีนโยบายลบ สุดท้ายจะกลายเป็น
+ * ตารางที่ใหญ่ที่สุดในระบบทั้งที่แทบไม่มีใครอ่านของเก่ากว่าปีที่แล้ว
+ *
+ * ถ้าต้องเก็บตามข้อกำหนดทางกฎหมาย ให้ย้ายออกไปเก็บที่อื่นก่อนเรียกฟังก์ชันนี้
+ * ค่าเริ่มต้น 365 วันตั้งไว้ตามอายุที่พอใช้ตรวจสอบย้อนหลังได้จริง
+ */
+export async function cleanupOldAuditLogs(retentionDays = 365): Promise<number> {
+  const cutoff = new Date(Date.now() - retentionDays * 24 * 60 * 60_000)
+
+  const { count } = await prisma.auditLog.deleteMany({
+    where: { createdAt: { lt: cutoff } },
+  })
+
+  return count
 }

@@ -278,7 +278,7 @@ export async function PATCH(request: NextRequest) {
 
     const before = await prisma.user.findUnique({
       where: { id },
-      select: { role: true, nickname: true, phone: true },
+      select: { email: true, role: true, nickname: true, phone: true },
     })
     if (!before) return apiError("ไม่พบสมาชิก", 404)
 
@@ -298,6 +298,7 @@ export async function PATCH(request: NextRequest) {
           action: AUDIT_ACTIONS.USER_ROLE_CHANGED,
           entityType: "User",
           entityId: id,
+          entityLabel: before.email,
           before: changed.before,
           after: changed.after,
           ip: clientIp(request.headers),
@@ -342,6 +343,7 @@ export async function DELETE(request: NextRequest) {
         action: AUDIT_ACTIONS.USER_DELETED,
         entityType: "User",
         entityId: id,
+        entityLabel: target.email,
         before: { email: target.email, name: target.name, role: target.role },
         ip: clientIp(request.headers),
       })

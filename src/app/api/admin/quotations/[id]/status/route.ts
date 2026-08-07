@@ -57,6 +57,7 @@ export async function PATCH(
             : AUDIT_ACTIONS.QUOTATION_STATUS_CHANGED,
         entityType: "Quotation",
         entityId: id,
+        entityLabel: existingQuotation.quotationNumber,
         before: { status: existingQuotation.status },
         after: { status },
         ip: clientIp(request.headers),

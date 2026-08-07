@@ -4,6 +4,7 @@ import { NextRequest } from "next/server"
 
 import { auth } from "@/lib/auth"
 import { apiOk, handleApiError, unauthorized } from "@/lib/api/response"
+import { cleanupOldAuditLogs } from "@/lib/audit"
 import { env } from "@/lib/env"
 import { cleanupExpiredRateLimits } from "@/lib/rate-limit"
 import { archiveProductViews } from "@/features/dashboard/archive-product-views"
@@ -50,12 +51,13 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
 async function runJobs() {
   const startedAt = Date.now()
 
-  const [views, tokens, rateLimits, quotations] = await Promise.all([
+  const [views, tokens, rateLimits, quotations, auditLogs] = await Promise.all([
     archiveProductViews(),
     cleanupExpiredResetTokens(),
     cleanupExpiredRateLimits(),
     // schema มี EXPIRED กับ validUntil มาตั้งแต่แรก แต่ไม่เคยมีอะไรเปลี่ยนสถานะให้
     expireQuotations(),
+    cleanupOldAuditLogs(),
   ])
 
   return {
@@ -65,6 +67,7 @@ async function runJobs() {
     expiredResetTokensRemoved: tokens,
     expiredRateLimitsRemoved: rateLimits,
     quotationsExpired: quotations,
+    oldAuditLogsRemoved: auditLogs,
   }
 }
 

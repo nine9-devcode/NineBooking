@@ -65,6 +65,7 @@ export async function PATCH(request: Request) {
           action: AUDIT_ACTIONS.SETTINGS_UPDATED,
           entityType: "Settings",
           entityId: saved.id,
+          entityLabel: "การตั้งค่าระบบ",
           before: { showHomePage: settings?.showHomePage ?? null },
           after: { showHomePage },
           ip: clientIp(request.headers),

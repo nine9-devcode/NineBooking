@@ -276,6 +276,13 @@ model AuditLog {
   entityType String
   entityId   String
 
+  /// ชื่อที่คนอ่านออก เช่น "ORD-20260807-001" หรือชื่อสินค้า
+  ///
+  /// entityId เป็น cuid ภายในซึ่งไม่มีใครจำได้ คำถามที่คนถามจริงคือ
+  /// "ใครแตะ ORD-20260807-001 บ้าง" จึงต้องเก็บเลขที่เอกสารไว้ตอนบันทึกด้วย
+  /// (เก็บ ณ ตอนนั้น ไม่ใช่ join ทีหลัง เพราะของที่ถูกลบไปแล้ว join ไม่เจอ)
+  entityLabel String?
+
   before Json?
   after  Json?
   ip     String?
@@ -285,6 +292,7 @@ model AuditLog {
   @@index([entityType, entityId, createdAt])
   @@index([actorId, createdAt])
   @@index([action, createdAt])
+  @@index([entityLabel])
   @@index([createdAt])
 }
 
