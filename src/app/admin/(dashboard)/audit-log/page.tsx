@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { History, ShieldCheck } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
 import { DataPagination } from "@/components/ui/data-pagination"
 import { PageHeader } from "@/components/ui/page-header"
 import {
@@ -13,7 +14,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { EmptyState, LoadingState } from "@/components/ui/states"
-import { AUDIT_ACTION_LABELS, AUDIT_ENTITY_LABELS } from "@/lib/audit-actions"
+import {
+  AUDIT_ACTION_LABELS,
+  AUDIT_ENTITY_LABELS,
+  auditFieldLabel,
+  auditValueLabel,
+} from "@/lib/audit-actions"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { formatDate } from "@/lib/utils"
 
 interface AuditEntry {
@@ -34,7 +42,7 @@ interface Actor {
   nickname: string | null
 }
 
-/** แปลง { status: "PENDING" } เป็นข้อความอ่านง่าย */
+/** แปลง { status: "PENDING" } เป็น "สถานะ: รอดำเนินการ → ยืนยันแล้ว" */
 function describeChange(before: unknown, after: unknown): string {
   const beforeObj = (before ?? {}) as Record<string, unknown>
   const afterObj = (after ?? {}) as Record<string, unknown>
@@ -44,11 +52,13 @@ function describeChange(before: unknown, after: unknown): string {
 
   return keys
     .map((key) => {
+      const label = auditFieldLabel(key)
+      const to = auditValueLabel(afterObj[key])
       const from = beforeObj[key]
-      const to = afterObj[key]
+
       return from === undefined || from === null
-        ? `${key}: ${String(to)}`
-        : `${key}: ${String(from)} → ${String(to)}`
+        ? `${label}: ${to}`
+        : `${label}: ${auditValueLabel(from)} → ${to}`
     })
     .join(" · ")
 }
@@ -62,6 +72,8 @@ export default function AuditLogPage() {
   const [total, setTotal] = useState(0)
   const [entityType, setEntityType] = useState("all")
   const [actorId, setActorId] = useState("all")
+  const [from, setFrom] = useState("")
+  const [to, setTo] = useState("")
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -71,6 +83,8 @@ export default function AuditLogPage() {
         limit: "25",
         entityType,
         actorId,
+        ...(from && { from }),
+        ...(to && { to }),
       })
       const res = await fetch(`/api/admin/audit-log?${params}`)
       if (!res.ok) throw new Error("โหลดข้อมูลไม่สำเร็จ")
@@ -85,7 +99,7 @@ export default function AuditLogPage() {
     } finally {
       setLoading(false)
     }
-  }, [page, entityType, actorId])
+  }, [page, entityType, actorId, from, to])
 
   useEffect(() => {
     void load()
@@ -104,7 +118,7 @@ export default function AuditLogPage() {
         }
       />
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-end gap-3">
         <Select
           value={entityType}
           onValueChange={(value) => {
@@ -144,6 +158,56 @@ export default function AuditLogPage() {
             ))}
           </SelectContent>
         </Select>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="audit-from" className="text-xs text-muted-foreground">
+            ตั้งแต่วันที่
+          </Label>
+          <Input
+            id="audit-from"
+            type="date"
+            value={from}
+            max={to || undefined}
+            onChange={(event) => {
+              setFrom(event.target.value)
+              setPage(1)
+            }}
+            className="w-40"
+          />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="audit-to" className="text-xs text-muted-foreground">
+            ถึงวันที่
+          </Label>
+          <Input
+            id="audit-to"
+            type="date"
+            value={to}
+            min={from || undefined}
+            onChange={(event) => {
+              setTo(event.target.value)
+              setPage(1)
+            }}
+            className="w-40"
+          />
+        </div>
+
+        {(from || to || entityType !== "all" || actorId !== "all") && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setFrom("")
+              setTo("")
+              setEntityType("all")
+              setActorId("all")
+              setPage(1)
+            }}
+          >
+            ล้างตัวกรอง
+          </Button>
+        )}
       </div>
 
       {loading ? (

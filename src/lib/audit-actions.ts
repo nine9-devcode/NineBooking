@@ -68,3 +68,60 @@ export const AUDIT_ENTITY_LABELS: Record<string, string> = {
   User: "สมาชิก",
   Settings: "การตั้งค่า",
 }
+
+/**
+ * ป้ายภาษาไทยของฟิลด์ที่ถูกบันทึกใน before/after
+ *
+ * ของเดิมหน้า audit log โชว์ชื่อฟิลด์ดิบ เช่น "status: PENDING → CONFIRMED"
+ * ซึ่งอ่านรู้เรื่องเฉพาะคนที่รู้จัก schema
+ */
+export const AUDIT_FIELD_LABELS: Record<string, string> = {
+  status: "สถานะ",
+  role: "บทบาท",
+  name: "ชื่อ",
+  nickname: "ชื่อเล่น",
+  phone: "เบอร์โทร",
+  email: "อีเมล",
+  price: "ราคา",
+  unitPrice: "ราคาต่อหน่วย",
+  totalAmount: "ยอดรวม",
+  quantity: "จำนวน",
+  isActive: "เปิดใช้งาน",
+  cancelReason: "เหตุผลที่ยกเลิก",
+  note: "หมายเหตุ",
+  adminNote: "หมายเหตุของแอดมิน",
+  showHomePage: "เปิดหน้าเว็บ",
+  categoryId: "หมวดหมู่",
+  slug: "slug",
+  validUntil: "ยืนราคาถึง",
+}
+
+/** ค่าที่เป็น enum ก็ต้องแปลด้วย ไม่งั้นได้ "สถานะ: PENDING → CONFIRMED" ซึ่งแปลครึ่งเดียว */
+export const AUDIT_VALUE_LABELS: Record<string, string> = {
+  PENDING: "รอดำเนินการ",
+  CONFIRMED: "ยืนยันแล้ว",
+  COMPLETED: "เสร็จสิ้น",
+  CANCELLED: "ยกเลิก",
+  DRAFT: "ฉบับร่าง",
+  SENT: "ส่งให้ลูกค้าแล้ว",
+  ACCEPTED: "ลูกค้ายอมรับ",
+  REJECTED: "ลูกค้าปฏิเสธ",
+  EXPIRED: "หมดอายุ",
+  IN_PROGRESS: "กำลังดำเนินการ",
+  CLOSED: "เสร็จสิ้น",
+  admin: "ผู้ดูแลระบบ",
+  user: "ผู้ใช้ทั่วไป",
+  CUSTOMER: "ลูกค้า",
+  ADMIN: "แอดมิน",
+  true: "ใช่",
+  false: "ไม่",
+}
+
+export function auditFieldLabel(field: string): string {
+  return AUDIT_FIELD_LABELS[field] ?? field
+}
+
+export function auditValueLabel(value: unknown): string {
+  if (value === null || value === undefined) return "—"
+  return AUDIT_VALUE_LABELS[String(value)] ?? String(value)
+}

@@ -65,16 +65,17 @@ export async function recordAuditSafely(entry: AuditEntry): Promise<void> {
 export function diffFields<T extends Record<string, unknown>>(
   before: T,
   after: Partial<T>
-): { before: Record<string, unknown>; after: Record<string, unknown> } | null {
-  const changedBefore: Record<string, unknown> = {}
-  const changedAfter: Record<string, unknown> = {}
+): { before: Prisma.InputJsonValue; after: Prisma.InputJsonValue } | null {
+  // InputJsonObject เป็น readonly จึงประกอบค่าใน Record ธรรมดาก่อน
+  const changedBefore: Record<string, Prisma.InputJsonValue> = {}
+  const changedAfter: Record<string, Prisma.InputJsonValue> = {}
 
   for (const [key, nextValue] of Object.entries(after)) {
     if (nextValue === undefined) continue
     if (Object.is(before[key], nextValue)) continue
 
-    changedBefore[key] = before[key] ?? null
-    changedAfter[key] = nextValue
+    changedBefore[key] = (before[key] ?? null) as Prisma.InputJsonValue
+    changedAfter[key] = nextValue as Prisma.InputJsonValue
   }
 
   return Object.keys(changedAfter).length > 0

@@ -186,7 +186,6 @@ export default function AdminLoginPage() {
                     disabled={isLoading}
                     required
                     autoComplete="email"
-                    aria-label="อีเมลผู้ดูแลระบบ"
                     className="pl-10"
                   />
                 </div>
@@ -206,7 +205,6 @@ export default function AdminLoginPage() {
                     disabled={isLoading}
                     required
                     autoComplete="current-password"
-                    aria-label="รหัสผ่านผู้ดูแลระบบ"
                     className="pl-10 pr-10"
                   />
                   <button

@@ -3,6 +3,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
+import { AUDIT_ACTIONS, recordAudit } from "@/lib/audit"
+import { clientIp } from "@/lib/rate-limit"
 import { updateStatusSchema } from "@/features/quotations/components/schema"
 
 // PATCH - อัปเดตสถานะใบเสนอราคา
@@ -37,10 +39,30 @@ export async function PATCH(
       return NextResponse.json({ error: "ไม่พบใบเสนอราคา" }, { status: 404 })
     }
 
-    // Update status
-    const updatedQuotation = await prisma.quotation.update({
-      where: { id },
-      data: { status },
+    const updatedQuotation = await prisma.$transaction(async (tx) => {
+      const quotation = await tx.quotation.update({
+        where: { id },
+        data: {
+          status,
+          // จำวันที่ส่งไว้ ใช้ทั้งในหน้าลูกค้าและตอนคำนวณว่าหมดอายุหรือยัง
+          ...(status === "SENT" && !existingQuotation.sentAt && { sentAt: new Date() }),
+        },
+      })
+
+      await recordAudit(tx, {
+        actorId: guard.user.id,
+        action:
+          status === "SENT"
+            ? AUDIT_ACTIONS.QUOTATION_SENT
+            : AUDIT_ACTIONS.QUOTATION_STATUS_CHANGED,
+        entityType: "Quotation",
+        entityId: id,
+        before: { status: existingQuotation.status },
+        after: { status },
+        ip: clientIp(request.headers),
+      })
+
+      return quotation
     })
 
     return NextResponse.json({

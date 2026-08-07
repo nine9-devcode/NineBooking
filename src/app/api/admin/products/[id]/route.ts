@@ -3,6 +3,8 @@ import { NextRequest } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { apiError, apiOk, handleApiError, notFound } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
+import { AUDIT_ACTIONS, recordAudit, recordAuditSafely } from "@/lib/audit"
+import { clientIp } from "@/lib/rate-limit"
 import { sanitizeRichText } from "@/lib/sanitize"
 import { deleteFiles } from "@/lib/storage"
 import type { DatasheetJSON } from "@/features/products/datasheet.types"
@@ -99,6 +101,16 @@ export async function PATCH(
 
     await deleteFiles(orphaned)
 
+    await recordAuditSafely({
+      actorId: guard.user.id,
+      action: AUDIT_ACTIONS.PRODUCT_UPDATED,
+      entityType: "Product",
+      entityId: id,
+      before: { name: existing.name, slug: existing.slug, isActive: existing.isActive },
+      after: { name: product.name, slug: product.slug, isActive: product.isActive },
+      ip: clientIp(request.headers),
+    })
+
     return apiOk(product)
   } catch (error) {
     return handleApiError(error, "admin/products:update")
@@ -132,7 +144,18 @@ export async function DELETE(
       )
     }
 
-    await prisma.product.delete({ where: { id } })
+    await prisma.$transaction(async (tx) => {
+      await tx.product.delete({ where: { id } })
+
+      await recordAudit(tx, {
+        actorId: guard.user.id,
+        action: AUDIT_ACTIONS.PRODUCT_DELETED,
+        entityType: "Product",
+        entityId: id,
+        before: { name: product.name, slug: product.slug },
+        ip: clientIp(_request.headers),
+      })
+    })
 
     await deleteFiles([
       ...(product.image ? [product.image] : []),

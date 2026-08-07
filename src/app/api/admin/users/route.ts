@@ -7,6 +7,8 @@ import { requireAdmin } from "@/lib/api/guards"
 import { parsePagination } from "@/lib/api/query"
 import { apiError, apiOk, handleApiError } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
+import { AUDIT_ACTIONS, diffFields, recordAudit } from "@/lib/audit"
+import { clientIp } from "@/lib/rate-limit"
 
 // GET - ดึงรายการสมาชิก + สถิติ + รองรับ filter/pagination
 export async function GET(request: NextRequest) {
@@ -274,11 +276,35 @@ export async function PATCH(request: NextRequest) {
       return apiError("คุณไม่สามารถลดบทบาทของตัวเองได้")
     }
 
-    // ต้องระบุ select เสมอ — ของเดิมคืนทั้งแถวซึ่งรวม bcrypt hash ของรหัสผ่านออกไปด้วย
-    const updatedUser = await prisma.user.update({
+    const before = await prisma.user.findUnique({
       where: { id },
-      data: changes,
-      select: adminUserSelect,
+      select: { role: true, nickname: true, phone: true },
+    })
+    if (!before) return apiError("ไม่พบสมาชิก", 404)
+
+    // ต้องระบุ select เสมอ — ของเดิมคืนทั้งแถวซึ่งรวม bcrypt hash ของรหัสผ่านออกไปด้วย
+    const updatedUser = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.update({
+        where: { id },
+        data: changes,
+        select: adminUserSelect,
+      })
+
+      // บันทึกเฉพาะตอนค่าเปลี่ยนจริง ไม่งั้นกดบันทึกเฉยๆ ก็มีบรรทัดใหม่โผล่
+      const changed = diffFields(before, changes)
+      if (changed) {
+        await recordAudit(tx, {
+          actorId: guard.user.id,
+          action: AUDIT_ACTIONS.USER_ROLE_CHANGED,
+          entityType: "User",
+          entityId: id,
+          before: changed.before,
+          after: changed.after,
+          ip: clientIp(request.headers),
+        })
+      }
+
+      return user
     })
 
     return apiOk(updatedUser)
@@ -302,7 +328,24 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: "คุณไม่สามารถลบบัญชีของตัวเองได้" }, { status: 400 })
     }
 
-    await prisma.user.delete({ where: { id } })
+    const target = await prisma.user.findUnique({
+      where: { id },
+      select: { email: true, name: true, role: true },
+    })
+    if (!target) return NextResponse.json({ error: "ไม่พบสมาชิก" }, { status: 404 })
+
+    await prisma.$transaction(async (tx) => {
+      await tx.user.delete({ where: { id } })
+
+      await recordAudit(tx, {
+        actorId: guard.user.id,
+        action: AUDIT_ACTIONS.USER_DELETED,
+        entityType: "User",
+        entityId: id,
+        before: { email: target.email, name: target.name, role: target.role },
+        ip: clientIp(request.headers),
+      })
+    })
 
     return NextResponse.json({ message: "ลบสมาชิกสำเร็จ" })
   } catch (error) {

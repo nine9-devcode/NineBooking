@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
+import { AUDIT_ACTIONS, recordAudit } from "@/lib/audit"
+import { clientIp } from "@/lib/rate-limit"
 
 // Type สำหรับ Category with children
 interface CategoryWithChildren {
@@ -219,8 +221,17 @@ export async function DELETE(
     }
 
     // ลบหมวดหมู่จาก Database (Cascade จะลบ children อัตโนมัติ)
-    await prisma.category.delete({
-      where: { id: params.id },
+    await prisma.$transaction(async (tx) => {
+      await tx.category.delete({ where: { id: params.id } })
+
+      await recordAudit(tx, {
+        actorId: guard.user.id,
+        action: AUDIT_ACTIONS.CATEGORY_DELETED,
+        entityType: "Category",
+        entityId: params.id,
+        before: { name: category.name, slug: category.slug },
+        ip: clientIp(request.headers),
+      })
     })
 
     return NextResponse.json({

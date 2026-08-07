@@ -4,6 +4,8 @@ import { Prisma } from "@prisma/client"
 import { requireAdmin } from "@/lib/api/guards"
 import { parsePagination, parseSort } from "@/lib/api/query"
 import { prisma } from "@/lib/db"
+import { AUDIT_ACTIONS, recordAuditSafely } from "@/lib/audit"
+import { clientIp } from "@/lib/rate-limit"
 import { sanitizeRichText } from "@/lib/sanitize"
 
 // ฟิลด์ที่ยอมให้เรียงได้ — ของเดิมยัดค่าจาก query string เข้า orderBy ตรงๆ
@@ -184,6 +186,15 @@ export async function POST(request: NextRequest) {
       include: {
         category: true,
       },
+    })
+
+    await recordAuditSafely({
+      actorId: guard.user.id,
+      action: AUDIT_ACTIONS.PRODUCT_CREATED,
+      entityType: "Product",
+      entityId: product.id,
+      after: { name: product.name, slug: product.slug },
+      ip: clientIp(request.headers),
     })
 
     return NextResponse.json(product, { status: 201 })

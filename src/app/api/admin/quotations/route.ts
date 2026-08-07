@@ -3,6 +3,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/api/guards"
 import { prisma } from "@/lib/db"
+import { AUDIT_ACTIONS, recordAuditSafely } from "@/lib/audit"
+import { clientIp } from "@/lib/rate-limit"
 import { createQuotationSchema } from "@/features/quotations/components/schema"
 import { Decimal } from "@prisma/client/runtime/library"
 import { Prisma, QuotationStatus } from "@prisma/client"
@@ -239,6 +241,18 @@ export async function POST(request: NextRequest) {
           },
         },
       })
+    })
+
+    await recordAuditSafely({
+      actorId: guard.user.id,
+      action: AUDIT_ACTIONS.QUOTATION_CREATED,
+      entityType: "Quotation",
+      entityId: quotation.id,
+      after: {
+        quotationNumber: quotation.quotationNumber,
+        totalAmount: quotation.totalAmount.toString(),
+      },
+      ip: clientIp(request.headers),
     })
 
     return NextResponse.json({

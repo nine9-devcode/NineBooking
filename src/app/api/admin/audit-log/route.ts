@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const [entries, total, actors] = await Promise.all([
+    const [entries, total, actorGroups] = await Promise.all([
       prisma.auditLog.findMany({
         where,
         orderBy: { createdAt: "desc" },
@@ -55,17 +55,23 @@ export async function GET(request: NextRequest) {
         },
       }),
       prisma.auditLog.count({ where }),
-      // รายชื่อผู้กระทำสำหรับตัวกรอง — เอาเฉพาะคนที่มีบันทึกจริง
-      prisma.auditLog.findMany({
-        distinct: ["actorId"],
-        select: { actor: { select: { id: true, name: true, nickname: true } } },
-        take: 50,
-      }),
+      // รายชื่อผู้กระทำสำหรับตัวกรอง
+      //
+      // ต้องใช้ groupBy ไม่ใช่ findMany({ distinct }) — Prisma ทำ distinct
+      // ในหน่วยความจำ แล้ว SQL ที่ออกมาไม่มี LIMIT เลย ("SELECT id, actorId
+      // FROM AuditLog WHERE 1=1 ORDER BY id") ผลคือขนทั้งตารางมาทุกครั้งที่เปิดหน้า
+      // ส่วน groupBy ถูกแปลเป็น GROUP BY จริง คืนมาแค่จำนวนผู้กระทำ
+      prisma.auditLog.groupBy({ by: ["actorId"], _count: { actorId: true } }),
     ])
+
+    const actors = await prisma.user.findMany({
+      where: { id: { in: actorGroups.map((group) => group.actorId) } },
+      select: { id: true, name: true, nickname: true },
+    })
 
     return apiOk({
       entries,
-      actors: actors.map((row) => row.actor),
+      actors,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {
