@@ -16,6 +16,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
+      // lib/db.ts ใส่ import "server-only" ไว้กันไม่ให้ client component ลาก
+      // Prisma เข้าบันเดิลเบราว์เซอร์ แต่ Vitest ไม่ใช่บันเดิลเบราว์เซอร์
+      // ถ้าไม่ปิดตรงนี้ เทสต์ของโมดูลที่แตะ db จะพังทั้งที่ไม่ได้ผิดอะไร
+      "server-only": path.resolve(__dirname, "src/test/server-only-stub.ts"),
     },
   },
 })
