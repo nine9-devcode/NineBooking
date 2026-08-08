@@ -29,6 +29,7 @@ import {
 } from "lucide-react"
 import { DataPagination } from "@/components/ui/data-pagination"
 import { getResidenceTypeLabel, getMemberTypeLabel, MEMBER_TYPE_COLORS } from "@/lib/constants"
+import { isAdminRole, isSuperAdminRole, roleLabel } from "@/lib/roles"
 
 interface UserData {
   id: string
@@ -249,12 +250,16 @@ export function UsersTable({
                   {/* ประเภทสมาชิก + หมายเหตุ */}
                   <TableCell className="hidden md:table-cell">
                     <div className="space-y-1.5 max-w-[200px]">
-                      {user.role === "admin" ? (
+                      {isAdminRole(user.role) ? (
                         <Badge
                           variant="outline"
-                          className="bg-destructive/10 text-destructive border-destructive/20"
+                          className={
+                            isSuperAdminRole(user.role)
+                              ? "border-primary/25 bg-primary/10 text-primary"
+                              : "border-destructive/20 bg-destructive/10 text-destructive"
+                          }
                         >
-                          ผู้ดูแลระบบ
+                          {roleLabel(user.role)}
                         </Badge>
                       ) : (
                         <>
@@ -317,8 +322,8 @@ export function UsersTable({
 
                   {/* บทบาท */}
                   <TableCell className="hidden sm:table-cell">
-                    <Badge variant={user.role === "admin" ? "default" : "secondary"}>
-                      {user.role === "admin" ? "Admin" : "User"}
+                    <Badge variant={isAdminRole(user.role) ? "default" : "secondary"}>
+                      {roleLabel(user.role)}
                     </Badge>
                   </TableCell>
 

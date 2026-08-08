@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/db"
 import { env } from "@/lib/env"
 import { RATE_LIMITS, clientIp, consume, resetRateLimit } from "@/lib/rate-limit"
+import { isAdminRole } from "@/lib/roles"
 
 // error code เหล่านี้ถูกส่งกลับไปหน้า login แล้วแปลงเป็นข้อความไทยที่นั่น
 class InvalidLoginError extends CredentialsSignin {
@@ -72,7 +73,7 @@ export const authOptions: NextAuthConfig = {
 
         // แอดมินต้องเข้าผ่านหน้า /admin/login — ตอนนี้คนที่จะเห็นข้อความนี้
         // ต้องรู้รหัสผ่านที่ถูกต้องอยู่แล้ว จึงไม่ใช่ช่องให้ไล่หาบัญชีอีกต่อไป
-        if (user.role === "admin" && isAdminLogin !== "true") {
+        if (isAdminRole(user.role) && isAdminLogin !== "true") {
           throw new AdminNotAllowedError()
         }
 

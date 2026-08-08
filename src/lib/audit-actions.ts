@@ -33,6 +33,10 @@ export const AUDIT_ACTIONS = {
   ADMIN_CREATED: "user.admin_created",
 
   SETTINGS_UPDATED: "settings.updated",
+
+  // เครื่องมือระบบ — ลบข้อมูลได้ แต่ลบแบบไม่มีร่องรอยไม่ได้
+  SYSTEM_JOB_RUN: "system.job_run",
+  SYSTEM_DATA_CLEARED: "system.data_cleared",
 } as const
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[keyof typeof AUDIT_ACTIONS]
@@ -57,6 +61,8 @@ export const AUDIT_ACTION_LABELS: Record<string, string> = {
   [AUDIT_ACTIONS.USER_DELETED]: "ลบสมาชิก",
   [AUDIT_ACTIONS.ADMIN_CREATED]: "สร้างบัญชีผู้ดูแลระบบ",
   [AUDIT_ACTIONS.SETTINGS_UPDATED]: "แก้ไขการตั้งค่าระบบ",
+  [AUDIT_ACTIONS.SYSTEM_JOB_RUN]: "สั่งรันงานตามเวลา",
+  [AUDIT_ACTIONS.SYSTEM_DATA_CLEARED]: "ล้างข้อมูลระบบ",
 }
 
 /** ประเภทข้อมูลที่ถูกบันทึก ใช้ทำตัวกรองในหน้า audit log */
@@ -67,6 +73,7 @@ export const AUDIT_ENTITY_LABELS: Record<string, string> = {
   Quotation: "ใบเสนอราคา",
   User: "สมาชิก",
   Settings: "การตั้งค่า",
+  System: "ระบบ",
 }
 
 /**
@@ -94,6 +101,10 @@ export const AUDIT_FIELD_LABELS: Record<string, string> = {
   categoryId: "หมวดหมู่",
   slug: "slug",
   validUntil: "ยืนราคาถึง",
+  job: "งาน",
+  target: "เป้าหมาย",
+  removed: "จำนวนที่ลบ",
+  durationMs: "เวลาที่ใช้ (มิลลิวินาที)",
 }
 
 /** ค่าที่เป็น enum ก็ต้องแปลด้วย ไม่งั้นได้ "สถานะ: PENDING → CONFIRMED" ซึ่งแปลครึ่งเดียว */

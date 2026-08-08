@@ -4,6 +4,7 @@ import path from "node:path"
 import { auth } from "@/lib/auth"
 import { forbidden, notFound, unauthorized } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
+import { isAdminRole } from "@/lib/roles"
 import { SERVEABLE_CONTENT_TYPES, resolveStoredPath } from "@/lib/storage"
 
 /**
@@ -35,7 +36,7 @@ export async function GET(
   // ปิดท้ายอีกชั้น: ต่อให้มีไฟล์แปลกๆ หลุดเข้าไปในโฟลเดอร์ ก็ไม่ถูกส่งออกไป
   if (!contentType) return notFound("ไฟล์")
 
-  const isOwner = await canAccess(relative, session.user.id, session.user.role === "admin")
+  const isOwner = await canAccess(relative, session.user.id, isAdminRole(session.user.role))
   if (!isOwner) return forbidden()
 
   try {

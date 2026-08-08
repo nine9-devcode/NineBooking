@@ -11,6 +11,7 @@ import {
   Users,
   Settings,
   History,
+  Wrench,
   ChevronLeft,
   ChevronRight,
   MessageSquare,
@@ -18,7 +19,10 @@ import {
   BarChart3,
   X,
 } from "lucide-react"
+import { useSession } from "next-auth/react"
+
 import { useAdminNotifications } from "@/features/notifications/admin-notification-context"
+import { isSuperAdminRole } from "@/lib/roles"
 
 const SIDEBAR_KEY = "admin-sidebar-collapsed"
 
@@ -69,6 +73,14 @@ const menuItems = [
     icon: History,
   },
   {
+    title: "เครื่องมือระบบ",
+    href: "/admin/dev-tools",
+    icon: Wrench,
+    // เมนูนี้ลบข้อมูลได้ จึงโผล่เฉพาะผู้ดูแลระบบสูงสุด
+    // การกั้นจริงอยู่ที่ requireSuperAdmin() ใน API — ตรงนี้แค่ไม่ให้เกะกะสายตา
+    superAdminOnly: true,
+  },
+  {
     title: "ตั้งค่า",
     href: "/admin/settings",
     icon: Settings,
@@ -89,7 +101,12 @@ export function AdminSidebar({
   onMobileClose,
 }: AdminSidebarProps) {
   const pathname = usePathname()
+  const { data: session } = useSession()
   const { ordersUnreadCount, issuesUnreadCount } = useAdminNotifications()
+
+  const visibleItems = menuItems.filter(
+    (item) => !("superAdminOnly" in item) || isSuperAdminRole(session?.user?.role)
+  )
 
   const getBadgeCount = (href: string) => {
     if (href === "/admin/orders") return ordersUnreadCount
@@ -144,7 +161,7 @@ export function AdminSidebar({
 
       {/* Menu Items */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-2 mt-4">
-        {menuItems.map((item) => {
+        {visibleItems.map((item) => {
           const Icon = item.icon
           const isActive =
             item.href === "/admin"

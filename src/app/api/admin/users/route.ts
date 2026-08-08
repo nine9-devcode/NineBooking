@@ -7,6 +7,7 @@ import { requireAdmin } from "@/lib/api/guards"
 import { parsePagination } from "@/lib/api/query"
 import { apiError, apiOk, handleApiError } from "@/lib/api/response"
 import { prisma } from "@/lib/db"
+import { isAdminRole, isSuperAdminRole } from "@/lib/roles"
 import { AUDIT_ACTIONS, diffFields, recordAudit } from "@/lib/audit"
 import { clientIp } from "@/lib/rate-limit"
 
@@ -41,7 +42,8 @@ export async function GET(request: NextRequest) {
       otherCount,
     ] = await Promise.all([
       prisma.user.count({ where: { role: "user" } }),
-      prisma.user.count({ where: { role: "admin" } }),
+      // นับรวม superadmin ด้วย ไม่งั้นสถิติหายไปหนึ่งคน
+      prisma.user.count({ where: { role: { in: ["admin", "superadmin"] } } }),
       prisma.user.count({
         where: {
           createdAt: { gte: today },
@@ -102,7 +104,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (role && role !== "all") {
-      where.role = role
+      // แท็บ "ผู้ดูแลระบบ" ต้องเห็น superadmin ด้วย ไม่งั้นคนที่กรองดูจะนึกว่าหายไป
+      where.role = role === "admin" ? { in: ["admin", "superadmin"] } : role
     }
 
     if (memberType && memberType !== "all") {
@@ -241,7 +244,7 @@ export async function POST(request: NextRequest) {
 const patchUserSchema = z.object({
   id: z.string().min(1, "ต้องระบุ id ของสมาชิก"),
   // ต้องเป็น enum ไม่ใช่ string อิสระ ไม่งั้นตั้ง role อะไรก็ได้ที่ไม่มีอยู่จริง
-  role: z.enum(["user", "admin"]).optional(),
+  role: z.enum(["user", "admin", "superadmin"]).optional(),
   nickname: z.string().trim().max(40).nullable().optional(),
   phone: z
     .string()
@@ -272,8 +275,16 @@ export async function PATCH(request: NextRequest) {
 
     const { id, ...changes } = patchUserSchema.parse(await request.json())
 
-    if (id === guard.user.id && changes.role && changes.role !== "admin") {
+    if (id === guard.user.id && changes.role && !isAdminRole(changes.role)) {
       return apiError("คุณไม่สามารถลดบทบาทของตัวเองได้")
+    }
+
+    // แอดมินธรรมดาแตะระดับ superadmin ไม่ได้ทั้งขาเข้าและขาออก
+    // ไม่งั้นการกั้นสิทธิ์ไม่มีความหมาย เพราะใครก็เลื่อนขั้นตัวเองได้
+    const actorIsSuperAdmin = isSuperAdminRole(guard.user.role)
+
+    if (changes.role === "superadmin" && !actorIsSuperAdmin) {
+      return apiError("เฉพาะผู้ดูแลระบบสูงสุดเท่านั้นที่ตั้งสิทธิ์ระดับนี้ได้", 403)
     }
 
     const before = await prisma.user.findUnique({
@@ -281,6 +292,10 @@ export async function PATCH(request: NextRequest) {
       select: { email: true, role: true, nickname: true, phone: true },
     })
     if (!before) return apiError("ไม่พบสมาชิก", 404)
+
+    if (isSuperAdminRole(before.role) && !actorIsSuperAdmin) {
+      return apiError("ไม่มีสิทธิ์แก้ไขบัญชีผู้ดูแลระบบสูงสุด", 403)
+    }
 
     // ต้องระบุ select เสมอ — ของเดิมคืนทั้งแถวซึ่งรวม bcrypt hash ของรหัสผ่านออกไปด้วย
     const updatedUser = await prisma.$transaction(async (tx) => {

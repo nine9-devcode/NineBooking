@@ -3,7 +3,10 @@ import { expect } from "@playwright/test"
 
 /** บัญชีจาก prisma/seed.ts */
 export const DEMO = { email: "demo@ninebooking.dev", password: "Demo@1234" }
+/** superadmin — เข้าถึงเครื่องมือระบบได้ */
 export const ADMIN = { email: "admin@ninebooking.dev", password: "Admin@1234" }
+/** admin ระดับปกติ — ใช้ทดสอบว่าการกั้นสิทธิ์ทำงานจริง */
+export const STAFF = { email: "staff@ninebooking.dev", password: "Staff@1234" }
 
 /** slug ของสินค้าที่ seed สร้างไว้เสมอ */
 export const SEED_PRODUCT_SLUG = "camera-in-200"

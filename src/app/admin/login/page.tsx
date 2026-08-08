@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { isAdminRole } from "@/lib/roles"
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -107,7 +108,7 @@ export default function AdminLoginPage() {
 
       // บัญชีผู้ใช้ทั่วไปเข้าหน้านี้ไม่ได้ — ขึ้นข้อความเดียวกับรหัสผ่านผิด
       // เพื่อไม่ให้เดาได้ว่าอีเมลไหนมีอยู่จริง
-      if (session?.user?.role !== "admin") {
+      if (!isAdminRole(session?.user?.role)) {
         await signOut({ redirect: false })
         setError("อีเมลหรือรหัสผ่านไม่ถูกต้อง")
         setIsLoading(false)

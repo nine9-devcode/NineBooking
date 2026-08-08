@@ -3,6 +3,7 @@ import type { Session } from "next-auth"
 
 import { auth } from "@/lib/auth"
 import { forbidden, unauthorized } from "@/lib/api/response"
+import { isAdminRole, isSuperAdminRole } from "@/lib/roles"
 
 export type SessionUser = Session["user"]
 
@@ -19,7 +20,7 @@ export async function requireAdmin(): Promise<Guard> {
   const session = await auth()
 
   if (!session?.user) return { ok: false, response: unauthorized() }
-  if (session.user.role !== "admin") return { ok: false, response: forbidden() }
+  if (!isAdminRole(session.user.role)) return { ok: false, response: forbidden() }
 
   return { ok: true, user: session.user }
 }
@@ -29,6 +30,20 @@ export async function requireUser(): Promise<Guard> {
   const session = await auth()
 
   if (!session?.user) return { ok: false, response: unauthorized() }
+
+  return { ok: true, user: session.user }
+}
+
+/**
+ * เครื่องมือระบบที่ลบข้อมูลได้ — เฉพาะ superadmin
+ *
+ * แยกจาก requireAdmin เพราะแอดมินทั่วไปไม่ควรมีปุ่มล้างข้อมูลอยู่ในมือ
+ */
+export async function requireSuperAdmin(): Promise<Guard> {
+  const session = await auth()
+
+  if (!session?.user) return { ok: false, response: unauthorized() }
+  if (!isSuperAdminRole(session.user.role)) return { ok: false, response: forbidden() }
 
   return { ok: true, user: session.user }
 }

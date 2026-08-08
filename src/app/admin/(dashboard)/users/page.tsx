@@ -15,6 +15,7 @@ import { RefreshCw, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { getErrorMessage } from "@/lib/utils"
+import { isAdminRole } from "@/lib/roles"
 
 interface UserStats {
   total: number
@@ -118,7 +119,7 @@ export default function MembersPage() {
   // Handle Edit Click - Fetch full user data
   const handleEditClick = async (user: any) => {
     setSelectedUser(user)
-    if (user.role === "admin") {
+    if (isAdminRole(user.role)) {
       setIsEditAdminModalOpen(true)
     } else {
       setIsEditModalOpen(true)

@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth"
 import { apiOk, handleApiError, unauthorized } from "@/lib/api/response"
 import { cleanupOldAuditLogs } from "@/lib/audit"
 import { env } from "@/lib/env"
+import { isAdminRole } from "@/lib/roles"
 import { cleanupExpiredRateLimits } from "@/lib/rate-limit"
 import { archiveProductViews } from "@/features/dashboard/archive-product-views"
 import { cleanupExpiredResetTokens } from "@/features/auth/password-reset"
@@ -45,10 +46,10 @@ async function isAuthorized(request: NextRequest): Promise<boolean> {
   }
 
   const session = await auth()
-  return session?.user?.role === "admin"
+  return isAdminRole(session?.user?.role)
 }
 
-async function runJobs() {
+export async function runJobs() {
   const startedAt = Date.now()
 
   const [views, tokens, rateLimits, quotations, auditLogs] = await Promise.all([

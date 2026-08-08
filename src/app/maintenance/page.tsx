@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react"
 import { Construction, Lock, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { signOut } from "next-auth/react"
+import { isAdminRole } from "@/lib/roles"
 
 export default function MaintenancePage() {
   const router = useRouter()
@@ -16,7 +17,7 @@ export default function MaintenancePage() {
     const checkAccess = async () => {
       try {
         // ถ้าเป็น admin ให้กลับไปหน้าแรกได้
-        if (status === "authenticated" && session?.user?.role === "admin") {
+        if (status === "authenticated" && isAdminRole(session?.user?.role)) {
           router.replace("/admin")
           return
         }
@@ -104,7 +105,7 @@ export default function MaintenancePage() {
           </div>
 
           {/* Logout for non-admin users */}
-          {status === "authenticated" && session?.user?.role !== "admin" && (
+          {status === "authenticated" && !isAdminRole(session?.user?.role) && (
             <Button
               variant="outline"
               className="w-full border-border hover:bg-secondary hover:border-border text-foreground"

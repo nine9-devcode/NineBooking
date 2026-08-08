@@ -17,10 +17,20 @@ export async function GET(request: NextRequest) {
 
     const where: Prisma.AuditLogWhereInput = {}
 
-    // ค้นจาก entityLabel (เลขที่เอกสาร / ชื่อสินค้า / อีเมล) ซึ่งเป็นสิ่งที่คนจำได้จริง
+    // ค้นจากสิ่งที่คนจำได้จริง — เลขที่เอกสาร ชื่อสินค้า หรือชื่อ/อีเมลของคนที่ทำ
     // ไม่ใช่ entityId ที่เป็น cuid ภายใน
+    //
+    // สาขาแรกใช้ index trgm ได้ ส่วนสาขาที่เหลือ Postgres จะ join กับ User แล้วกรอง
+    // ซึ่งถูกเพราะจำนวนแอดมินอยู่หลักสิบ ไม่ได้ scan AuditLog ทั้งตาราง
     const q = searchParams.get("q")?.trim()
-    if (q) where.entityLabel = { contains: q, mode: "insensitive" }
+    if (q) {
+      where.OR = [
+        { entityLabel: { contains: q, mode: "insensitive" } },
+        { actor: { name: { contains: q, mode: "insensitive" } } },
+        { actor: { nickname: { contains: q, mode: "insensitive" } } },
+        { actor: { email: { contains: q, mode: "insensitive" } } },
+      ]
+    }
 
     const action = searchParams.get("action")
     if (action && action !== "all") where.action = action
@@ -41,7 +51,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const [entries, total, actorGroups] = await Promise.all([
+    const [entries, total] = await Promise.all([
       prisma.auditLog.findMany({
         where,
         orderBy: { createdAt: "desc" },
@@ -61,23 +71,10 @@ export async function GET(request: NextRequest) {
         },
       }),
       prisma.auditLog.count({ where }),
-      // รายชื่อผู้กระทำสำหรับตัวกรอง
-      //
-      // ต้องใช้ groupBy ไม่ใช่ findMany({ distinct }) — Prisma ทำ distinct
-      // ในหน่วยความจำ แล้ว SQL ที่ออกมาไม่มี LIMIT เลย ("SELECT id, actorId
-      // FROM AuditLog WHERE 1=1 ORDER BY id") ผลคือขนทั้งตารางมาทุกครั้งที่เปิดหน้า
-      // ส่วน groupBy ถูกแปลเป็น GROUP BY จริง คืนมาแค่จำนวนผู้กระทำ
-      prisma.auditLog.groupBy({ by: ["actorId"], _count: { actorId: true } }),
     ])
-
-    const actors = await prisma.user.findMany({
-      where: { id: { in: actorGroups.map((group) => group.actorId) } },
-      select: { id: true, name: true, nickname: true },
-    })
 
     return apiOk({
       entries,
-      actors,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
     })
   } catch (error) {

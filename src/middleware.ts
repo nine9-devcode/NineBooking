@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 
 import { auth } from "@/lib/auth"
+import { isAdminRole } from "@/lib/roles"
 
 // middleware ทำงานบน Edge runtime จึงเรียก Prisma ตรงๆ ไม่ได้
 // ต้องถาม API แทน — แคชผลไว้ 30 วินาทีต่อ worker เพื่อไม่ให้ยิงทุก request
@@ -58,7 +59,7 @@ export default auth(async (req) => {
 
   if (!siteOpen) {
     // admin และโซน admin ผ่านได้ (CASE ถัดไปจะพาไป /admin/login เองถ้ายังไม่ล็อกอิน)
-    const canBypass = userRole === "admin" || isAdminZone
+    const canBypass = isAdminRole(userRole) || isAdminZone
     if (!canBypass) {
       if (isPublicPage || isMaintenancePage) return NextResponse.next()
       return NextResponse.redirect(new URL("/maintenance", req.url))
@@ -76,7 +77,7 @@ export default auth(async (req) => {
   }
 
   // ── ล็อกอินแล้ว: ผู้ดูแลระบบ ──
-  if (userRole === "admin") {
+  if (isAdminRole(userRole)) {
     if (isAdminLoginPage) return NextResponse.redirect(new URL("/admin", req.url))
     if (isAdminZone) return NextResponse.next()
     // admin หลงเข้าฝั่งผู้ใช้ → พากลับ dashboard

@@ -25,6 +25,14 @@ const ADMIN = {
   nickname: "แอดมิน",
 }
 
+// แอดมินระดับปกติ มีไว้ให้เห็นความต่างของสองระดับสิทธิ์ตอนเปิดดู
+const STAFF = {
+  email: "staff@ninebooking.dev",
+  password: "Staff@1234",
+  name: "พนักงานฝ่ายขาย",
+  nickname: "พนักงาน",
+}
+
 const DEMO_USER = {
   email: "demo@ninebooking.dev",
   password: "Demo@1234",
@@ -360,7 +368,7 @@ async function main() {
   await reset()
 
   // ── ผู้ใช้ ──
-  const [admin, demoUser] = await Promise.all([
+  const [admin, , demoUser] = await Promise.all([
     prisma.user.create({
       data: {
         email: ADMIN.email,
@@ -368,6 +376,21 @@ async function main() {
         name: ADMIN.name,
         nickname: ADMIN.nickname,
         phone: "0800000001",
+        // superadmin — เข้าถึงเครื่องมือระบบที่ /admin/dev-tools ได้
+        role: "superadmin",
+        residenceType: "condo",
+        isProfileCompleted: true,
+        ...THAI_ADDRESS,
+      },
+    }),
+    prisma.user.create({
+      data: {
+        email: STAFF.email,
+        password: await bcrypt.hash(STAFF.password, 10),
+        name: STAFF.name,
+        nickname: STAFF.nickname,
+        phone: "0800000003",
+        // admin ระดับปกติ — เข้าหลังบ้านได้ทุกอย่างยกเว้นเครื่องมือระบบ
         role: "admin",
         residenceType: "condo",
         isProfileCompleted: true,
@@ -758,8 +781,9 @@ async function main() {
   console.table(counts)
   console.log(`
 บัญชีสำหรับทดลองใช้งาน
-  ผู้ดูแลระบบ  ${ADMIN.email} / ${ADMIN.password}   (เข้าที่ /admin/login)
-  ผู้ใช้ทั่วไป  ${DEMO_USER.email} / ${DEMO_USER.password}   (เข้าที่ /login)
+  ผู้ดูแลระบบสูงสุด  ${ADMIN.email} / ${ADMIN.password}   (เข้าที่ /admin/login)
+  ผู้ดูแลระบบ       ${STAFF.email} / ${STAFF.password}   (เข้าที่ /admin/login)
+  ผู้ใช้ทั่วไป       ${DEMO_USER.email} / ${DEMO_USER.password}   (เข้าที่ /login)
 `)
 }
 
