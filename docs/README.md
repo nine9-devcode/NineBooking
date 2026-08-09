@@ -9,6 +9,7 @@
 | [flows.md](./flows.md)                     | ผู้ใช้กดปุ่มแล้วเกิดอะไรขึ้นบ้าง ไล่ทีละไฟล์จนถึงฐานข้อมูล           |
 | [data-model.md](./data-model.md)           | ตารางไหนเก็บอะไร เชื่อมกันยังไง และทำไมออกแบบแบบนั้น                 |
 | [api-reference.md](./api-reference.md)     | มี endpoint อะไรบ้าง ใครเรียกได้                                     |
+| [testing.md](./testing.md)                 | ไฟล์เทสต์แต่ละตัวครอบอะไร และ CI ตรวจอะไรบ้าง                        |
 | [interview-notes.md](./interview-notes.md) | สรุปสำหรับเล่าให้คนอื่นฟัง — ปัญหาที่เจอ วิธีแก้ และคำถามที่น่าจะโดน |
 
 ---
@@ -24,6 +25,8 @@
 
 **จะเพิ่ม endpoint ใหม่** → ดูหัวข้อ "สองด่านตรวจสิทธิ์" ใน architecture.md
 แล้วลอกโครงจาก route ที่ใกล้เคียงใน [api-reference.md](./api-reference.md)
+
+**เทสต์แดงแล้วไม่รู้ว่ามันตรวจอะไร** → [testing.md](./testing.md)
 
 **จะเล่าโปรเจกให้คนอื่นฟัง** → [interview-notes.md](./interview-notes.md)
 

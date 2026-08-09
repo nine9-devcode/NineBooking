@@ -283,4 +283,6 @@ PostgreSQL + Prisma 20 ตาราง ดูรายละเอียดท�
 Vitest alias `server-only` ไปที่ stub ว่าง (`src/test/server-only-stub.ts`) ไม่งั้นไฟล์ที่
 import `lib/db` จะรันในเทสต์ไม่ได้ — ดู `vitest.config.ts`
 
+**ไฟล์เทสต์แต่ละตัวครอบอะไร และ CI ตรวจอะไรบ้าง อยู่ที่ [testing.md](./testing.md)**
+
 คำสั่งตรวจก่อน commit อยู่ใน [CONTRIBUTING.md](../CONTRIBUTING.md)
