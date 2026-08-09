@@ -24,15 +24,24 @@
 
 ### สมัครสมาชิก
 
+ฟอร์มแบ่งเป็นสองขั้น (ข้อมูลบัญชี → ข้อมูลติดต่อ) แล้วยิงครั้งเดียวตอนจบ
+
 ```
 src/app/(public)/register/page.tsx
   └─ POST /api/auth/register          src/app/api/auth/register/route.ts
-       ├─ consume(register)           src/lib/rate-limit.ts       5 ครั้ง/ชม.
+       ├─ consume(register:ip:…)      src/lib/rate-limit.ts   5 ครั้ง/ชม. ต่อ IP
+       │                              นับก่อน parse เสมอ — ปลายทางคือ bcrypt
+       │                              cost 12 ซึ่งยิงรัวแล้ว CPU ตาย
        ├─ registerSchema.parse()      src/features/auth/schema.ts
+       ├─ อีเมลซ้ำ → 400 "อีเมลนี้ถูกใช้งานแล้ว"
        ├─ bcrypt.hash(password, 12)
-       └─ prisma.user.create()
-  └─ signIn("credentials")            เข้าสู่ระบบให้อัตโนมัติ
+       └─ prisma.user.create()        select เฉพาะฟิลด์ที่ส่งกลับ
+                                      กันไม่ให้ password hash หลุดออกไป
+  └─ router.push("/login?registered=true")
 ```
+
+**ไม่ได้ล็อกอินให้อัตโนมัติ** — สมัครเสร็จจะถูกพาไปหน้า login พร้อม
+query `registered=true` เพื่อให้หน้านั้นขึ้นข้อความว่าสมัครสำเร็จแล้ว
 
 ### เข้าสู่ระบบ
 
@@ -67,12 +76,12 @@ sequenceDiagram
 ตอนแก้โปรไฟล์ ฝั่ง client เรียก `update()` → `trigger === "update"` → เขียนทับใน token
 (ไม่งั้นต้องออกจากระบบแล้วเข้าใหม่ข้อมูลถึงจะตรง)
 
-| ไฟล์                                      | หน้าที่                                  |
-| ----------------------------------------- | ---------------------------------------- |
-| `src/lib/auth.ts`                         | provider, callbacks, การตรวจรหัสผ่าน     |
-| `src/app/api/auth/[...nextauth]/route.ts` | ส่ง handler ของ NextAuth ออกไปเป็น route |
-| `src/app/api/auth/check-lock/route.ts`    | หน้า login ถามว่าบัญชีนี้ถูกล็อกอยู่ไหม  |
-| `src/types/next-auth.d.ts`                | ขยาย type ของ session ให้มีฟิลด์ที่เพิ่ม |
+| ไฟล์                                      | หน้าที่                                                         |
+| ----------------------------------------- | --------------------------------------------------------------- |
+| `src/lib/auth.ts`                         | provider, callbacks, การตรวจรหัสผ่าน                            |
+| `src/app/api/auth/[...nextauth]/route.ts` | ส่ง handler ของ NextAuth ออกไปเป็น route                        |
+| `src/app/api/auth/check-lock/route.ts`    | ถามว่าบัญชีนี้ถูกล็อกอยู่ไหม — เรียกจาก `/admin/login` เท่านั้น |
+| `src/types/next-auth.d.ts`                | ขยาย type ของ session ให้มีฟิลด์ที่เพิ่ม                        |
 
 ---
 
@@ -113,14 +122,29 @@ sequenceDiagram
 
 ## ค้นหาและดูสินค้า
 
+หน้าแรกเป็น client component ที่อ่านเงื่อนไขจาก URL แล้วยิง API ใหม่ทุกครั้งที่ URL เปลี่ยน
+
 ```
-src/app/page.tsx  (รายการสินค้า)
-  └─ GET /api/products?search=…&category=…&page=…
-       src/app/api/products/route.ts
-         ├─ คำค้น ≥ 2 ตัวอักษร → searchProductIds()
-         │    src/features/products/services/search-products.ts   ← ที่เดียวที่ใช้ $queryRaw
-         └─ สั้นกว่านั้น → Prisma contains (ILIKE) ตามเดิม
+src/app/page.tsx  (รายการสินค้า — "use client")
+  └─ useEffect  ทำงานใหม่เมื่อ page / sort / search / categorySlug ใน URL เปลี่ยน
+       └─ GET /api/products?page=1&limit=12&sort=…&search=…&categorySlug=…
+            src/app/api/products/route.ts
+              ├─ คำค้น ≥ 2 ตัวอักษร → searchProductIds()
+              │    src/features/products/services/search-products.ts  ← ที่เดียวที่ใช้ $queryRaw
+              └─ สั้นกว่านั้น → Prisma contains (ILIKE) ตามเดิม
 ```
+
+| พารามิเตอร์    | ค่าเริ่มต้น  | หมายเหตุ                                                                 |
+| -------------- | ------------ | ------------------------------------------------------------------------ |
+| `page`         | `1`          |                                                                          |
+| `limit`        | `12`         | หน้าแรกตรึงไว้ที่ 12                                                     |
+| `sort`         | `"category"` |                                                                          |
+| `search`       | —            | ส่งเฉพาะเมื่อมีค่า                                                       |
+| `categorySlug` | —            | **ไม่ใช่ `category`** — route รับ `categoryId` ได้ด้วยแต่หน้าแรกส่ง slug |
+
+**`AbortController`** ที่ห่อ `fetch` ไว้ยกเลิก request เก่าเมื่อผู้ใช้พิมพ์ค้นหาเร็ว ๆ
+หรือกดเปลี่ยนหน้ารัว ๆ ไม่งั้นผลของ request เก่าอาจมาถึงทีหลังแล้วทับของใหม่
+(ตัว `catch` จงใจเงียบเมื่อเป็น `AbortError` เพราะนั่นไม่ใช่ความผิดพลาด)
 
 การค้นใช้สองกลไกคู่กันในคำสั่งเดียว:
 
@@ -143,12 +167,26 @@ src/app/page.tsx  (รายการสินค้า)
 
 ### หน้ารายละเอียดสินค้าและการจับคู่
 
+หน้านี้แบ่งงานกันสองชั้น — **page เป็น server component ที่ไม่ยิง API เลย**
+
 ```
-src/app/products/[slug]/page.tsx
-  ├─ GET /api/products/[slug]           ข้อมูลสินค้า
-  ├─ GET /api/products/[slug]/paired    สินค้าที่จับคู่ได้
-  └─ POST /api/products/[slug]/view     นับยอดเข้าชม (กันซ้ำ 1 ครั้ง/คน/วัน)
+src/app/products/[slug]/page.tsx          Server Component
+  ├─ generateMetadata()  query Prisma ตรง ๆ เพื่อทำ SEO metadata
+  └─ <ProductDetail slug={slug} />        ส่งต่อแค่ slug
+       src/features/products/components/product-detail.tsx   ("use client")
+         ├─ GET  /api/products/{slug}          ข้อมูลสินค้า + สินค้าที่เกี่ยวข้อง
+         ├─ POST /api/products/{slug}/view     นับยอดเข้าชม (กันซ้ำ 1 ครั้ง/คน/วัน)
+         └─ GET  /api/products/{slug}/paired   สินค้าที่จับคู่ได้
 ```
+
+ที่แบ่งแบบนี้เพราะ metadata ต้องถูกต้องตั้งแต่ HTML ชุดแรก (server component ทำได้)
+แต่เนื้อหาข้างในต้องโต้ตอบได้ — เลือกคู่จับ เพิ่มลงตะกร้า (ต้องเป็น client)
+
+> **สังเกตรูปแบบ URL** ตัว `slug` ไปอยู่ใน path ไม่ใช่ query string
+> `/api/products/camera-in-200` จึงเข้า `api/products/[slug]/route.ts`
+> ส่วน `/api/products?page=1` เข้า `api/products/route.ts` เพราะ query string
+> ไม่นับเป็น path segment ฝั่ง route รับค่าผ่าน argument ตัวที่สอง
+> (`{ params }: { params: Promise<{ slug: string }> }` — ต้อง `await` ตั้งแต่ Next 15)
 
 การจับคู่มีสองระดับ ซึ่งทำงานทับกัน:
 
@@ -167,12 +205,17 @@ src/app/products/[slug]/page.tsx
 state ทั้งแอปอยู่ที่ `src/features/cart/cart-context.tsx` (React Context)
 ทุกการเปลี่ยนแปลงยิง API แล้วค่อย refresh — ไม่มี optimistic update
 
+**component ไม่ยิง API เอง** — ทุกตัวเรียกฟังก์ชันจาก context แล้ว context เป็นคนยิง
+(`fetch` ทั้ง 5 จุดอยู่ในไฟล์ `cart-context.tsx` ไฟล์เดียว)
+
 ```
-components/…/add-to-cart-button.tsx
-  └─ POST /api/cart          { productId, quantity, pairedProductId? }
-       ├─ ตรวจว่าสินค้ายัง isActive
-       ├─ มีชุดนี้ในตะกร้าแล้ว → เพิ่มจำนวน (เพดาน 99)
-       └─ ยังไม่มี → สร้างแถวใหม่
+src/features/cart/components/add-to-cart-button.tsx
+  └─ useCart().addItem(...)
+       src/features/cart/cart-context.tsx
+         └─ POST /api/cart          { productId, quantity, pairedProductId? }
+              ├─ ตรวจว่าสินค้ายัง isActive
+              ├─ มีชุดนี้ในตะกร้าแล้ว → เพิ่มจำนวน (เพดาน 99)
+              └─ ยังไม่มี → สร้างแถวใหม่
 ```
 
 **คีย์ของตะกร้าคือ `(userId, productId, pairedProductId)`** ไม่ใช่แค่ `productId`
@@ -438,17 +481,31 @@ sequenceDiagram
 
 ## รายงานและการส่งออก
 
+เป็นสองหน้าคนละตัว ที่มักถูกเข้าใจว่าเป็นหน้าเดียวกัน
+
+**`/admin` — หน้าแรกหลังบ้าน** แต่ละการ์ด/กราฟยิง API ของตัวเองแยกกัน
+(component อยู่ใน `src/features/dashboard/components/`)
+
 ```
-src/app/admin/(dashboard)/report/page.tsx
-  ├─ GET /api/admin/dashboard/stats             การ์ดสรุป
-  ├─ GET /api/admin/dashboard/yearly-stats      กราฟรายเดือน
-  ├─ GET /api/admin/dashboard/top-products      สินค้ายอดนิยม
-  ├─ GET /api/admin/dashboard/category-stats    สัดส่วนตามหมวด
-  └─ GET /api/admin/dashboard/summary-report    ตัวเลขรวมตามช่วงวันที่
-       └─ …/excel  (ExcelJS)   …/pdf  (@react-pdf/renderer)
+src/app/admin/(dashboard)/page.tsx
+  ├─ <StatsCards />         → GET /api/admin/dashboard/stats
+  ├─ <YearlyChart />        → GET /api/admin/dashboard/yearly-stats?year=…
+  ├─ <CategoryPieChart />   → GET /api/admin/dashboard/category-stats
+  ├─ <RecentOrdersTable />  → GET /api/admin/dashboard/recent-orders?limit=5
+  └─ <TopProducts />        → GET /api/admin/dashboard/top-products
 ```
 
-การคำนวณทั้งหมดอยู่ที่ `src/features/dashboard/report-data.ts` ที่เดียว
+**`/admin/report` — หน้ารายงานตามช่วงวันที่** ยิงแค่สาย `summary-report`
+
+```
+src/app/admin/(dashboard)/report/page.tsx
+  ├─ GET /api/admin/dashboard/summary-report?…        ตัวเลขบนหน้าจอ
+  ├─ GET /api/admin/dashboard/summary-report/pdf?…    (@react-pdf/renderer)
+  └─ GET /api/admin/dashboard/summary-report/excel?…  (ExcelJS)
+```
+
+ทั้งสาม route ของ `summary-report` เรียก `calculateSummaryReport()` จาก
+`src/features/dashboard/report-data.ts` ตัวเดียวกัน
 route ของ Excel และ PDF เรียกฟังก์ชันเดียวกัน ตัวเลขในสองไฟล์จึงตรงกันเสมอ
 
 **ยอดเข้าชมมาจากสองตาราง:** `ProductView` เก็บทีละครั้ง (กันซ้ำ 1 ครั้ง/คน/วัน)
@@ -467,7 +524,7 @@ route ของ Excel และ PDF เรียกฟังก์ชันเ�
 
 ```
 src/app/admin/(dashboard)/audit-log/page.tsx     (client component)
-  └─ GET /api/admin/audit-log?actor=&action=&entityType=&q=&from=&to=
+  └─ GET /api/admin/audit-log?q=&action=&entityType=&actorId=&from=&to=
 ```
 
 - `entityLabel` เก็บชื่อที่คนอ่านออก (`ORD-20260807-001`) ใช้เป็นตัวค้น
