@@ -171,7 +171,7 @@ src/app/page.tsx  (รายการสินค้า — "use client")
 
 ```
 src/app/products/[slug]/page.tsx          Server Component
-  ├─ generateMetadata()  query Prisma ตรง ๆ เพื่อทำ SEO metadata
+  ├─ generateMetadata()  query Prisma ตรง ๆ เพื่อตั้งชื่อแท็บเป็นชื่อสินค้า
   └─ <ProductDetail slug={slug} />        ส่งต่อแค่ slug
        src/features/products/components/product-detail.tsx   ("use client")
          ├─ GET  /api/products/{slug}          ข้อมูลสินค้า + สินค้าที่เกี่ยวข้อง
@@ -179,8 +179,15 @@ src/app/products/[slug]/page.tsx          Server Component
          └─ GET  /api/products/{slug}/paired   สินค้าที่จับคู่ได้
 ```
 
-ที่แบ่งแบบนี้เพราะ metadata ต้องถูกต้องตั้งแต่ HTML ชุดแรก (server component ทำได้)
+ที่แบ่งแบบนี้เพราะชื่อแท็บต้องถูกต้องตั้งแต่ HTML ชุดแรก (server component ทำได้)
 แต่เนื้อหาข้างในต้องโต้ตอบได้ — เลือกคู่จับ เพิ่มลงตะกร้า (ต้องเป็น client)
+
+> **`generateMetadata` ที่นี่ไม่ใช่งาน SEO** แม้จะเป็น API ตัวเดียวกับที่ปกติใช้ทำ SEO
+> หน้านี้อยู่หลังการล็อกอิน crawler จึงเห็นแค่ redirect ไปหน้า login และ
+> [`robots.ts`](../src/app/robots.ts) ก็ `disallow: "/"` ทั้งเว็บ — ด้วยเหตุนี้
+> Open Graph / Twitter card / canonical และ `sitemap.ts` จึงถูกถอดออกไปแล้ว
+> สิ่งที่ยังได้ผลจริงคือ **ชื่อแท็บเบราว์เซอร์ ประวัติการเข้าชม และบุ๊กมาร์ก**
+> ของคนที่ล็อกอินแล้ว ([`lib/seo.ts`](../src/lib/seo.ts) จึงคืนแค่ `title` กับ `description`)
 
 > **สังเกตรูปแบบ URL** ตัว `slug` ไปอยู่ใน path ไม่ใช่ query string
 > `/api/products/camera-in-200` จึงเข้า `api/products/[slug]/route.ts`

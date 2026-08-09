@@ -1,5 +1,11 @@
 // ไฟล์: app/products/[slug]/page.tsx
-// Server Component พร้อม Dynamic SEO Metadata
+//
+// Server Component ที่ทำหน้าที่เดียว — ตั้งชื่อแท็บให้เป็นชื่อสินค้าจริง
+// ตั้งแต่ HTML ชุดแรก แล้วส่ง slug ต่อให้ client component ไปดึงข้อมูล
+//
+// ไม่ใช่งาน SEO แม้จะใช้ API ชื่อ generateMetadata — หน้านี้อยู่หลังการล็อกอิน
+// crawler จึงเห็นแค่ redirect ไปหน้า login และ robots.ts ก็ disallow ทั้งเว็บ
+// (ด้วยเหตุนี้ OG / Twitter card / canonical จึงถูกถอดออกไปแล้ว ดู lib/seo.ts)
 
 import { Metadata } from "next"
 import { prisma } from "@/lib/db"
